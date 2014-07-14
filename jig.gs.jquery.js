@@ -9,11 +9,12 @@
 		}
 		party = [];
 	},
-	perElement = function(elems){
-		var de = 0;
+
+	perElement = function(method,elems){
+		var de = 0
 		for( var f in elems ){
 			de+=.1
-			wiggle(elems[f],{ speed:.5, delay:de });
+			method(elems[f],{ speed:.5, delay:de });
 		}
 	},
 		
@@ -27,7 +28,9 @@
 		me.anim = function(j){
 			me.timeline.to(elem,sp,{rotation:20,left:le,ease:'easeInOut'});
 			me.timeline.to(elem,sp,{rotation:-20,left:-le,ease:'easeInOut'});
-			if(j){ me.timeline.call(me.loop) }
+			if(j){ me.timeline.call(me.loop) }else{
+				me.timeline.to(elem,sp,{rotation:0,left:0,ease:'easeInOut'});
+			}
 		};
 		
 		me.init();
@@ -38,14 +41,87 @@
 	jump=function(elem,obj){
 	
 		var me = new animation(elem,obj);
-		var sp = me.settings.speed/2;
-		var am = me.settings.amount
-		var hp =  parseInt(me.settings.height)*1.1+'px'
+		var speed = me.settings.speed; // Speed
+		var amp = parseInt(me.settings.amplitude); // Amplitude
+		var wid = parseInt(me.settings.width); // Width
+		var hgt = parseInt(me.settings.height); // Height
+		var off; //Offset
+		var tl = me.timeline;
 		
 		me.anim = function(j){
-			me.timeline.to(elem,sp,{height:hp, top:-am,ease:'easeOut'});
-			me.timeline.to(elem,sp,{height:me.settings.height,top:0,ease:'easeIn'});
-			if(j){ me.timeline.call(me.loop) }
+			
+			//1 windup
+			w=wid*1.1;
+			h=hgt*.9;
+			a=hgt*.1;
+			o = wid*-.05;
+			s = speed/12;
+			e='easeIn';
+			
+			tl.to(elem,s,{
+				width:w+'px',
+				height:h+'px',
+				top:a+'px',
+				left:o+'px',
+				ease:e
+			});
+			
+			//2 launch
+			w = wid*.9;
+			h = hgt*1.1;
+			a = amp*-.6;
+			o= wid*.05;
+			s= speed/2;
+			e='linearOut';
+			
+			tl.to(elem,s,{
+				width:w,
+				height:h,
+				top:a,
+				left:o,
+				ease:e
+			});
+			
+			//4 fall
+			w = wid*.9;
+			h = hgt*1.1;
+			a = hgt*-.2;
+			o = wid*.05;
+			s = speed/8;
+			e='easeIn';
+			
+			tl.to(elem,s,{
+				width:w,
+				height:h,
+				top:a,
+				left:o,
+				ease:e
+			});
+			
+			//6 reset
+			w = wid;
+			h = hgt;
+			a = 0;
+			o = 0;
+			s=speed/9;
+			e='linearOut';
+			
+			tl.to(elem,s,{
+				width:w,
+				height:h,
+				top:a,
+				left:o,
+				ease:e
+			});
+			
+			//ANIMATION END
+			//====================
+			if(j){ me.timeline.call(me.loop) }else{
+				me.timeline.to(elem,sp,{
+					height:h,
+					top:0,ease:'easeIn'
+				});
+			}
 		};
 		
 		me.init();
@@ -65,7 +141,7 @@
 			speed:2,
 			repeat:null,
 			delay:0,
-			amount:10,
+			amplitude:10,
 			width: $(e).css('width'),
 			height: $(e).css('height')
 		};		

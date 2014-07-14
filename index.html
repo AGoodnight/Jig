@@ -4,52 +4,69 @@
 <link href='css/bootstrap.css' rel='stylesheet'></link>
 <style>
 .block{
-	width:400px;
-	height:400px;
+	margin: 20px 3px 20px 3px;
+	width:100px;
+	height:100px;
 	background-color:black;
 	position:relative;
+	float:left;
 }
 figure{
 	width:100%;
+	display:block;
+	height:150px;
 }
 </style>
 </head>
 
 <body >
-	<div class='navbar-wrapper'>
-		<div class='container'>
-			<div class='navbar navbar-inverse navbar static-top' role='navigation'>
-				<div class='navbar-header'>
-					<button type='button' class='navbar-toggle'>
-						<a class='navbar-brand'></a>
-					</button>
-				</div>
-				<div class='navbar-collapse collapse'>
-					<ul class='nav navbar-nav'>
-						<li>Wiggle</li>
-						<li>Slide</li>
-						<li>Shuffle</li>
-					</ul>
-				</div>
+	
+	<div class='container marketing'>
+	
+		<div class='blog-header'>
+		<h1>Jig: An Animation Library</h1>
+		</div>
+	
+		<div class='row'>
+			<div class='col-md-4'>
+				<h3>Wiggle</h3>
+				<figure>
+					<div id='wiggle' class='block'></div>
+				</figure>
+				<div>
+				<p>Wiggle the motion</p>
+				<p><button id='startwiggle' onclick="wiggle('#wiggle',{speed:.5, repeat:6})">Start</button></p>
+				<pre>wiggle( element, {paramters})</pre>
+				 </div>
+			</div>
+			
+			<div class='col-md-4'>
+				<h3>Jump</h3>
+				<figure>
+					<div id='jump' class='block'></div>
+				</figure>
+				<div>
+				<p>Wiggle the motion</p>
+				<p><button id='startwiggle' onclick="jump('#jump',{amplitude:200, speed:.5, repeat:6})">Start</button></p>
+				<pre>jump( element, {paramters})</pre>
+				 </div>
+			</div>
+			
+			<div class='col-md-4'>
+				<h3>Spin</h3>
+				<figure>
+					<div id='spin' class='block'></div>
+				</figure>
+				<div>
+				<p>Wiggle the motion</p>
+				<p><button id='startwiggle' onclick="spin('#jump',{amount:50, speed:.5, repeat:6})">Start</button></p>
+				<pre>spin( element, {paramters})</pre>
+				 </div>
 			</div>
 		</div>
 	</div>
-
-	<div class='container marketing'>
-		<section class='row'>
-			<div class='col-lg-4'>
-				<h2>Wiggle</h2>
-				<figure>
-					<div id='block1' class='block'></div>
-					<!--<div id='block2' class='block'></div>
-					<div id='block3' class='block'></div>
-					<div id='block4' class='block'></div>-->
-				</figure>
-				Wiggle the motion <button id='startwiggle' onclick='buttonClick(1)'>Start</button>
-				 <button id='stopwiggle' onclick='buttonClick(0)'>Stop</button>
-			</div>
-		</section>
-	</div>
+	
+	
 
 </body>
 <script src='vendors/greensock/TweenLite.min.js'></script>
@@ -58,21 +75,6 @@ figure{
 <script src='vendors/jquery-1.11.1.min.js'></script>
 <script src='jig.gs.jquery.js'></script>
 <script type='text/javascript'>
-
-
-var buttonClick = function(inp){
-	if(inp == 1){
-		/*perElement([
-			byId('block1'),
-			byId('block2'),
-			byId('block3'),
-			byId('block4')
-		]);*/
-		jump('#block1',{amount:100, speed:.5, repeat:10});
-	}else{
-		removeAll();
-	}
-};
 
 </script>
 
