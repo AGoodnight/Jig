@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link href='css/bootstrap.css' rel='stylesheet'></link>
+<style>
+.block{
+	width:400px;
+	height:400px;
+	background-color:black;
+	position:relative;
+}
+figure{
+	width:100%;
+}
+</style>
+</head>
+
+<body >
+	<div class='navbar-wrapper'>
+		<div class='container'>
+			<div class='navbar navbar-inverse navbar static-top' role='navigation'>
+				<div class='navbar-header'>
+					<button type='button' class='navbar-toggle'>
+						<a class='navbar-brand'></a>
+					</button>
+				</div>
+				<div class='navbar-collapse collapse'>
+					<ul class='nav navbar-nav'>
+						<li>Wiggle</li>
+						<li>Slide</li>
+						<li>Shuffle</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class='container marketing'>
+		<section class='row'>
+			<div class='col-lg-4'>
+				<h2>Wiggle</h2>
+				<figure>
+					<div id='block1' class='block'></div>
+					<!--<div id='block2' class='block'></div>
+					<div id='block3' class='block'></div>
+					<div id='block4' class='block'></div>-->
+				</figure>
+				Wiggle the motion <button id='startwiggle' onclick='buttonClick(1)'>Start</button>
+				 <button id='stopwiggle' onclick='buttonClick(0)'>Stop</button>
+			</div>
+		</section>
+	</div>
+
+</body>
+<script src='vendors/greensock/TweenLite.min.js'></script>
+<script src='vendors/greensock/TimelineLite.min.js'></script>
+<script src='vendors/greensock/plugins/CSSPlugin.min.js'></script>
+<script src='vendors/jquery-1.11.1.min.js'></script>
+<script src='jig.gs.jquery.js'></script>
+<script type='text/javascript'>
+
+
+var buttonClick = function(inp){
+	if(inp == 1){
+		/*perElement([
+			byId('block1'),
+			byId('block2'),
+			byId('block3'),
+			byId('block4')
+		]);*/
+		jump('#block1',{amount:100, speed:.5, repeat:10});
+	}else{
+		removeAll();
+	}
+};
+
+</script>
+
+</html>
