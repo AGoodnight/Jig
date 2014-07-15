@@ -21,34 +21,83 @@
 		
 	wiggle=function(elem,obj){
 	
-		var me = new animation(elem,obj);
-		var sp = me.settings.speed/2;
-		var le = parseInt(me.settings.width)/5;
+		var _me = new animation(elem,obj);
+		var _tl = _me.timeline;
 		
-		me.anim = function(j){
-			me.timeline.to(elem,sp,{rotation:20,left:le,ease:'easeInOut'});
-			me.timeline.to(elem,sp,{rotation:-20,left:-le,ease:'easeInOut'});
-			if(j){ me.timeline.call(me.loop) }else{
-				me.timeline.to(elem,sp,{rotation:0,left:0,ease:'easeInOut'});
+		var speed = _me.settings.speed; // Speed
+		var amp = parseInt(_me.settings.amplitude); // Amplitude
+		var wid = parseInt(_me.settings.width); // Width
+		var hgt = parseInt(_me.settings.height); // Height
+		var bol = _me.settings.bol
+		
+		_me.anim = function(j){
+			
+			var rand=function(num){
+			  var n = Math.round(Math.random()*num);
+			  if(n > num){
+			    rand(num);
+			  }else{
+			    console.log('random = '+n);
+			    return n;
+			  }
 			}
+			
+			inf = rand(2)+amp; //influence
+			x = inf/rand(2)+amp;
+			y = 1;// create an radius line
+			s = speed/2;
+			
+			// vector 1
+			_tl.to(elem,s,{
+			  left:x*amp,
+			  top:y*amp,
+			  ease:'easeInOutCirc'
+			});
+			// vector 1
+			_tl.to(elem,s,{
+		    left:x*-amp,
+			  top:y*-amp,
+			  ease:'easeInOutCirc'
+			});
+			
+			//ANIMATION END
+			//====================
+			if(j){ _me.timeline.call(_me.loop) }else{
+				_me.timeline.to(elem,s,{
+					top:0,
+					left:0
+				});
+			  console.log(_me.settings.name+' is at rest');
+			}
+			
 		};
 		
-		me.init();
-		party.push(me);
+		_me.init();
+		party.push(_me);
 
 	}
 	
 	jump=function(elem,obj){
 	
-		var me = new animation(elem,obj);
-		var speed = me.settings.speed; // Speed
-		var amp = parseInt(me.settings.amplitude); // Amplitude
-		var wid = parseInt(me.settings.width); // Width
-		var hgt = parseInt(me.settings.height); // Height
-		var off; //Offset
-		var tl = me.timeline;
+		var _me = new animation(elem,obj);
+		var _tl = _me.timeline;
 		
-		me.anim = function(j){
+		var speed = _me.settings.speed; // Speed
+		var amp = parseInt(_me.settings.amplitude); // Amplitude
+		var wid = parseInt(_me.settings.width); // Width
+		var hgt = parseInt(_me.settings.height); // Height
+		var bol = _me.settings.bol
+		
+		_me.anim = function(j){
+			var w,h,a,o,s,e,b;
+			
+			// aloofness
+			// --------------
+			bol = bol ? false : true;
+			b = bol ? '20deg' : '-20deg';
+			
+			// action
+			// --------------
 			
 			//1 windup
 			w=wid*1.1;
@@ -58,7 +107,7 @@
 			s = speed/12;
 			e='easeIn';
 			
-			tl.to(elem,s,{
+			_tl.to(elem,s,{
 				width:w+'px',
 				height:h+'px',
 				top:a+'px',
@@ -73,13 +122,15 @@
 			o= wid*.05;
 			s= speed/2;
 			e='linearOut';
+			lean = bol;
 			
-			tl.to(elem,s,{
+			_tl.to(elem,s,{
 				width:w,
 				height:h,
 				top:a,
 				left:o,
-				ease:e
+				ease:e,
+				rotation:b
 			});
 			
 			//4 fall
@@ -90,15 +141,16 @@
 			s = speed/8;
 			e='easeIn';
 			
-			tl.to(elem,s,{
+			_tl.to(elem,s,{
 				width:w,
 				height:h,
 				top:a,
 				left:o,
-				ease:e
+				ease:e,
+				rotation:0
 			});
 			
-			//6 reset
+			//6 rest
 			w = wid;
 			h = hgt;
 			a = 0;
@@ -106,7 +158,7 @@
 			s=speed/9;
 			e='linearOut';
 			
-			tl.to(elem,s,{
+			_tl.to(elem,s,{
 				width:w,
 				height:h,
 				top:a,
@@ -116,16 +168,17 @@
 			
 			//ANIMATION END
 			//====================
-			if(j){ me.timeline.call(me.loop) }else{
-				me.timeline.to(elem,sp,{
+			if(j){ _me.timeline.call(_me.loop) }else{
+				_me.timeline.to(elem,s,{
 					height:h,
 					top:0,ease:'easeIn'
 				});
+			  console.log(_me.settings.name+' is at rest');
 			}
 		};
 		
-		me.init();
-		party.push(me);
+		_me.init();
+		party.push(_me);
 
 	}
 	
@@ -138,12 +191,13 @@
 		// -----------------------------------------------------------
 		obj.settings = {
 			name:e,
-			speed:2,
+			speed:1,
 			repeat:null,
 			delay:0,
-			amplitude:10,
+			amplitude:50,
 			width: $(e).css('width'),
-			height: $(e).css('height')
+			height: $(e).css('height'),
+			bol:true
 		};		
 		
 		obj.stats ={
@@ -152,8 +206,18 @@
 		
 		// FUNCTIONS
 		// -----------------------------------------------------------
+		obj.swap=function(r){
+		  if(r){
+		    r = false;
+		  }else{
+		    r = true;
+		  };
+		};
+		
 		obj.loop = function(){
-			obj.stats.reps++
+			
+			obj.stats.reps++;
+			
 			var j;
 			
 			if(obj.settings.repeat === null || obj.stats.reps<obj.settings.repeat){
@@ -166,14 +230,8 @@
 			
 		};
 		obj.init = function(){
-		
-			console.log('initialize');
-			
-			if(this.settings.repeat == null){
-				this.loop();
-			}else{
-				this.loop()
-			}
+			console.log(obj.settings.name+' is animating');
+			this.loop();
 		};
 		
 		// SETUP
