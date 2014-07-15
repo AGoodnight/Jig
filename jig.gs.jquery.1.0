@@ -1,0 +1,13 @@
+(function(document){
+	
+	jig = function(selector){
+		return new jig.fn.(selector);
+	}
+
+	jig.fn = jig.prototype ={
+		
+	}
+
+
+
+})(document)
