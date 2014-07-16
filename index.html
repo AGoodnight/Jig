@@ -35,7 +35,7 @@ figure{
 				</figure>
 				<div>
 					<p>Wiggle the motion</p>
-					<p><button onclick="wiggle('wiggle',{speed:.1, amplitude:6, repeat:20})">Start</button></p>
+					<p><button onclick="wiggle('wiggle',{speed:1, ease:'easeInOut', rotation:20, amplitude:20})">Start</button></p>
 					<pre>wiggle( element, {paramters})
 
   /*paramaters:{
@@ -122,7 +122,7 @@ figure{
 				</figure>
 				<div>
 					<p>Fall with a plop</p>
-					<p><button onclick="jig.perElement(plop, ['plop1','plop2','plop3'], .2, {
+					<p><button onclick="each(['plop1','plop2','plop3'],plop,  .2, {
 							speed:.6,
 							startY:'800px',
 							endY:0,
@@ -153,7 +153,7 @@ figure{
 				</figure>
 				<div>
 					<p>Wiggle the motion</p>
-					<p><button onclick="spin('spin',{amount:50, speed:.5, repeat:6})">Start</button></p>
+					<p><button onclick="spin('spin',{rotation:360, speed:2, repeat:'forever'})">Start</button></p>
 					<pre>jump( element, {paramters})
 
   /*paramaters:{
@@ -260,8 +260,8 @@ figure{
 <script type='text/javascript'>
 	
 
-		fly("#header",{speed:.6,startOpacity:0,startY:-30});
-		jig.perElement(fly,jig.getClass('col-md-4'),.1,{startX:10,startOpacity:0,speed:.5},true);
+		fly(document.getElementById('header'),{speed:.6,startOpacity:0,startY:-30});
+		each(document.getElementsByClassName('col-md-4'),fly,.1,{startX:10,startOpacity:0,speed:.5},true);
 		//jig.perElement(plop,$('.col-md-4'),.1,{startY:300,exaggeration:10},true);
 
 	

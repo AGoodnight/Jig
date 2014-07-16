@@ -5,16 +5,19 @@
 <style>
 .block{
 	margin: 20px 3px 20px 3px;
-	width:60px;
-	height:60px;
+	width:200px;
+	height:200px;
 	background-color:black;
 	position:relative;
 	float:left;
 }
 figure{
-	width:100%;
+	top:100px;
+	width:600px;
 	display:block;
-	height:150px;
+	height:600px;
+	margin:0 auto;
+	position:relative;
 }
 </style>
 </head>
@@ -23,26 +26,70 @@ figure{
 
 <figure>
 <div class='block'></div>
-<div class='block'></div>
-<div class='block'></div>
 </figure>
 
 </body>
 <script src='vendors/greensock/TweenLite.min.js'></script>
 <script src='vendors/greensock/TimelineLite.min.js'></script>
 <script src='vendors/greensock/plugins/CSSPlugin.min.js'></script>
+<script src='vendors/greensock/plugins/BezierPlugin.min.js'></script>
 <script src='jig.gs.0.3.js'></script>
 <script type='text/javascript'>
 	
-	jig.perElement(jump,jig.getClass('block'),.01,{
-		amplitude:100,
-		speed:1,
-		exaggeration:10,
-		aloofness:0,
-		repeat:'forever'
-	},true);
+var ex = 10
 
-	console.log(jig.party);
+// jive
+var tl = new TimelineLite();
+me = jig.getClass('block');
+tl.to(me,.2,{
+	scaleX:1.1,
+	scaleY:.9,
+	transformOrigin:'50% 100%',
+	ease:'easeInExpo'
+});
+tl.to(me,.4,{
+	scaleX:.9,
+	scaleY:1.1,
+	rotation:-20,
+	bottom:50
+	}
+);
+tl.to(me,.2,{
+	scaleX:1.1,
+	scaleY:.9,
+	bottom:0,
+	rotation:0,
+	transformOrigin:'50% 100%',
+	ease:'easeInExpo'
+});
+tl.to(me,.4,{
+	scaleX:.9,
+	scaleY:1.1,
+	rotation:20,
+	bottom:50
+	}
+);
+tl.to(me,.2,{
+	scaleX:1,
+	scaleY:1,
+	bottom:0,
+	rotation:0,
+	transformOrigin:'50% 100%',
+	ease:'easeInExpo'
+});
+
+
+// Flutter
+/*TweenLite.to(jig.getClass('block'),1,{
+		bezier:[
+		{left:ex, top:ex}, 
+		{left:ex*2, top:ex*-1}, 
+		{left:ex*-1, top:ex},
+		{left:ex, top:ex}
+		], ease:Power1.easeInOut
+})*/
+
+
 
 	
 </script>

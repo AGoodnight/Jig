@@ -4,7 +4,7 @@ inquire@adamgoodnight.com
 
 You may use this script anyway you wish, but do not remove this information.
 
-Jig is a collection of animation presets
+Jig is a collection of preset presets
 
 Jig is meant to be expanded upon and easy to use with Jquery and GSAP's timeline package.
 
@@ -14,27 +14,16 @@ to it's development or bring up any issues you experience with jig on github (ht
 
 (function(document){
 
-	jig = {
-		version:0.3,
+	rand=function(num){
+		var n = Math.round(Math.random()*num);
+		if(n > num){
+			rand(num);
+		}else{
+			return n;
+		}
+	};
 
-		getId:function(e){
-			return document.getElementById(e);
-		},
-
-		getClass:function(e){
-			return document.getElementsByClassName(e);
-		},
-			
-		init:function(){
-			jig.rootTimeline = new TimelineLite();
-		},
-
-		removeAll:function(){
-			for(var g in this.party){ this.party[g].timeline.pause() }
-			this.party = [];
-		},
-
-		mixUp:function(arr){
+	mixUp=function(arr){
 
 			var currentIndex = arr.length
     		, temporaryValue
@@ -56,9 +45,9 @@ to it's development or bring up any issues you experience with jig on github (ht
   			}
 
   			return arr;
-		},
+	};
 
-		perElement: function(method,elems,delay,paramaters,randomize){
+	each=function(elems,method,delay,paramaters,randomize){
 			var de = 0
 			var arr;
 
@@ -67,7 +56,7 @@ to it's development or bring up any issues you experience with jig on github (ht
 			if(!randomize){
 				arr = elems
 			}else{
-				arr = jig.mixUp(Array.prototype.slice.call(elems));
+				arr = mixUp(Array.prototype.slice.call(elems));
 			}
 
 			for( var f in arr ){
@@ -75,35 +64,40 @@ to it's development or bring up any issues you experience with jig on github (ht
 				method(arr[f],paramaters);
 				de+=delay;
 			}			
-		},
-
-		party:[], // a place for animations or 'jigs' to hang out after they have been instantiated
-
 	};
 
+	party:[]; // a place for presets or 'jigs' to hang out after they have been instantiated
+
 	//Instance Constructor
-	function animation(e,o,root){
+	function preset(e,o,root){
+
 		var obj = {};	
 		obj.anim = null;
 		
-		// STORAGE
-		// -----------------------------------------------------------
 		obj.settings = {
 			name:e,
+			
 			speed:1,
-			tempo:60,
+
 			repeat:0,
 			delay:0,
+			
 			amplitude:50,
+			
 			bol:true,
+			
 			startX:0,
 			startY:0,
 			endX:0,
 			endY:0,
+			
 			startScale:1,
 			endScale:1,
+			
 			aloofness:20,
+			ease:'linear',
 			exaggeration:0,
+			
 			startOpacity:1,
 			endOpacity:1
 		};		
@@ -122,6 +116,7 @@ to it's development or bring up any issues you experience with jig on github (ht
 
 			if(obj.settings.repeat === 'forever' || obj.stats.reps<obj.settings.repeat){ 
 				obj.anim(obj.vars);	
+				console.log('-');
 			}else{
 				console.log('-completed loop-')
 				obj.stats.complete = true;
@@ -130,10 +125,18 @@ to it's development or bring up any issues you experience with jig on github (ht
 			obj.stats.reps++;
 		};
 
+		obj.pause = function(){
+			obj.stats.paused = true;
+			obj.stats.playing = false;
+			obj.timeline.pause();
+		}
+
 		obj.init = function(){
 			
 			if(obj.stats.playing === false){
 				obj.stats.playing = true;
+				obj.stats.paused = false;
+				obj.stats.reps = 0;
 
 				if(obj.settings.repeat === 'forever'){
 					this.loop();
@@ -155,18 +158,11 @@ to it's development or bring up any issues you experience with jig on github (ht
 				var u;
 
 				if(j=='speed'){
-					console.log('speed',o[j]);
 					u = o[j];
 					j = 'speed';
 				}else if(j=='bpm'){
-
-					 //seconds divided by tempo gives us a percentage of seconds
 					var secs = 60/o[j]
-					
-					//seconds converted to a ratio of 100
 					u = secs*1.2
-
-					console.log(u);
 					j = 'speed';
 				}else{
 					u = o[j];
@@ -190,7 +186,9 @@ to it's development or bring up any issues you experience with jig on github (ht
 			ss:obj.settings.startScale, // Start Scale
 			es:obj.settings.endScale, // End Scale
 			opaS:obj.settings.startOpacity, // Start Opacity
-			opaE:obj.settings.endOpacity // End Opacity
+			opaE:obj.settings.endOpacity, // End Opacity
+			ease:obj.settings.ease, // Ease
+			bol:obj.settings.bol//boolean
 		};
 		
 		obj.timeline = (!!root)? root : ( new TimelineLite({delay:obj.settings.delay}) );// so you can append the motion to a timeline already in use.
@@ -200,77 +198,56 @@ to it's development or bring up any issues you experience with jig on github (ht
 	//Instance Models
 	wiggle=function(elem,obj,timeline){
 	
-		var _me = new animation(elem,obj);
+		var _me = new preset(elem,obj);
 		var _tl = _me.timeline;
 		
 		_me.anim = function(vars){
 			
 			var v = vars;
-
-			var inf,r,x,y,s;
 			var nums = [];
-			s = v.speed/6;
+			s = v.speed/4;
 
-			var rand=function(num){
-			  var n = Math.round(Math.random()*num);
-			  if(n > num){
-			    rand(num);
-			  }else{
-			    return n;
-			  }
-			};
+			_tl.to(elem,s,{
+				left:v.amp*-1,
+				rotation:v.rot*-1,
+				ease:v.e
+			});
 
-			var newVector = function(i){
-				
-				v.bol = (v.bol)? false:true;
-				r = (v.bol)? -1:1;
+			_tl.to(elem,s,{
+				left:v.amp,
+				rotation:v.rot,
+				ease:v.e
+			});
 
-				if(i === -1){
-					inf = rand(v.amp);	
-				}else{
-					do{
-						inf = rand(v.amp);
-					}while(inf === nums[i][0]);
+			_tl.to(elem,s,{
+				left:v.amp/2*-1,
+				rotation:v.rot/2*-1,
+				ease:v.e
+			});
 
-					do{
-						x = (inf/rand(v.amp))*r;
-					}while(x === nums[i][1]);
+			_tl.to(elem,s,{
+				left:v.amp/2,
+				rotation:v.rot/2*1,
+				ease:v.e
+			});
 
-					do{
-						y = (inf/rand(v.amp))*r;
-					}while(y === nums[i][2]);
-				}
-
-				nums.push([inf,x,y]);
-
-				console.log(x)
-				_tl.to(elem,s,{
-			 		left:x*v.amp,
-			 		top:y*v.amp,
-			  		ease:'easeInOut'
-				});
-			};
-
-			newVector(-1);
-			newVector(0);
-			newVector(1);
-			newVector(2);
-			newVector(3);
-			newVector(4);
-			newVector(5);
+			_tl.to(elem,s,{
+				left:0,
+				rotation:0,
+				ease:v.e
+			});
 
 			_tl.call(_me.loop);
 
 		};
-		
+
 		_me.init();
-		jig.party.push(_me);
 
 	};
 	
 	jump=function(elem,obj,timeline){
 	
-		var _me = new animation(elem,obj);
+		var _me = new preset(elem,obj);
 		var _tl = _me.timeline;
 		
 		_me.anim = function(vars){
@@ -323,15 +300,14 @@ to it's development or bring up any issues you experience with jig on github (ht
 
 			_tl.call(_me.loop)
 		};
-		
+
 		_me.init();
-		jig.party.push(_me);
 
 	};
 
 	plop=function(elem,obj,timeline){
 	
-		var _me = new animation(elem,obj);
+		var _me = new preset(elem,obj);
 		var _tl = _me.timeline;
 		
 		_me.anim = function(vars){
@@ -396,13 +372,11 @@ to it's development or bring up any issues you experience with jig on github (ht
 		};
 		
 		_me.init();
-		jig.party.push(_me);
-
 	};
 
 	fly=function(elem,obj,timeline){
 	
-		var _me = new animation(elem,obj);
+		var _me = new preset(elem,obj);
 		var _tl = _me.timeline;
 
 		_me.anim = function(vars){
@@ -430,15 +404,13 @@ to it's development or bring up any issues you experience with jig on github (ht
 			_tl.call(_me.loop);
 
 		};
-		
-		_me.init();
-		jig.party.push(_me);
 
+		_me.init();
 	};
 
 	pulse=function(elem,obj,timeline){
 
-		var _me = new animation(elem,obj);
+		var _me = new preset(elem,obj);
 		var _tl = _me.timeline;
 
 		_me.anim = function(vars){
@@ -459,27 +431,58 @@ to it's development or bring up any issues you experience with jig on github (ht
 		};
 
 		_me.init();
-		jig.party.push(_me);
 	
 	};
 
-	jiggle=function(elem,obj,timeline){};
+	jiggle=function(elem,obj,timeline){
 
-	flutter=function(elem,obj,timeline){
-
-		var _me = new animation(elem,obj);
+		var _me = new preset(elem,obj);
 		var _tl = _me.timeline;
 
 		_me.anim = function(vars){
 			var v = vars;
+
+
+
 		}
 
 		_me.init();
-		jig.party.push(_me);
 
 	};
 
-	
-	jig.init();
+	flutter=function(elem,obj,timeline){
+
+		var _me = new preset(elem,obj);
+		var _tl = _me.timeline;
+
+		_me.anim = function(vars){
+			var v = vars;
+
+
+
+		}
+
+		_me.init();
+
+	};
+
+	spin=function(elem,obj,timeline){
+
+		var _me = new preset(elem,obj);
+		var _tl = _me.timeline;
+
+		_me.anim = function(vars){
+			var v = vars;
+			_tl.to(elem,v.speed,{
+				ease:v.ease,
+				rotation:'+='+v.rot
+			})
+			_tl.call(_me.loop);
+		}
+
+		_me.init();
+
+	};
+
 
 })(document);

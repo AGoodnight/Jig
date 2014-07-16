@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link href='css/bootstrap.css' rel='stylesheet'></link>
+<style>
+.block{
+	margin: 20px 3px 20px 3px;
+	width:100px;
+	height:100px;
+	background-color:black;
+	position:relative;
+	float:left;
+}
+figure{
+	width:100%;
+	display:block;
+	height:150px;
+}
+</style>
+</head>
+
+<body>
+	
+	<div class='container marketing'>
+	
+		<div class='blog-header' >
+		<h1 id='header' style='position:relative;'>Jig: An Animation Library</h1>
+		</div>
+		<div class='row'>
+
+
+<!-- PLOP -->			
+			
+			<div class='col-md-4'>
+				<h3>Plop</h3>
+				<figure>
+					<div id='plop1' class='block'></div>
+					<div id='plop2' class='block'></div>
+					<div id='plop3' class='block'></div>
+				</figure>
+				<div>
+					<p>Fall with a plop</p>
+					<p><button onclick="func()">
+					Start</button></p>
+					<pre>var myAnim = new jig(element,model,parameters)
+					</pre>
+				 </div>
+			</div>
+		</div>
+	</div>
+</body>
+<script src='vendors/greensock/TweenLite.min.js'></script>
+<script src='vendors/greensock/TimelineLite.min.js'></script>
+<script src='vendors/greensock/plugins/CSSPlugin.min.js'></script>
+<script src='jig.gs.0.3.2.js'></script>
+<script type='text/javascript'>
+
+	var func = function(){
+		
+		var elements = [
+			document.getElementById('plop1'),
+			document.getElementById('plop2'),
+			document.getElementById('plop3')
+		];
+
+		var jive = new jig(
+			elements,plop,{
+			speed:.4,
+			startY:200,
+			exaggeration:10
+		});
+
+		jive.play();
+	}
+
+</script>
+
+</html>
