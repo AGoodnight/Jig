@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link href='css/bootstrap.css' rel='stylesheet'></link>
+<style>
+.block{
+	margin: 20px 3px 20px 3px;
+	width:60px;
+	height:60px;
+	background-color:black;
+	position:relative;
+	float:left;
+}
+figure{
+	width:100%;
+	display:block;
+	height:150px;
+}
+</style>
+</head>
+
+<body>
+
+<figure>
+<div class='block'></div>
+<div class='block'></div>
+<div class='block'></div>
+</figure>
+
+</body>
+<script src='vendors/greensock/TweenLite.min.js'></script>
+<script src='vendors/greensock/TimelineLite.min.js'></script>
+<script src='vendors/greensock/plugins/CSSPlugin.min.js'></script>
+<script src='jig.gs.0.3.js'></script>
+<script type='text/javascript'>
+	
+	jig.perElement(jump,jig.getClass('block'),.01,{
+		amplitude:100,
+		speed:1,
+		exaggeration:10,
+		aloofness:0,
+		repeat:'forever'
+	},true);
+
+	console.log(jig.party);
+
+	
+</script>
+
+</html>

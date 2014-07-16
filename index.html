@@ -35,7 +35,7 @@ figure{
 				</figure>
 				<div>
 					<p>Wiggle the motion</p>
-					<p><button onclick="wiggle('#wiggle',{speed:.1, amplitude:6, repeat:20})">Start</button></p>
+					<p><button onclick="wiggle('wiggle',{speed:.1, amplitude:6, repeat:20})">Start</button></p>
 					<pre>wiggle( element, {paramters})
 
   /*paramaters:{
@@ -57,7 +57,7 @@ figure{
 				</figure>
 				<div>
 					<p>Wiggle the motion</p>
-					<p><button onclick="jump('#jump',{
+					<p><button onclick="jump('jump',{
 						amplitude:100, 
 						aloofness:20,
 						exaggeration:10,
@@ -85,7 +85,7 @@ figure{
 				</figure>
 				<div>
 					<p>Zip somewhere</p>
-					<p><button onclick="fly('#zip',{
+					<p><button onclick="fly('zip',{
 						startX:-500, 
 						endX:0, 
 						startY:-500, 
@@ -122,10 +122,11 @@ figure{
 				</figure>
 				<div>
 					<p>Fall with a plop</p>
-					<p><button onclick="jig.perElement(plop, ['#plop1','#plop2','#plop3'], .2, {
+					<p><button onclick="jig.perElement(plop, ['plop1','plop2','plop3'], .2, {
 							speed:.6,
 							startY:'800px',
-							endY:0})">
+							endY:0,
+							exaggeration:10})">
 					Start</button></p>
 					<pre>zip( element, {paramters})
 
@@ -152,7 +153,7 @@ figure{
 				</figure>
 				<div>
 					<p>Wiggle the motion</p>
-					<p><button onclick="spin('#spin',{amount:50, speed:.5, repeat:6})">Start</button></p>
+					<p><button onclick="spin('spin',{amount:50, speed:.5, repeat:6})">Start</button></p>
 					<pre>jump( element, {paramters})
 
   /*paramaters:{
@@ -174,7 +175,7 @@ figure{
 				</figure>
 				<div>
 					<p>light up or pulse</p>
-					<p><button onclick="iluminate('#iluminate',{amount:50, speed:.5, repeat:6})">Start</button></p>
+					<p><button onclick="iluminate('iluminate',{amount:50, speed:.5, repeat:6})">Start</button></p>
 					<pre>iluminate( element, {paramters})
 
   /*paramaters:{
@@ -193,11 +194,11 @@ figure{
 			<div class='col-md-4'>
 				<h3>Pulse</h3>
 				<figure>
-					<div id='spin' class='block'></div>
+					<div id='pulse' class='block'></div>
 				</figure>
 				<div>
 					<p>Wiggle the motion</p>
-					<p><button onclick="spin('#spin',{amount:50, speed:.5, repeat:6})">Start</button></p>
+					<p><button onclick="pulse('pulse',{endScale:.8, speed:.5, repeat:6})">Start</button></p>
 					<pre>jump( element, {paramters})
 
   /*paramaters:{
@@ -219,7 +220,7 @@ figure{
 				</figure>
 				<div>
 					<p>Wiggle the motion</p>
-					<p><button onclick="spin('#spin',{amount:50, speed:.5, repeat:6})">Start</button></p>
+					<p><button onclick="spin('spin',{amount:50, speed:.5, repeat:6})">Start</button></p>
 					<pre>spin( element, {paramters})</pre>
 				</div>
 			</div>
@@ -233,7 +234,7 @@ figure{
 				</figure>
 				<div>
 				<p>Fall with a plop</p>
-				<p><button onclick="cloudly('#cloudly',{amount:50, speed:.5, repeat:6})">Start</button></p>
+				<p><button onclick="cloudly('cloudly',{amount:50, speed:.5, repeat:6})">Start</button></p>
 				<pre>cloudly( element, {paramters})
 
   /*paramaters:{
@@ -255,16 +256,15 @@ figure{
 <script src='vendors/greensock/TweenLite.min.js'></script>
 <script src='vendors/greensock/TimelineLite.min.js'></script>
 <script src='vendors/greensock/plugins/CSSPlugin.min.js'></script>
-<script src='vendors/jquery-1.11.1.min.js'></script>
-<script src='jig.gs.jquery.1.0.js'></script>
+<script src='jig.gs.0.3.js'></script>
 <script type='text/javascript'>
-	$(document).ready(function(){
+	
 
 		fly("#header",{speed:.6,startOpacity:0,startY:-30});
-		jig.perElement(fly,$('.col-md-4'),.1,{startX:10,startOpacity:0,speed:.5},true);
+		jig.perElement(fly,jig.getClass('col-md-4'),.1,{startX:10,startOpacity:0,speed:.5},true);
 		//jig.perElement(plop,$('.col-md-4'),.1,{startY:300,exaggeration:10},true);
 
-	});
+	
 </script>
 
 </html>
