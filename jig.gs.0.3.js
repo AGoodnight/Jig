@@ -95,7 +95,7 @@ to it's development or bring up any issues you experience with jig on github (ht
 			repeat:0,
 			delay:0,
 			
-			amplitude:50,
+			amplitude:20,
 			
 			bol:true,
 			
@@ -107,7 +107,7 @@ to it's development or bring up any issues you experience with jig on github (ht
 			startScale:1,
 			endScale:1,
 			
-			aloofness:20,
+			aloofness:0,
 			ease:'linear',
 			exaggeration:0,
 			
@@ -182,7 +182,7 @@ to it's development or bring up any issues you experience with jig on github (ht
 					j = 'speed';
 				}else if(j=='bpm'){
 					var secs = 60/o[j]
-					u = secs*1.2
+					u = secs*1.6666666666667
 					j = 'speed';
 				}else{
 					u = o[j];
@@ -221,7 +221,50 @@ to it's development or bring up any issues you experience with jig on github (ht
 	//Instance Models
 	wiggle=function(elem,obj,timeline){
 	
+<<<<<<< HEAD
 		if(!exhist){
+=======
+		var _me = new preset(elem,obj);
+		var _tl = _me.timeline;
+		
+		_me.anim = function(vars){
+			
+			var v = vars;
+			var nums = [];
+			s = v.speed/5;
+
+			_tl.to(elem,s,{
+				left:v.amp*-1,
+				rotation:v.rot*-1,
+				ease:v.e
+			});
+
+			_tl.to(elem,s,{
+				left:v.amp,
+				rotation:v.rot,
+				ease:v.e
+			});
+
+			_tl.to(elem,s,{
+				left:v.amp/2*-1,
+				rotation:v.rot/2*-1,
+				ease:v.e
+			});
+
+			_tl.to(elem,s,{
+				left:v.amp/2,
+				rotation:v.rot/2*1,
+				ease:v.e
+			});
+
+			_tl.to(elem,s,{
+				left:0,
+				rotation:0,
+				ease:v.e
+			});
+
+			_tl.call(_me.loop);
+>>>>>>> origin/master
 
 			var _me = new preset(elem,obj);
 			var _tl = _me.timeline;
@@ -293,7 +336,7 @@ to it's development or bring up any issues you experience with jig on github (ht
 			// MAIN SEQUENCE
 			// --------------
 			//1 windup
-			_tl.to(elem,v.speed/12,{
+			_tl.to(elem,v.speed/6,{
 				scaleX:(1+ex),
 				scaleY:(1-ex),
 				top:0,
@@ -306,12 +349,12 @@ to it's development or bring up any issues you experience with jig on github (ht
 				scaleX:(1-ex),
 				scaleY:(1+ex),
 				top:v.amp*-1,
-				ease:'linearOut',
+				ease:'easeOut',
 				rotation:b
 			});
 			
 			//4 fall			
-			_tl.to(elem,v.speed/8,{
+			_tl.to(elem,v.speed/4,{
 				scaleX:(1-ex),
 				scaleY:(1+ex),
 				top:0,
@@ -320,11 +363,11 @@ to it's development or bring up any issues you experience with jig on github (ht
 			});
 			
 			//6 rest
-			_tl.to(elem,v.speed/9,{
+			_tl.to(elem,v.speed/8,{
 				scaleX:1,
 				scaleY:1,
 				top:0,
-				ease:'linearOut'
+				ease:'linear'
 			});
 
 			_tl.call(_me.loop)
@@ -403,7 +446,9 @@ to it's development or bring up any issues you experience with jig on github (ht
 		_me.init();
 	};
 
-	fly=function(elem,obj,timeline){
+	fly={};
+
+	fly.from = function(elem,obj,timeline){
 	
 		var _me = new preset(elem,obj);
 		var _tl = _me.timeline;
@@ -511,6 +556,61 @@ to it's development or bring up any issues you experience with jig on github (ht
 
 		_me.init();
 
+	};
+
+	sideStep = function(elem,obj,timeline){
+	
+		var _me = new preset(elem,obj);
+		var _tl = _me.timeline;
+
+		_me.anim = function(vars){
+			var v = vars;	
+
+			_tl.to(elem,.2,{
+				scaleX:1.1,
+				scaleY:.9,
+				transformOrigin:'50% 100%',
+				ease:'easeInExpo'
+			});
+
+			_tl.to(elem,.4,{
+				scaleX:.9,
+				scaleY:1.1,
+				rotation:-20,
+				bottom:50
+		
+			});
+
+			_tl.to(elem,.2,{
+				scaleX:1.1,
+				scaleY:.9,
+				bottom:0,
+				rotation:0,
+				transformOrigin:'50% 100%',
+				ease:'easeInExpo'
+			});
+
+			_tl.to(elem,.4,{
+				scaleX:.9,
+				scaleY:1.1,
+				rotation:20,
+				bottom:50
+			});
+
+			_tl.to(elem,.2,{
+				scaleX:1,
+				scaleY:1,
+				bottom:0,
+				rotation:0,
+				transformOrigin:'50% 100%',
+				ease:'easeInExpo'
+			});
+
+
+			_tl.call(_me.loop);
+		};
+
+		_me.init();
 	};
 
 
