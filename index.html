@@ -81,14 +81,14 @@ figure{
 				<h1 id='header' style='position:relative;'>Jig: An Animation Library</h1>
 			</div>
 			<div class='col-lg-8'>
-				<p id='summary' style='position:relative;'>Jig is an instantiated object containg an individual timeline of <a href='http://www.greensock.com'>TimelineLite</a>. The result is the ability to write preset animation sequences as functions. Jig is an idea manifested, it is meant to speed up the production of nifty little animations for websites or applications. Also as demonstrated by 'WIGGLE' you can set your animations in beats per minute, potentially syncronizing them with music!</p>
+				<p id='summary' style='position:relative;'>Jig is an instantiated object containing an individual timeline of <a href='http://www.greensock.com'>TimelineLite</a>. The result is the ability to write preset animation sequences as functions. Jig is an idea manifested and as demonstrated by 'WIGGLE' you can set your animations in beats per minute, potentially syncronizing them with music!</p>
 			</div>
 		</div>
 <!-- WIGGLE -->
 		<div class='row'>
 
 			<div class='col-md-4'>
-				<figure onclick="jig('wiggle',wiggle,{bpm:120, ease:'easeInOut', rotation:20, aloofness:20, amplitude:20})">
+				<figure onmouseover="hover('wiggle',wiggle,{bpm:120, ease:'easeInOut', rotation:20, aloofness:20, amplitude:20})">
 					<div id='wiggle' class='block'>wiggle</div>
 				</figure>
 			</div>
@@ -102,7 +102,7 @@ wiggle('wiggle',{bpm:120, ease:'easeInOut', rotation:20, aloofness:20, amplitude
 <!-- JUMP -->
 		<div class='row'>
 			<div class='col-md-4'>
-				<figure onclick="toggle('jump',jump,{aloofness:20,exaggeration:10,amplitude:100, speed:.4,repeat:'forever'})">
+				<figure onmouseover="hover('jump',jump,{aloofness:20,exaggeration:10,amplitude:100, speed:.4, repeat:2})">
 					<div id='jump' class='block'>jump</div>
 				</figure>
 			</div>
@@ -115,7 +115,7 @@ jump('jump',{aloofness:20,exaggeration:10,amplitude:140, speed:.4, repeat:'forev
 		</div>
 
 <!-- SPIN -->
-		<div class='row'>
+<!--		<div class='row'>
 			<div class='col-md-4'>
 				<figure onclick="spin('spin',{rotation:360, speed:2})">
 					<div id='spin' class='block'>spin</div>
@@ -128,11 +128,11 @@ jump('jump',{aloofness:20,exaggeration:10,amplitude:140, speed:.4, repeat:'forev
 spin('spin',{rotation:360, speed:2, repeat:'forever'});</pre>
 				
 			</div>
-		</div>
+		</div>-->
 
 
 <!-- PULSE -->
-		<div class='row'>
+	<!--	<div class='row'>
 			<div class='col-md-4'>
 				<figure onclick="pulse('pulse',{endScale:.8, speed:.5})"> 
 					<div id='pulse' class='block'>pulse</div>
@@ -144,9 +144,9 @@ spin('spin',{rotation:360, speed:2, repeat:'forever'});</pre>
 pulse('pulse',{endScale:.8, speed:.5, repeat:'forever'})</pre>
 			</div>
 		</div>
-
+-->
 <!-- FLY -->
-		<div class='row'>	
+	<!--	<div class='row'>	
 			<div class='col-md-4'>
 				<figure onclick="fly.from('fly0',{
 						startX:600, 
@@ -166,10 +166,10 @@ pulse('pulse',{endScale:.8, speed:.5, repeat:'forever'})</pre>
 
 fly.from('fly0',{startX:50, startY:-50, startScale:0, rotation:40, speed:.5, ease:'easeOutExpo',startOpacity:0});</pre>
 			</div>
-		</div>
+		</div>-->
 
 <!-- PLOP -->			
-		<div class='row'>	
+	<!--	<div class='row'>	
 			<div class='col-md-6'>
 				<figure onclick="each(['plop1','plop2','plop3'],plop,  .2, {
 							speed:.6,
@@ -187,7 +187,7 @@ fly.from('fly0',{startX:50, startY:-50, startScale:0, rotation:40, speed:.5, eas
 each(['plop1','plop2','plop3'],plop, .2, {speed:.6,startY:'800px',endY:0, exaggeration:10});</pre>
 				 
 			</div>
-		</div>
+		</div>-->
 
 <!-- ILLUMINATE -->
 

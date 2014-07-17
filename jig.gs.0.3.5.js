@@ -14,11 +14,19 @@ to it's development or bring up any issues you experience with jig on github (ht
 ---------------------------------------
 For version 0.3.5
 ---------------------------------------
+testing....
+1. eradication of old jigs
+
+to do....
 1. The ability to pause animations using toggle();
-*2. Prevention of instance stacking by wrapping in jig(); -- Error occurs when pausing while other jig is running
-*3. Eradication of old object instances
-4. New presets: jive, jiggle and flutter
-5. Merge each into toggle and jig
+	- Error occurs when pausing after another jig has started playing
+2. hover
+2. jive
+4. jiggle
+5. shake
+6. flutter
+7. drag
+
 
 */
 
@@ -147,6 +155,10 @@ For version 0.3.5
 				instance.init();
 			}
 		}
+	};
+
+	hover = function(elem,model,parameters,delay,random){
+		// if your hovering over it it should watch to see when you leave and repeat the animation until that point.
 	};
 
 	var party = []; // a place for presets or 'jigs' to hang out after they have been instantiated
