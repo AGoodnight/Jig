@@ -3,19 +3,66 @@
 <head>
 <link href='css/bootstrap.css' rel='stylesheet'></link>
 <style>
+
 .block{
-	margin: 20px 3px 20px 3px;
-	width:100px;
-	height:100px;
+	margin:20px 3px 20px 3px;
+	padding:30px;
 	background-color:black;
 	position:relative;
 	float:left;
+	color:rgb(0,0,0);
+	text-transform:uppercase;
+	font-size:30px;
+	font-weight:bold;
+
+	-webkit-transition:color .4s;
+
 }
+
+.block:hover{
+	color:rgb(200,200,200);
+}
+
 figure{
 	width:100%;
 	display:block;
 	height:150px;
+	cursor:pointer;
 }
+
+.blog-header{
+	margin-top:70px;
+}
+
+.blog-header p{
+	padding-top:10px;
+}
+
+.row{
+	padding:0px 0 100px 0;
+}
+
+.col-md-4 figure{
+
+}
+
+.col-md-6 pre{
+	margin:20px 0px 0px 0px;
+}
+
+
+.col-md-8 pre{
+	margin:20px 0px 0px 0px;
+}
+
+#header .col-lg-16{
+	padding:20px 20px 0 20px;
+}
+
+#header .col-lg-8{
+	padding:20px 20px 0 20px;
+}
+
 </style>
 </head>
 
@@ -23,152 +70,122 @@ figure{
 	
 	<div class='container marketing'>
 	
-		<div class='blog-header' >
-		<h1 id='header' style='position:relative;'>Jig: An Animation Library</h1>
-		</div>
-		<div class='row'>
-<!-- WIGGLE -->
-			<div class='col-md-4'>
-				<h3>Wiggle</h3>
-				<figure>
-					<div id='wiggle' class='block'></div>
-				</figure>
-				<div>
-					<p>Wiggle the motion</p>
-					<p><button onclick="wiggle('wiggle',{speed:1, ease:'easeInOut', rotation:20, amplitude:20})">Start</button></p>
-					<pre>wiggle( element, {paramters})
-
-  /*paramaters:{
-    amplitude:10,
-    exaggeration:1,
-    alloofness:1,
-    speed }*/
-				
-					</pre>
-				 </div>
+		<div id='header' class='row'>
+			<div class='col-lg-16'>
+				<h1 id='header' style='position:relative;'>Jig: An Animation Library</h1>
 			</div>
+			<div class='col-lg-8'>
+				<p id='summary' style='position:relative;'>Jig is an instantiated object containg an individual timeline of <a href='http://www.greensock.com'>TimelineLite</a>. The result is the ability to write preset animation sequences as functions. Jig is an idea manifested, it is meant to speed up the production of nifty little animations for websites or applications. Also as demonstrated by 'WIGGLE' you can set your animations in beats per minute, potentially syncronizing them with music!</p>
+			</div>
+		</div>
+<!-- WIGGLE -->
+		<div class='row'>
+
+			<div class='col-md-4'>
+				<figure onclick="wiggle('wiggle',{bpm:120, ease:'easeInOut', rotation:20, aloofness:20, amplitude:20, repeat:'forever'})">
+					<div id='wiggle' class='block'>wiggle</div>
+				</figure>
+			</div>
+			<div class = 'col-md-8'>
+					<pre>wiggle( element, {parameters});
+
+wiggle('wiggle',{bpm:120, ease:'easeInOut', rotation:20, aloofness:20, amplitude:20, repeat:'forever'});</pre>
+			</div>
+		</div>
 			
 <!-- JUMP -->
-
+		<div class='row'>
 			<div class='col-md-4'>
-				<h3>Jump</h3>
-				<figure>
-					<div id='jump' class='block'></div>
+				<figure onclick="jump('jump',{aloofness:20,exaggeration:10,amplitude:100, speed:.4, repeat:'forever'})">
+					<div id='jump' class='block'>jump</div>
 				</figure>
-				<div>
-					<p>Wiggle the motion</p>
-					<p><button onclick="jump('jump',{
-						amplitude:100, 
-						aloofness:20,
-						exaggeration:10,
-						speed:.5,
-						repeat:4})">
-						Start</button></p>
-					<pre>jump( element, {paramters})
-
-	  /*paramaters:{
-	    amplitude:10,
-	    exaggeration:1,
-	    alloofness:1,
-	    speed }*/
-					
-					</pre>
-				 </div>
 			</div>
 
-<!-- FLY -->
-			
+			<div class='col-md-8'>
+				<pre>jump( element, {parameters});
+
+jump('jump',{aloofness:20,exaggeration:10,amplitude:140, speed:.4, repeat:'forever'});</pre>	 
+			</div>
+		</div>
+
+<!-- SPIN -->
+		<div class='row'>
 			<div class='col-md-4'>
-				<h3>Fly</h3>
-				<figure>
-					<div id='zip' class='block'></div>
+				<figure onclick="spin('spin',{rotation:360, speed:2, repeat:'forever'})">
+					<div id='spin' class='block'>spin</div>
 				</figure>
-				<div>
-					<p>Zip somewhere</p>
-					<p><button onclick="fly('zip',{
-						startX:-500, 
-						endX:0, 
-						startY:-500, 
-						endY:0, 
+			</div>
+			<div class='col-md-8'>
+			
+					<pre>spin, element, {parameters});
+
+spin('spin',{rotation:360, speed:2, repeat:'forever'});</pre>
+				
+			</div>
+		</div>
+
+
+<!-- PULSE -->
+		<div class='row'>
+			<div class='col-md-4'>
+				<figure onclick="pulse('pulse',{endScale:.8, speed:.5, repeat:'forever'})"> 
+					<div id='pulse' class='block'>pulse</div>
+				</figure>
+			</div>
+			<div class='col-md-8'>
+					<pre>pulse(element, {paramters})
+
+pulse('pulse',{endScale:.8, speed:.5, repeat:'forever'})</pre>
+			</div>
+		</div>
+
+<!-- FLY -->
+		<div class='row'>	
+			<div class='col-md-4'>
+				<figure onclick="fly.from('fly0',{
+						startX:600, 
+						startY:-100, 
 						startScale:0, 
-						endScale:1, 
 						rotation:40, 
 						speed:.5, 
 						ease:'easeOutExpo',
-						startOpacity:0,
-						endOpacity:1})">
-						Start</button></p>
-					<pre>fly( element, {paramters})
-
-	/*paramaters:{
-	where[x:'10px',y:'10px'],
-	scale:[width:'1px',height:'1px'],
-	speed:1,
-	ease:'easeInCirc',
-	fade:.4 }*/
-					
-			</pre>
-				 </div>
+						startOpacity:0});" >
+					<div id='fly0' class='block'>fly.from</div>
+				</figure>
 			</div>
 
+			<div class='col-md-8'>
+					
+					<pre>fly.from( element, {parameters});
+
+fly.from('fly0',{startX:50, startY:-50, startScale:0, rotation:40, speed:.5, ease:'easeOutExpo',startOpacity:0});</pre>
+			</div>
+		</div>
+
 <!-- PLOP -->			
-			
-			<div class='col-md-4'>
-				<h3>Plop</h3>
-				<figure>
-					<div id='plop1' class='block'></div>
-					<div id='plop2' class='block'></div>
-					<div id='plop3' class='block'></div>
-				</figure>
-				<div>
-					<p>Fall with a plop</p>
-					<p><button onclick="each(['plop1','plop2','plop3'],plop,  .2, {
+		<div class='row'>	
+			<div class='col-md-6'>
+				<figure onclick="each(['plop1','plop2','plop3'],plop,  .2, {
 							speed:.6,
 							startY:'800px',
 							endY:0,
-							exaggeration:10})">
-					Start</button></p>
-					<pre>zip( element, {paramters})
-
-  /*paramaters:{
-    
-    scale:[width:'1px',height:'1px'],
-    exaggeration:1,
-    alloofness:1, 
-    speed:1,
-    ease:'easeIn',
-    fadeIn:.4,
-    type:'plop' //plop, thump, bam, slam }*/
-				
-					</pre>
-				 </div>
-			</div>
-
-<!-- SPIN -->
-
-			<div class='col-md-4'>
-				<h3>Spin</h3>
-				<figure>
-					<div id='spin' class='block'></div>
+							exaggeration:10},true)">
+					<div id='plop1' class='block'>plop</div>
+					<div id='plop2' class='block'>plop</div>
+					<div id='plop3' class='block'>plop</div>
 				</figure>
-				<div>
-					<p>Wiggle the motion</p>
-					<p><button onclick="spin('spin',{rotation:360, speed:2, repeat:'forever'})">Start</button></p>
-					<pre>jump( element, {paramters})
-
-  /*paramaters:{
-    amplitude:10,
-    exaggeration:1,
-    alloofness:1,
-    speed }*/
-				
-					</pre>
-				</div>
 			</div>
+			<div class='col-md-6'>
+					<pre>plop( element, {parameters});
+
+each(['plop1','plop2','plop3'],plop, .2, {speed:.6,startY:'800px',endY:0, exaggeration:10});</pre>
+				 
+			</div>
+		</div>
 
 <!-- ILLUMINATE -->
 
-			<div class='col-md-4'>
+			<!--<div class='col-md-4'>
 				<h3>Iluminate</h3>
 				<figure>
 					<div id='iluminate' class='block'></div>
@@ -187,33 +204,27 @@ figure{
 				
 					</pre>
 				 </div>
-			</div>
+			</div>-->
 
-<!-- PULSE -->
 
-			<div class='col-md-4'>
-				<h3>Pulse</h3>
+<!-- SIDE STEP -->
+
+			<!--<div class='col-md-4'>
+				<h3>sideStep</h3>
 				<figure>
-					<div id='pulse' class='block'></div>
+					<div id='sideStep' class='block'></div>
 				</figure>
 				<div>
-					<p>Wiggle the motion</p>
-					<p><button onclick="pulse('pulse',{endScale:.8, speed:.5, repeat:6})">Start</button></p>
-					<pre>jump( element, {paramters})
-
-  /*paramaters:{
-    amplitude:10,
-    exaggeration:1,
-    alloofness:1,
-    speed }*/
-				
-					</pre>
+					<p>Side to side</p>
+					<p><button onclick="sideStep('sidestep')">Start</button></p>
+					<pre>sideStep( element, {paramters})</pre>
 				</div>
-			</div>
+			</div>-->
+
 
 <!-- FLUTTER -->
 
-			<div class='col-md-4'>
+			<!--<div class='col-md-4'>
 				<h3>Flutter</h3>
 				<figure>
 					<div id='spin' class='block'></div>
@@ -223,11 +234,11 @@ figure{
 					<p><button onclick="spin('spin',{amount:50, speed:.5, repeat:6})">Start</button></p>
 					<pre>spin( element, {paramters})</pre>
 				</div>
-			</div>
+			</div>-->
 
 <!-- CLOUDLY -->
 			
-			<div class='col-md-4'>
+		<!--	<div class='col-md-4'>
 				<h3>Cloudly</h3>
 				<figure>
 					<div id='cloudly' class='block'></div>
@@ -235,20 +246,11 @@ figure{
 				<div>
 				<p>Fall with a plop</p>
 				<p><button onclick="cloudly('cloudly',{amount:50, speed:.5, repeat:6})">Start</button></p>
-				<pre>cloudly( element, {paramters})
-
-  /*paramaters:{
-    region:$('id'),
-    altitude:'20px';
-    aloofness:3,
-    speed:1
-  }
-				
-				</pre>
+				<pre>cloudly( element, {paramters})=</pre>
 				</div>
 			</div>
 		</div>
-	</div>
+	</div>-->
 	
 	
 
@@ -260,10 +262,11 @@ figure{
 <script type='text/javascript'>
 	
 
-		fly(document.getElementById('header'),{speed:.6,startOpacity:0,startY:-30});
-		each(document.getElementsByClassName('col-md-4'),fly,.1,{startX:10,startOpacity:0,speed:.5},true);
-		//jig.perElement(plop,$('.col-md-4'),.1,{startY:300,exaggeration:10},true);
-
+		fly.from(document.getElementById('header'),{speed:.6,startOpacity:0,startY:-10});
+		fly.from(document.getElementById('summary'),{speed:.6,startOpacity:0,startY:-20});
+		each(document.getElementsByClassName('col-md-4'),fly.from,0,{startY:-40,startOpacity:0,speed:.5},true);
+		each(document.getElementsByClassName('col-md-8'),fly.from,0,{startY:-90,startOpacity:0,speed:.5},true);
+	
 	
 </script>
 
