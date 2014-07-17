@@ -14,13 +14,19 @@
 	text-transform:uppercase;
 	font-size:30px;
 	font-weight:bold;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
 
 	-webkit-transition:color .4s;
 
 }
 
 .block:hover{
-	color:rgb(200,200,200);
+	color:rgb(260,260,260);
 }
 
 figure{
@@ -82,7 +88,7 @@ figure{
 		<div class='row'>
 
 			<div class='col-md-4'>
-				<figure onclick="wiggle('wiggle',{bpm:120, ease:'easeInOut', rotation:20, aloofness:20, amplitude:20, repeat:'forever'})">
+				<figure onclick="jig('wiggle',wiggle,{bpm:120, ease:'easeInOut', rotation:20, aloofness:20, amplitude:20})">
 					<div id='wiggle' class='block'>wiggle</div>
 				</figure>
 			</div>
@@ -96,7 +102,7 @@ wiggle('wiggle',{bpm:120, ease:'easeInOut', rotation:20, aloofness:20, amplitude
 <!-- JUMP -->
 		<div class='row'>
 			<div class='col-md-4'>
-				<figure onclick="jump('jump',{aloofness:20,exaggeration:10,amplitude:100, speed:.4, repeat:'forever'})">
+				<figure onclick="toggle('jump',jump,{aloofness:20,exaggeration:10,amplitude:100, speed:.4,repeat:'forever'})">
 					<div id='jump' class='block'>jump</div>
 				</figure>
 			</div>
@@ -111,7 +117,7 @@ jump('jump',{aloofness:20,exaggeration:10,amplitude:140, speed:.4, repeat:'forev
 <!-- SPIN -->
 		<div class='row'>
 			<div class='col-md-4'>
-				<figure onclick="spin('spin',{rotation:360, speed:2, repeat:'forever'})">
+				<figure onclick="spin('spin',{rotation:360, speed:2})">
 					<div id='spin' class='block'>spin</div>
 				</figure>
 			</div>
@@ -128,7 +134,7 @@ spin('spin',{rotation:360, speed:2, repeat:'forever'});</pre>
 <!-- PULSE -->
 		<div class='row'>
 			<div class='col-md-4'>
-				<figure onclick="pulse('pulse',{endScale:.8, speed:.5, repeat:'forever'})"> 
+				<figure onclick="pulse('pulse',{endScale:.8, speed:.5})"> 
 					<div id='pulse' class='block'>pulse</div>
 				</figure>
 			</div>
@@ -169,7 +175,7 @@ fly.from('fly0',{startX:50, startY:-50, startScale:0, rotation:40, speed:.5, eas
 							speed:.6,
 							startY:'800px',
 							endY:0,
-							exaggeration:10},true)">
+							exaggeration:10})">
 					<div id='plop1' class='block'>plop</div>
 					<div id='plop2' class='block'>plop</div>
 					<div id='plop3' class='block'>plop</div>
@@ -258,14 +264,14 @@ each(['plop1','plop2','plop3'],plop, .2, {speed:.6,startY:'800px',endY:0, exagge
 <script src='vendors/greensock/TweenLite.min.js'></script>
 <script src='vendors/greensock/TimelineLite.min.js'></script>
 <script src='vendors/greensock/plugins/CSSPlugin.min.js'></script>
-<script src='jig.gs.0.3.js'></script>
+<script src='jig.gs.0.3.5.js'></script>
 <script type='text/javascript'>
 	
 
-		fly.from(document.getElementById('header'),{speed:.6,startOpacity:0,startY:-10});
+		/*fly.from(document.getElementById('header'),{speed:.6,startOpacity:0,startY:-10});
 		fly.from(document.getElementById('summary'),{speed:.6,startOpacity:0,startY:-20});
 		each(document.getElementsByClassName('col-md-4'),fly.from,0,{startY:-40,startOpacity:0,speed:.5},true);
-		each(document.getElementsByClassName('col-md-8'),fly.from,0,{startY:-90,startOpacity:0,speed:.5},true);
+		each(document.getElementsByClassName('col-md-8'),fly.from,0,{startY:-90,startOpacity:0,speed:.5},true);*/
 	
 	
 </script>

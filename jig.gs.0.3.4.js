@@ -10,6 +10,14 @@ Jig is meant to be expanded upon and easy to use with Jquery and GSAP's timeline
 
 Jig is still in alpha, and may not work in all browsers or under certain conditions, you may contribute 
 to it's development or bring up any issues you experience with jig on github (http://github.com/AGoodnight/Jig).
+
+---------------------------------------
+New in version 0.3.4
+---------------------------------------
+1. The ability to pause animations
+2. Eradication of old object instances
+3. New presets: jive, jiggle and flutter
+
 */
 
 (function(document){
@@ -269,7 +277,7 @@ to it's development or bring up any issues you experience with jig on github (ht
 			_me.init();
 
 		}else{
-			play(_me);
+			_me.play();
 		}
 
 	};
@@ -461,38 +469,6 @@ to it's development or bring up any issues you experience with jig on github (ht
 
 		_me.init();
 	
-	};
-
-	jiggle=function(elem,obj,timeline){
-
-		var _me = new preset(elem,obj);
-		var _tl = _me.timeline;
-
-		_me.anim = function(vars){
-			var v = vars;
-
-
-
-		}
-
-		_me.init();
-
-	};
-
-	flutter=function(elem,obj,timeline){
-
-		var _me = new preset(elem,obj);
-		var _tl = _me.timeline;
-
-		_me.anim = function(vars){
-			var v = vars;
-
-
-
-		}
-
-		_me.init();
-
 	};
 
 	spin=function(elem,obj,timeline){
