@@ -88,7 +88,7 @@ figure{
 		<div class='row'>
 
 			<div class='col-md-4'>
-				<figure onmouseover="hover('wiggle',wiggle,{bpm:120, ease:'easeInOut', rotation:20, aloofness:20, amplitude:20})">
+				<figure onclick="toggle('wiggle',wiggle,{bpm:120, ease:'easeInOut', rotation:20, aloofness:20, amplitude:20, repeat:'forever'})">
 					<div id='wiggle' class='block'>wiggle</div>
 				</figure>
 			</div>
@@ -102,7 +102,7 @@ wiggle('wiggle',{bpm:120, ease:'easeInOut', rotation:20, aloofness:20, amplitude
 <!-- JUMP -->
 		<div class='row'>
 			<div class='col-md-4'>
-				<figure onmouseover="hover('jump',jump,{aloofness:20,exaggeration:10,amplitude:100, speed:.4, repeat:2})">
+				<figure onclick="jig('jump',jump,{aloofness:20,exaggeration:10,amplitude:100, speed:.4, repeat:2})">
 					<div id='jump' class='block'>jump</div>
 				</figure>
 			</div>

@@ -49,6 +49,27 @@ to do....
 		}
 	};
 
+	randomSeed = function(){
+		var j;
+		var n = rand(100000);
+		console.log('New seed: '+n);
+		if(party.length > 0){
+			for (var g in party){
+				
+				j = document.getElementById(party[g].settings.name).getAttribute('partyid');
+
+				if(j===n){
+					n = rand(100000);
+				}else{
+					return n;
+				}
+
+			}
+		}else{
+			return n;
+		}
+	};
+
 	mixUp=function(arr){
 
 			var currentIndex = arr.length
@@ -74,25 +95,62 @@ to do....
 	};
 
 	jigIndex = function(elem){
-		var g=0;
+		var dom;
+		console.log('PARTY: '+party);
+		//-------------------------------------------------------------
+		// Determines if the dom element havs an attribute of 'partyid'
+		dom = document.getElementById(elem).getAttribute('partyid');
 
-		for(var i in party){
-			console.log(party[i].settings.name+' === '+elem)
-			if(party[i].settings.name === elem){
-				return i;
+		if(dom != null){
+			var g=0;
+			var j;
+			//----------------------------------------------------
+			/* loops through the party to try and find an instance 
+			of the passed dom elements 'partyid' if it finds it, 
+			it returns it's index.*/
+			if(party.length>0){
+				for(var i in party){
+				
+					j = party[g].settings.seed;
+					console.log('>> -- '+j+' == '+dom);
+					if(j == dom){
+						return i;
+					}else{
+						g++;
+					}
+				}
+				//----------------------------------------------------
+				// if the instance of the jig is not found, return -1
+				if(g === party.length){
+					console.log('- - - return: -1');
+					return -1;
+				};
+
 			}else{
-				g++
+				// if the party is empty return -1
+				console.log('party is empty: '+party.length);
+				return -1;
+			};
+				
+		}else{
+
+			console.log('First Time');
+			return -1;
+
+		};
+
+		console.log('>>>>>>>>>>>>>>>>>>>>> jigindex()');
+			
+	};
+
+	removeJig = function(obj){
+		for(var i in party){
+			if(party[i].settings.seed === obj.settings.seed){
+				console.log('removed '+party[i].settings.seed+' - '+i);
+				party.splice(i,0);
+				break;
 			}
 		}
-
-		if(g === party.length){
-			return -1;
-		}
-	}
-
-	removeJig = function(index){
-		console.log(">----Jig: "+party[index-1].settings.name+" removed----<");
-		party = party.slice(index);
 	};
 
 	toggle = function(elem,model,parameters,delay,random){
@@ -100,44 +158,22 @@ to do....
 		 // if the element has not been made a jig object yet
 		 //---------------------------------------------------
 		if(jigIndex(elem) === -1){
-			parameters.partyPos = party.length;
 			var instance = new preset(model,elem,parameters);
-			if(elem instanceof Array){
-				// handle multiple animations and a delay
-
-					/*var de = 0
-					var arr;
-
-					if(!randomize){
-						arr = elems
-					}else{
-						arr = mixUp(Array.prototype.slice.call(elems));
-					}
-
-					for( var f in arr ){
-						paramaters.delay = de;
-						method(arr[f],paramaters);
-						de+=delay;
-					}*/	
-
-			}else{
-				party.push(instance);
-				instance.init();
-			}
+			instance.init();
+			console.log('-------new toggle--------');
 		}else{
 		//----------------------------------------
 		// if the element is already a jig object
 		//----------------------------------------
-			if(elem instanceof Array){
-				// handle multiple animations and a delay
+			var i = jigIndex(elem);
+			console.log('------toggling: '+i+'-------');
+
+			if(party[i].stats.playing){
+				party[i].pause();
 			}else{
-				var i = jigIndex(elem);
-				if(party[i].stats.playing){
-					party[i].pause();
-				}else{
-					party[i].play();
-				}
+				party[i].play();
 			}
+			
 		}
 	};
 
@@ -146,15 +182,11 @@ to do....
 		// if the element has not been made a jig object yet
 		//---------------------------------------------------
 		if(jigIndex(elem) === -1){
-			parameters.partyPos = party.length;
 			var instance = new preset(model,elem,parameters);
-			if(elem instanceof Array){
-				// handle multiple elements and a delay
-			}else{
-				party.push(instance);
-				instance.init();
-			}
-		}
+			instance.init();
+		};
+		console.log('-------------------------------------------');
+
 	};
 
 	hover = function(elem,model,parameters,delay,random){
@@ -170,7 +202,7 @@ to do....
 		obj.anim;
 		
 		obj.settings = {
-			partyPos:0,
+			seed:0,
 			name:element,
 			
 			speed:1,
@@ -214,7 +246,7 @@ to do....
 				obj.anim();	
 			}else{
 				obj.stats.complete = true;
-				removeJig(obj.settings.partyPos+1);
+				removeJig(obj);
 			}	
 
 			obj.stats.reps++;
@@ -309,6 +341,11 @@ to do....
 		}else{
 			obj.anim = partial(model,obj,element,vars);
 		}
+
+		var seed = randomSeed();
+		obj.settings.seed = seed;
+		document.getElementById(obj.settings.name).setAttribute('partyid',seed);
+		party.push(obj);
 
 		return obj;
 
