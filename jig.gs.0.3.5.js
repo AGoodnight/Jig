@@ -17,7 +17,7 @@ testing....
 3. support arrays ('className')
 
 to do....
-0. killJig
+0. killJig - support arrays
 1. jive
 2. jiggle
 3. shake
@@ -36,7 +36,7 @@ to do....
     		var allArguments = args.concat(Array.prototype.slice.call(arguments));
     		return func.apply(this, allArguments);
  	 	};
-	}
+	};
 
 	// Returns a random number as long as its not greater than the number passed to the function
 	// -----------------------------------------------------------------------------------------
@@ -80,6 +80,8 @@ to do....
 		}
 	};
 
+	// Mixes up anny array you give it
+	// -------------------------------
 	mixUp=function(arr){
 
 			var currentIndex = arr.length
@@ -104,12 +106,11 @@ to do....
   			return arr;
 	};
 
+	// Used to detect instance stacking
+	// --------------------------------
 	jigIndex = function(elem){
+		
 		var dom;
-
-
-		//console.log('>>>>>>>>>>>>>>>>>>>>> jigindex()');
-		//console.log('PARTY: '+party);
 		//-------------------------------------------------------------
 		// Determines if the dom element havs an attribute of 'partyid'
 		if(elem instanceof Array){
@@ -129,13 +130,10 @@ to do....
 			/* loops through the party to try and find an instance 
 			of the passed dom elements 'partyid' if it finds it, 
 			it returns it's index.*/
-
-			//console.log(party.length);
 			if(party.length>0){
 				for(var i in party){
 				
 					j = party[g].settings.seed;
-					//console.log('>> -- PARTY[OBJ]: '+j+' == DOM: '+dom);
 					if(j == dom){
 						return i;
 						break;
@@ -147,71 +145,59 @@ to do....
 				//----------------------------------------------------
 				// if the instance of the jig is not found, return -1
 				if(g === party.length){
-					//console.log('- - - return: -1');
 					return -1;
 				};
 
 			}else{
 				// if the party is empty return -1
-				//console.log('party is empty: '+party.length);
 				return -1;
 			};
 				
 		}else{
-
-			//console.log('First Time');
 			return -1;
 
 		};		
 	};
 
+	// Sets the DOM elements paramters back to default and calls removeJig()
+	//----------------------------------------------------------------------
 	killJig = function(elem){
-		
+
+		// we make a clone so that removeJig can run without being affected
+		var arr = party;
 		var seed = document.getElementById(elem).getAttribute('partyid');
 
-		for(var i in party){
-			//console.log(party[i]);
-			if( party[i].settings.name == document.getElementById(elem).getAttribute('id')){
-				item = party[i];
-				//setTimeout(function(){item.timeline.pause();}, party[i].stats.repPos*1000);
-				//item.timeline.pause(0);
+		for(var i in arr){
+			if( arr[i].settings.name == document.getElementById(elem).getAttribute('id')){
+				item = arr[i];
 				item.timeline.to(item.settings.name,.1,{
 					clearProps:'scale,left,top,width,height,rotation',
 					onComplete:function(){item.timeline.pause()
-						//console.log(party[i].stats.repPos)
-						removeJig(party[i])
+						removeJig(arr[i])
 					}
 				})
 				
 			};
 		}
 
-		party = party.filter(
-			function(item) { 
-				if(item.settings.seed !== seed){
-					return item; 
-				}
-		});
-
-		//console.log('killed: '+elem);
-
 	};
-
+	// removes the Jig object from the party
+	//--------------------------------------
 	removeJig = function(obj){
 		party = party.filter(
 			function(item) { 
 				if(item.settings.seed !== obj.settings.seed){
-					//console.log(item.settings.seed+'=='+obj.settings.seed)
 					return item; 
-				}
+				};
 		});
-		console.log('Party length after removal: '+party.length);
+		console.log(obj.settings.name+' -- '+party.length);
 	};
 
+	// Allows one to pause the animation on alternate instance of an event
+	// -------------------------------------------------------------------
 	toggle = function(elem,model,parameters,spacing,random){
 
 			var elements;
-
 			//----------------------------------------------------
 			// if the element has not been made a jig object yet
 			//---------------------------------------------------
@@ -225,13 +211,11 @@ to do....
 
 				var instance = new preset(model,elements,parameters,spacing);
 				instance.init();
-				//console.log('-------new toggle--------');
 			}else{
 			//----------------------------------------
 			// if the element is already a jig object
 			//----------------------------------------
 				var i = jigIndex(elem);
-				//console.log('------toggling: '+i+'-------');
 
 				if(party[i].stats.playing){
 					party[i].pause();
@@ -242,22 +226,22 @@ to do....
 			}		
 	};
 
+	// The single instanceof a jig animation
+	//--------------------------------------
 	jig = function(elem,model,parameters,delay){
 		//---------------------------------------------------
 		// if the element has not been made a jig object yet
 		//---------------------------------------------------
-
 		if(jigIndex(elem) === -1){
 			var instance = new preset(model,elem,parameters,delay);
 			instance.init();
 		};
-		
-		//console.log('-------------------------------------------');
 	};
 
 	var party = []; // a place for presets or 'jigs' to hang out after they have been instantiated
 
 	//Instance Constructor
+	//--------------------
 	function preset(model,element,o,delay){
 
 		var obj = {};
@@ -330,8 +314,6 @@ to do....
 					removeJig(obj);
 				}
 			}	
-
-			
 		};
 
 		obj.pause = function(){
@@ -429,39 +411,37 @@ to do....
 		// this creates the primary timeline (obj.timeline) for the preset
 		// ---------------------------------------------------
 		obj.timeline = new TimelineLite({delay:obj.settings.delay});
+		obj.settings.seed = randomSeed();
 
+		// Determine if we need to handle the lement as an array or a single DOM element
+		// ----------------------------------------------------------------------------
 		if(element instanceof Array){
 			obj.anims = [];
+			obj.stats.reps = [];
+			// As an array
+			// -----------
 			for(var i in element){
+
+				// assign a seed to each DOM element
+				document.getElementById(
+					document.getElementById(element[i]).getAttribute('id')
+					).setAttribute('partyid',obj.settings.seed);
+
+				// sets reps as an array to keep track of them on an element basis
+				obj.stats.reps.push(0);
+
 				// Make a timeline for each item in the array and append it to the primary timeline
-				// ---------------------------------------------------------------------------------
 				tl = new TimelineLite();
 				dl = delay*i;
 				obj.timeline.append(tl,dl);
 				// assign to anims for easy reference
-				// ----------------------------------
 				obj.anims[i] = partial(model,obj,element[i],vars,tl,dl,i);
 			};
 		}else{
-			// Handle a single item
-			// --------------------
+			// As a single DOM element
+			// -----------------------
 			dl = 0;
 			obj.anim = partial(model,obj,element,vars,obj.timeline,dl);
-		}
-
-		// Assigns the seed to DOM elements and obj.settings
-		// -------------------------------------------------
-		obj.settings.seed = randomSeed();
-
-		if(element instanceof Array){
-			obj.stats.reps = [];
-			for(var i in element){
-				document.getElementById(
-					document.getElementById(element[i]).getAttribute('id')
-					).setAttribute('partyid',obj.settings.seed);
-				obj.stats.reps.push(0);
-			}
-		}else{
 			document.getElementById(obj.settings.name).setAttribute('partyid',obj.settings.seed);
 			obj.stats.reps = 0;
 		}
@@ -469,18 +449,17 @@ to do....
 		// Push this preset object to the party array
 		// ------------------------------------------
 		party.push(obj);
-		//console.log(party);
 		return obj;
 
 	};
 			
 	//Instance Models
+	//---------------
 	wiggle=function(obj,elem,vars,timeline,delay2,index){
 	
 		var v = vars;
 		var tl = timeline;
 		var dl;
-		//console.log(tl);
 
 		s = v.speed/5;
 
@@ -521,33 +500,10 @@ to do....
 	
 	jump=function(obj,elem,vars,timeline,delay2,index){
 
-				
 		var v = vars;
 		var tl = obj.timeline;
 		var s = [v.speed/8, v.speed/3, v.speed/6,v.speed/8];
 		
-		//Complete the animation
-		//---------------------------------
-		/*console.log('-------------');
-		var func=function(va,preset){
-			var rp = 0;
-			var tD = tl.totalDuration();
-			var cRp = preset.stats.repPos - tD;
-
-			var rpInterval = setInterval(function(){
-				preset.stats.repPos +=tD/100
-				
-				console.log('rp: '+preset.stats.repPos);
-				console.log('speed: '+va.speed);
-				//console.log('current reps: '+cRp);
-				console.log('total Duration: '+ tD);
-				console.log(rp);
-			},1);
-
-			setTimeout(function(){ clearInterval(rpInterval)}, va.speed*1000);
-		};
-
-		func(v,obj);*/
 		// PARAM: aloofness
 		v.bol = v.bol ? false : true;
 		b = v.bol ? v.aloof+'deg' : (-1*v.aloof)+'deg';
