@@ -14,20 +14,22 @@ For version 0.3.6
 testing....
 1. Eradication of old jigs
 2. The ability to pause animations using toggle();
+3. support arrays ('className')
 
 to do....
-1. support arrays ('className')
-3. BPM support
-2. hover
+1. hover
 2. jive
-4. jiggle
-5. shake
-6. flutter
-7. drag
+3. jiggle
+4. shake
+5. flutter
+6. drag
+7. BPM support
 */
 
 (function(document){
 
+	// lets you set a function as an object literal along with paramaters without running the function
+	// -----------------------------------------------------------------------------------------------
 	partial = function(func /*, 0..n args */) {
   		var args = Array.prototype.slice.call(arguments).splice(1);
   		return function() {
@@ -36,6 +38,8 @@ to do....
  	 	};
 	}
 
+	// Returns a random number as long as its not greater than the number passed to the function
+	// -----------------------------------------------------------------------------------------
 	rand=function(num){
 		var n = Math.round(Math.random()*num);
 		if(n > num){
@@ -45,14 +49,23 @@ to do....
 		}
 	};
 
+	// Returns a random number used to identify elements and presets, this is used to eliminate instance stacking
+	// ----------------------------------------------------------------------------------------------------------
 	randomSeed = function(){
 		var j;
 		var n = rand(100000);
 		//console.log('New seed: '+n);
+
 		if(party.length > 0){
 			for (var g in party){
 				
-				j = document.getElementById(party[g].settings.name).getAttribute('partyid');
+				if(party[g].settings.name instanceof Array){
+					for(var i in party[g]){
+						console.log(party[g][i].seed);
+					}
+				}else{
+					j = document.getElementById(party[g].settings.name).getAttribute('partyid');
+				}
 
 				if(j===n){
 					n = rand(100000);
@@ -98,7 +111,15 @@ to do....
 		//console.log('PARTY: '+party);
 		//-------------------------------------------------------------
 		// Determines if the dom element havs an attribute of 'partyid'
-		dom = document.getElementById(elem).getAttribute('partyid');
+		if(elem instanceof Array){
+			for(var i in elem){
+				dom = document.getElementById(elem[i]).getAttribute('partyid');
+			}
+		}else{
+			dom = document.getElementById(elem).getAttribute('partyid');
+		};
+
+		
 
 		if(dom != null){
 			var g=0;
@@ -108,7 +129,7 @@ to do....
 			of the passed dom elements 'partyid' if it finds it, 
 			it returns it's index.*/
 
-				console.log(party.length);
+			console.log(party.length);
 			if(party.length>0){
 				for(var i in party){
 				
@@ -156,27 +177,29 @@ to do....
 	};
 
 	toggle = function(elem,model,parameters,spacing,random){
-		//----------------------------------------------------
-		 // if the element has not been made a jig object yet
-		 //---------------------------------------------------
-		if(jigIndex(elem) === -1){
-			var instance = new preset(model,elem,parameters,spacing);
-			instance.init();
-			//console.log('-------new toggle--------');
-		}else{
-		//----------------------------------------
-		// if the element is already a jig object
-		//----------------------------------------
-			var i = jigIndex(elem);
-			//console.log('------toggling: '+i+'-------');
 
-			if(party[i].stats.playing){
-				party[i].pause();
+			//----------------------------------------------------
+			// if the element has not been made a jig object yet
+			//---------------------------------------------------
+			if(jigIndex(elem) === -1){
+				var instance = new preset(model,elem,parameters,spacing);
+				instance.init();
+				//console.log('-------new toggle--------');
 			}else{
-				party[i].play();
+			//----------------------------------------
+			// if the element is already a jig object
+			//----------------------------------------
+				var i = jigIndex(elem);
+				//console.log('------toggling: '+i+'-------');
+
+				if(party[i].stats.playing){
+					party[i].pause();
+				}else{
+					party[i].play();
+				}
+				
 			}
-			
-		}
+		
 	};
 
 	jig = function(elem,model,parameters,delay){
@@ -202,7 +225,12 @@ to do....
 	//Instance Constructor
 	function preset(model,element,o,delay){
 
-		var obj = {};	
+		var obj = {};
+		var tl,
+			dl,
+			vars,
+			seed;
+
 		obj.anim;
 		obj.anims=[];
 		
@@ -255,7 +283,8 @@ to do....
 					removeJig(obj);
 				}
 			}else{
-				console.log('this featured is not yet supported - go to github https://github.com/AGoodnight/Jig')
+				obj.anims[index]();
+				//console.log('this featured is not yet supported - go to github https://github.com/AGoodnight/Jig')
 			}	
 
 			obj.stats.reps++;
@@ -266,7 +295,7 @@ to do....
 			obj.stats.playing = false;
 			obj.timeline.pause();
 			//Pause Effect
-			TweenLite.to(document.getElementById(obj.settings.name),.2,{opacity:.5})
+			//TweenLite.to(document.getElementById(obj.settings.name),.2,{opacity:.5})
 		};
 
 		obj.play = function(){
@@ -274,7 +303,7 @@ to do....
 			obj.stats.playing = true;
 			obj.timeline.play();
 			// Pause Effect
-			TweenLite.to(document.getElementById(obj.settings.name),.2,{opacity:1})
+			//TweenLite.to(document.getElementById(obj.settings.name),.2,{opacity:1})
 		};
 
 		obj.init = function(){
@@ -290,15 +319,16 @@ to do....
 					if(obj.anims.length < 1){
 						obj.anim();
 					}else{
-						for(var i in anims){
+						for(var i in obj.anims){
 							obj.anims[i]();
+
 						}
 					}
 
 				}else{
 					// if it loops or repeats
 					if(obj.anims.length > 0){
-						for(var i in anims){
+						for(var i in obj.anims){
 							obj.loop(i);
 						}
 					}else{
@@ -309,9 +339,8 @@ to do....
 		};
 
 		
-		// SETUP
+		// Assign passed parameters to obj.settings
 		// -----------------------------------------------------------
-
 		for(var j in o){
 			if(o[j] != undefined){
 
@@ -332,8 +361,10 @@ to do....
 			}
 		};
 
-		// It looks really heavy here, but this makes the equations under each instance model much easier to manage.
-		var vars = {
+		// Assign aliases for object literals in obj.settings
+		// It looks really heavy here, but this makes the equations under each instance model much easier to read.
+		// ----------------------------------------------------------------------------------------------------------
+		vars = {
 			speed:obj.settings.speed, // Speed
 			amp:parseInt(obj.settings.amplitude), // Amplitude
 			sx:parseInt(obj.settings.startX), // Starting Point [X]
@@ -350,76 +381,99 @@ to do....
 			ease:obj.settings.ease, // Ease
 			bol:obj.settings.bol//boolean
 		};
-		
+
+
+		// this creates the primary timeline (obj.timeline) for the preset
+		// ---------------------------------------------------
 		obj.timeline = new TimelineLite({delay:obj.settings.delay});
-		
+
 		if(element instanceof Array){
 			obj.anims = [];
 			for(var i in element){
-				var delay2 = delaySet(); // ---> (settings.speed-delay) 
-				obj.anims[i] = partial(model,obj,element,vars,delay2);
+				// Make a timeline for each item in the array and append it to the primary timeline
+				// ---------------------------------------------------------------------------------
+				tl = new TimelineLite();
+				dl = delay*i;
+				obj.timeline.append(tl,dl);
+				// assign to anims for easy reference
+				// ----------------------------------
+				obj.anims[i] = partial(model,obj,element[i],vars,tl,dl,i);
 			};
 		}else{
-			obj.anim = partial(model,obj,element,vars);
+			// Handle a single item
+			// --------------------
+			dl = 0;
+			obj.anim = partial(model,obj,element,vars,obj.timeline,dl);
 		}
 
-		var seed = randomSeed();
-		obj.settings.seed = seed;
-		document.getElementById(obj.settings.name).setAttribute('partyid',seed);
-		party.push(obj);
+		// Assigns the seed to DOM elements and obj.settings
+		// -------------------------------------------------
+		obj.settings.seed = randomSeed();
 
+		if(element instanceof Array){
+			for(var i in element){
+				document.getElementById(
+					document.getElementById(element[i]).getAttribute('id')
+					).setAttribute('partyid',obj.settings.seed);
+			}
+		}else{
+			document.getElementById(obj.settings.name).setAttribute('partyid',obj.settings.seed);
+		}
+
+		// Push this preset object to the party array
+		// ------------------------------------------
+		party.push(obj);
+		console.log(party);
 		return obj;
 
 	};
 			
 	//Instance Models
-	wiggle=function(obj,elem,vars,delay2){
+	wiggle=function(obj,elem,vars,timeline,delay2,index){
 	
 		var v = vars;
-		var tl = obj.timeline;
+		var tl = timeline;
+		var dl;
+		//console.log(tl);
 
 		s = v.speed/5;
 
 		tl.to(elem,s,{
 			left:v.amp*-1,
 			rotation:v.rot*-1,
-			ease:v.e
-			//delay:calcDelay(s,delay2); -----if delay2 is undefined this returns '0'
+			ease:v.e,
+			delay:dl
 		});
 
 		tl.to(elem,s,{
 			left:v.amp,
 			rotation:v.rot,
 			ease:v.e
-			//delay:calcDelay(s,delay2);
 		});
 
 		tl.to(elem,s,{
 			left:v.amp/2*-1,
 			rotation:v.rot/2*-1,
 			ease:v.e
-			//delay:calcDelay(s,delay2);
 		});
 
 		tl.to(elem,s,{
 			left:v.amp/2,
 			rotation:v.rot/2*1,
 			ease:v.e
-			//delay:calcDelay(s,delay2);
 		});
 
 		tl.to(elem,s,{
 			left:0,
 			rotation:0,
 			ease:v.e
-			//delay:calcDelay(s,delay2);
 		});
 
-		tl.call(obj.loop);
+		tl.call(obj.loop,[index]);
 
 	};
 	
-	jump=function(obj,elem,vars){
+	jump=function(obj,elem,vars,timeline,delay2,index){
 
 				
 		var v = vars;
@@ -468,7 +522,7 @@ to do....
 			ease:'linear'
 		});
 
-		tl.call(obj.loop)
+		tl.call(obj.loop,[index])
 
 	};
 

@@ -25,7 +25,7 @@ figure{
 <body>
 
 <figure>
-<div class='block'></div>
+<div id = 'block' class='block'></div>
 </figure>
 
 </body>
@@ -33,14 +33,27 @@ figure{
 <script src='vendors/greensock/TimelineLite.min.js'></script>
 <script src='vendors/greensock/plugins/CSSPlugin.min.js'></script>
 <script src='vendors/greensock/plugins/BezierPlugin.min.js'></script>
-<script src='jig.gs.0.3.js'></script>
 <script type='text/javascript'>
 	
 var ex = 10
 
 // jive
 var tl = new TimelineLite();
-me = jig.getClass('block');
+var tl2 = new TimelineLite();
+var tl3 = new TimelineLite();
+
+tl.to(document.getElementById('block'),2,{height:'400px'});
+
+tl.append(tl2,'-=1');
+
+tl2.to(document.getElementById('block'),2,{width:'400px'});
+
+tl.append(tl3,'-=1');
+
+tl3.to(document.getElementById('block'),2,{rotation:'40'});
+
+
+/*me = jig.getClass('block');
 tl.to(me,.2,{
 	scaleX:1.1,
 	scaleY:.9,
@@ -76,7 +89,7 @@ tl.to(me,.2,{
 	rotation:0,
 	transformOrigin:'50% 100%',
 	ease:'easeInExpo'
-});
+});*/
 
 
 // Flutter

@@ -89,12 +89,14 @@ figure{
 		<div class='row'>
 
 			<div class='col-md-4'>
-				<figure onclick="toggle('wiggle',wiggle,{bpm:120, ease:'easeInOut', rotation:20, aloofness:20, amplitude:20, repeat:'forever'})">
-					<div id='wiggle' class='block'>wiggle</div>
+				<figure onclick="toggle(['wiggle1','wiggle2','wiggle3'],wiggle,{bpm:120, ease:'easeInOut', rotation:20, aloofness:20, amplitude:20,repeat:'forever'},.1)">
+					<div id='wiggle1' class='block'>wiggle</div>
+					<div id='wiggle2' class='block'>wiggle</div>
+					<div id='wiggle3' class='block'>wiggle</div>
 				</figure>
 			</div>
 			<div class = 'col-md-8'>
-					<pre>toggle('wiggle',wiggle,{bpm:120, ease:'easeInOut', rotation:20, aloofness:20, amplitude:20, repeat:'forever'})</pre>
+					<pre>toggle(wiggle,['wiggle1','wiggle2','wiggle3'],{bpm:120, ease:'easeInOut', rotation:20, aloofness:20, amplitude:20, repeat:'forever'})</pre>
 			</div>
 		</div>
 			
