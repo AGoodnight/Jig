@@ -1,4 +1,5 @@
 Jig
 ===
 
-Jig is intended to be a library of presets utilizing Greensocks powerful TweenLite and TimelineLite. We are sticking to TweenLite and Timeline Lite until it is neccessary to load thier robust max cousins.
+Jig is intended to be a library of presets animations/behaviors utilizing Greensocks powerful TweenLite and TimelineLite.
+I started jig so I could become more familiar with developing javascript componenets and the Greensock Animation Platform. 
