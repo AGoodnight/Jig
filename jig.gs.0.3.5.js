@@ -17,13 +17,13 @@ testing....
 3. support arrays ('className')
 
 to do....
-1. hover
-2. jive
-3. jiggle
-4. shake
-5. flutter
-6. drag
-7. BPM support
+0. killJig
+1. jive
+2. jiggle
+3. shake
+4. flutter
+5. drag
+6. BPM support
 */
 
 (function(document){
@@ -54,14 +54,14 @@ to do....
 	randomSeed = function(){
 		var j;
 		var n = rand(100000);
-		//console.log('New seed: '+n);
+		////console.log('New seed: '+n);
 
 		if(party.length > 0){
 			for (var g in party){
 				
 				if(party[g].settings.name instanceof Array){
 					for(var i in party[g]){
-						console.log(party[g][i].seed);
+						//console.log(party[g][i].seed);
 						// seems to be working without this actually doing anything...... so..... testing.
 					}
 				}else{
@@ -130,7 +130,7 @@ to do....
 			of the passed dom elements 'partyid' if it finds it, 
 			it returns it's index.*/
 
-			console.log(party.length);
+			//console.log(party.length);
 			if(party.length>0){
 				for(var i in party){
 				
@@ -162,8 +162,39 @@ to do....
 			//console.log('First Time');
 			return -1;
 
-		};
-			
+		};		
+	};
+
+	killJig = function(elem){
+		
+		var seed = document.getElementById(elem).getAttribute('partyid');
+
+		for(var i in party){
+			//console.log(party[i]);
+			if( party[i].settings.name == document.getElementById(elem).getAttribute('id')){
+				item = party[i];
+				//setTimeout(function(){item.timeline.pause();}, party[i].stats.repPos*1000);
+				//item.timeline.pause(0);
+				item.timeline.to(item.settings.name,.1,{
+					clearProps:'scale,left,top,width,height,rotation',
+					onComplete:function(){item.timeline.pause()
+						//console.log(party[i].stats.repPos)
+						removeJig(party[i])
+					}
+				})
+				
+			};
+		}
+
+		party = party.filter(
+			function(item) { 
+				if(item.settings.seed !== seed){
+					return item; 
+				}
+		});
+
+		//console.log('killed: '+elem);
+
 	};
 
 	removeJig = function(obj){
@@ -174,16 +205,25 @@ to do....
 					return item; 
 				}
 		});
-		//console.log('Party length after removal: '+party.length);
+		console.log('Party length after removal: '+party.length);
 	};
 
 	toggle = function(elem,model,parameters,spacing,random){
+
+			var elements;
 
 			//----------------------------------------------------
 			// if the element has not been made a jig object yet
 			//---------------------------------------------------
 			if(jigIndex(elem) === -1){
-				var instance = new preset(model,elem,parameters,spacing);
+				
+				if(random){
+					elements = mixUp(elem);
+				}else{
+					elements = elem;
+				}
+
+				var instance = new preset(model,elements,parameters,spacing);
 				instance.init();
 				//console.log('-------new toggle--------');
 			}else{
@@ -199,8 +239,7 @@ to do....
 					party[i].play();
 				}
 				
-			}
-		
+			}		
 	};
 
 	jig = function(elem,model,parameters,delay){
@@ -214,11 +253,6 @@ to do....
 		};
 		
 		//console.log('-------------------------------------------');
-
-	};
-
-	hover = function(elem,model,parameters,delay,random){
-		// if your hovering over it it should watch to see when you leave and repeat the animation until that point.
 	};
 
 	var party = []; // a place for presets or 'jigs' to hang out after they have been instantiated
@@ -265,12 +299,13 @@ to do....
 		};		
 		
 		obj.stats ={
-			reps:0,
+			reps:undefined,
 			playing:false,
 			paused:false,
-			complete:false
-		};		
-		
+			complete:false,
+			groupComplete:0,
+			repPos:0
+		};	
 		// FUNCTIONS
 		// -----------------------------------------------------------
 		
@@ -279,23 +314,24 @@ to do....
 			if(index == undefined ){
 				if(obj.settings.repeat === 'forever' || obj.stats.reps<obj.settings.repeat){ 
 					obj.anim();	
-					console.log('repeat: '+obj.settings.repeat)
+					obj.stats.reps++;
 				}else{
 					obj.stats.complete = true;
 					removeJig(obj);
-				}
+				}		
+
 			}else{
-				if(obj.settings.repeat === 'forever' || obj.stats.reps<obj.settings.repeat){ 
+				if(obj.settings.repeat === 'forever' || obj.stats.reps[index]<obj.settings.repeat){ 
 					obj.anims[index]();
-					console.log('repeat: '+obj.settings.repeat)
+					obj.stats.reps[index]++
+					
 				}else{
 					obj.stats.complete = true;
 					removeJig(obj);
 				}
-				//console.log('this featured is not yet supported - go to github https://github.com/AGoodnight/Jig')
 			}	
 
-			obj.stats.reps++;
+			
 		};
 
 		obj.pause = function(){
@@ -320,7 +356,6 @@ to do....
 
 				obj.stats.playing = true;
 				obj.stats.paused = false;
-				obj.stats.reps = 0;
 
 				if(obj.settings.repeat === 0){	
 					// if it has no repeat set by user or a repeat of 0;
@@ -419,19 +454,22 @@ to do....
 		obj.settings.seed = randomSeed();
 
 		if(element instanceof Array){
+			obj.stats.reps = [];
 			for(var i in element){
 				document.getElementById(
 					document.getElementById(element[i]).getAttribute('id')
 					).setAttribute('partyid',obj.settings.seed);
+				obj.stats.reps.push(0);
 			}
 		}else{
 			document.getElementById(obj.settings.name).setAttribute('partyid',obj.settings.seed);
+			obj.stats.reps = 0;
 		}
 
 		// Push this preset object to the party array
 		// ------------------------------------------
 		party.push(obj);
-		console.log(party);
+		//console.log(party);
 		return obj;
 
 	};
@@ -486,6 +524,30 @@ to do....
 				
 		var v = vars;
 		var tl = obj.timeline;
+		var s = [v.speed/8, v.speed/3, v.speed/6,v.speed/8];
+		
+		//Complete the animation
+		//---------------------------------
+		/*console.log('-------------');
+		var func=function(va,preset){
+			var rp = 0;
+			var tD = tl.totalDuration();
+			var cRp = preset.stats.repPos - tD;
+
+			var rpInterval = setInterval(function(){
+				preset.stats.repPos +=tD/100
+				
+				console.log('rp: '+preset.stats.repPos);
+				console.log('speed: '+va.speed);
+				//console.log('current reps: '+cRp);
+				console.log('total Duration: '+ tD);
+				console.log(rp);
+			},1);
+
+			setTimeout(function(){ clearInterval(rpInterval)}, va.speed*1000);
+		};
+
+		func(v,obj);*/
 		// PARAM: aloofness
 		v.bol = v.bol ? false : true;
 		b = v.bol ? v.aloof+'deg' : (-1*v.aloof)+'deg';
@@ -496,7 +558,8 @@ to do....
 		// MAIN SEQUENCE
 		// --------------
 		//1 windup
-		tl.to(elem,v.speed/6,{
+
+		tl.to(elem,s[0],{
 			scaleX:(1+ex),
 			scaleY:(1-ex),
 			top:0,
@@ -505,7 +568,8 @@ to do....
 		});
 				
 		//2 launch
-		tl.to(elem,v.speed/2,{
+
+		tl.to(elem,s[1],{
 			scaleX:(1-ex),
 			scaleY:(1+ex),
 			top:v.amp*-1,
@@ -513,8 +577,9 @@ to do....
 			rotation:b
 		});
 				
-		//4 fall			
-		tl.to(elem,v.speed/4,{
+		//4 fall
+
+		tl.to(elem,s[2],{
 			scaleX:(1-ex),
 			scaleY:(1+ex),
 			top:0,
@@ -523,7 +588,8 @@ to do....
 		});
 				
 		//6 rest
-		tl.to(elem,v.speed/8,{
+		
+		tl.to(elem,s[3],{
 			scaleX:1,
 			scaleY:1,
 			top:0,

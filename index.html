@@ -89,21 +89,24 @@ figure{
 		<div class='row'>
 
 			<div class='col-md-4'>
-				<figure onclick="toggle(['wiggle1','wiggle2','wiggle3'],wiggle,{bpm:120, ease:'easeInOut', rotation:20, aloofness:20, amplitude:20, repeat:10},.1)">
-					<div id='wiggle1' class='block'>wiggle</div>
-					<div id='wiggle2' class='block'>wiggle</div>
-					<div id='wiggle3' class='block'>wiggle</div>
+				<figure onclick="toggle(['wiggle1','wiggle2','wiggle3','wiggle4','wiggle5','wiggle6'],wiggle,{bpm:120, ease:'easeInOut', rotation:20, aloofness:20, amplitude:20, repeat:10},.1)">
+					<div id='wiggle1' class='block'>w</div>
+					<div id='wiggle2' class='block'>i</div>
+					<div id='wiggle3' class='block'>g</div>
+					<div id='wiggle4' class='block'>g</div>
+					<div id='wiggle5' class='block'>l</div>
+					<div id='wiggle6' class='block'>e</div>
 				</figure>
 			</div>
 			<div class = 'col-md-8'>
-					<pre>toggle(wiggle,['wiggle1','wiggle2','wiggle3'],{bpm:120, ease:'easeInOut', rotation:20, aloofness:20, amplitude:20, repeat:'forever'})</pre>
+					<pre>toggle(wiggle,['wiggle1','wiggle2','wiggle3','wiggle4','wiggle5'],{bpm:120, ease:'easeInOut', rotation:20, aloofness:20, amplitude:20, repeat:'forever'})</pre>
 			</div>
 		</div>
 			
 <!-- JUMP -->
 		<div class='row'>
 			<div class='col-md-4'>
-				<figure onclick="jig('jump',jump,{aloofness:20,exaggeration:10,amplitude:100, speed:.4, repeat:2})">
+				<figure onmouseover="jig('jump',jump,{aloofness:20,exaggeration:10,amplitude:100, speed:1, repeat:100})" onmouseout="killJig('jump')">
 					<div id='jump' class='block'>jump</div>
 				</figure>
 			</div>
