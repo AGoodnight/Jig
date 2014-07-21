@@ -1,33 +1,29 @@
-/* This script is copyright Adam Goodnight 2014, all rights reserved
+/* This script is copyright 2014 Adam Goodnight, All rights reserved.
 http://www.adamgoodnight.com
 inquire@adamgoodnight.com
+You may use this script anyway you wish, but do not remove lines 1-26 of this script.
 
-You may use this script anyway you wish, but do not remove this information.
-
-Jig is a collection of preset presets
-
-Jig is meant to be expanded upon and easy to use with Jquery and GSAP's timeline package.
+Jig is intened as an unoffical plugin for Greensock's Animation Platform (http://www.greensock.com/gsap-js/).
 
 Jig is still in alpha, and may not work in all browsers or under certain conditions, you may contribute 
 to it's development or bring up any issues you experience with jig on github (http://github.com/AGoodnight/Jig).
 
 ---------------------------------------
-For version 0.3.5
+For version 0.3.6
 ---------------------------------------
 testing....
-1. eradication of old jigs
+1. Eradication of old jigs
+2. The ability to pause animations using toggle();
 
 to do....
-1. The ability to pause animations using toggle();
-	- Error occurs when pausing after another jig has started playing
+1. support arrays ('className')
+3. BPM support
 2. hover
 2. jive
 4. jiggle
 5. shake
 6. flutter
 7. drag
-
-
 */
 
 (function(document){
@@ -52,7 +48,7 @@ to do....
 	randomSeed = function(){
 		var j;
 		var n = rand(100000);
-		console.log('New seed: '+n);
+		//console.log('New seed: '+n);
 		if(party.length > 0){
 			for (var g in party){
 				
@@ -96,7 +92,10 @@ to do....
 
 	jigIndex = function(elem){
 		var dom;
-		console.log('PARTY: '+party);
+
+
+		//console.log('>>>>>>>>>>>>>>>>>>>>> jigindex()');
+		//console.log('PARTY: '+party);
 		//-------------------------------------------------------------
 		// Determines if the dom element havs an attribute of 'partyid'
 		dom = document.getElementById(elem).getAttribute('partyid');
@@ -108,13 +107,17 @@ to do....
 			/* loops through the party to try and find an instance 
 			of the passed dom elements 'partyid' if it finds it, 
 			it returns it's index.*/
+
+				console.log(party.length);
 			if(party.length>0){
 				for(var i in party){
 				
 					j = party[g].settings.seed;
-					console.log('>> -- '+j+' == '+dom);
+					//console.log('>> -- PARTY[OBJ]: '+j+' == DOM: '+dom);
 					if(j == dom){
 						return i;
+						break;
+
 					}else{
 						g++;
 					}
@@ -122,51 +125,50 @@ to do....
 				//----------------------------------------------------
 				// if the instance of the jig is not found, return -1
 				if(g === party.length){
-					console.log('- - - return: -1');
+					//console.log('- - - return: -1');
 					return -1;
 				};
 
 			}else{
 				// if the party is empty return -1
-				console.log('party is empty: '+party.length);
+				//console.log('party is empty: '+party.length);
 				return -1;
 			};
 				
 		}else{
 
-			console.log('First Time');
+			//console.log('First Time');
 			return -1;
 
 		};
-
-		console.log('>>>>>>>>>>>>>>>>>>>>> jigindex()');
 			
 	};
 
 	removeJig = function(obj){
-		for(var i in party){
-			if(party[i].settings.seed === obj.settings.seed){
-				console.log('removed '+party[i].settings.seed+' - '+i);
-				party.splice(i,0);
-				break;
-			}
-		}
+		party = party.filter(
+			function(item) { 
+				if(item.settings.seed !== obj.settings.seed){
+					//console.log(item.settings.seed+'=='+obj.settings.seed)
+					return item; 
+				}
+		});
+		//console.log('Party length after removal: '+party.length);
 	};
 
-	toggle = function(elem,model,parameters,delay,random){
+	toggle = function(elem,model,parameters,spacing,random){
 		//----------------------------------------------------
 		 // if the element has not been made a jig object yet
 		 //---------------------------------------------------
 		if(jigIndex(elem) === -1){
-			var instance = new preset(model,elem,parameters);
+			var instance = new preset(model,elem,parameters,spacing);
 			instance.init();
-			console.log('-------new toggle--------');
+			//console.log('-------new toggle--------');
 		}else{
 		//----------------------------------------
 		// if the element is already a jig object
 		//----------------------------------------
 			var i = jigIndex(elem);
-			console.log('------toggling: '+i+'-------');
+			//console.log('------toggling: '+i+'-------');
 
 			if(party[i].stats.playing){
 				party[i].pause();
@@ -177,15 +179,17 @@ to do....
 		}
 	};
 
-	jig = function(elem,model,parameters,delay,random){
+	jig = function(elem,model,parameters,delay){
 		//---------------------------------------------------
 		// if the element has not been made a jig object yet
 		//---------------------------------------------------
+
 		if(jigIndex(elem) === -1){
 			var instance = new preset(model,elem,parameters);
 			instance.init();
 		};
-		console.log('-------------------------------------------');
+		
+		//console.log('-------------------------------------------');
 
 	};
 
@@ -196,10 +200,11 @@ to do....
 	var party = []; // a place for presets or 'jigs' to hang out after they have been instantiated
 
 	//Instance Constructor
-	function preset(model,element,o){
+	function preset(model,element,o,delay){
 
 		var obj = {};	
 		obj.anim;
+		obj.anims=[];
 		
 		obj.settings = {
 			seed:0,
@@ -240,13 +245,17 @@ to do....
 		// FUNCTIONS
 		// -----------------------------------------------------------
 		
-		obj.loop = function(){
+		obj.loop = function(index){
 
-			if(obj.settings.repeat === 'forever' || obj.stats.reps<obj.settings.repeat){ 
-				obj.anim();	
+			if(index == undefined ){
+				if(obj.settings.repeat === 'forever' || obj.stats.reps<obj.settings.repeat){ 
+					obj.anim();	
+				}else{
+					obj.stats.complete = true;
+					removeJig(obj);
+				}
 			}else{
-				obj.stats.complete = true;
-				removeJig(obj);
+				console.log('this featured is not yet supported - go to github https://github.com/AGoodnight/Jig')
 			}	
 
 			obj.stats.reps++;
@@ -276,17 +285,28 @@ to do....
 				obj.stats.paused = false;
 				obj.stats.reps = 0;
 
-				if(obj.settings.repeat === 'forever'){
-					this.loop();
-				}else if(obj.settings.repeat > 1){
-					this.loop();
-				}else if(obj.settings.repeat === 0){
-					obj.anim();	
+				if(obj.settings.repeat === 0){	
+					// if it has no repeat set by user or a repeat of 0;
+					if(obj.anims.length < 1){
+						obj.anim();
+					}else{
+						for(var i in anims){
+							obj.anims[i]();
+						}
+					}
+
+				}else{
+					// if it loops or repeats
+					if(obj.anims.length > 0){
+						for(var i in anims){
+							obj.loop(i);
+						}
+					}else{
+						obj.loop();
+					}
 				}
 			}
-
 		};
-
 
 		
 		// SETUP
@@ -336,7 +356,8 @@ to do....
 		if(element instanceof Array){
 			obj.anims = [];
 			for(var i in element){
-				obj.anims[i] = partial(model,obj,element,vars);
+				var delay2 = delaySet(); // ---> (settings.speed-delay) 
+				obj.anims[i] = partial(model,obj,element,vars,delay2);
 			};
 		}else{
 			obj.anim = partial(model,obj,element,vars);
@@ -352,7 +373,7 @@ to do....
 	};
 			
 	//Instance Models
-	wiggle=function(obj,elem,vars){
+	wiggle=function(obj,elem,vars,delay2){
 	
 		var v = vars;
 		var tl = obj.timeline;
@@ -363,30 +384,35 @@ to do....
 			left:v.amp*-1,
 			rotation:v.rot*-1,
 			ease:v.e
+			//delay:calcDelay(s,delay2); -----if delay2 is undefined this returns '0'
 		});
 
 		tl.to(elem,s,{
 			left:v.amp,
 			rotation:v.rot,
 			ease:v.e
+			//delay:calcDelay(s,delay2);
 		});
 
 		tl.to(elem,s,{
 			left:v.amp/2*-1,
 			rotation:v.rot/2*-1,
 			ease:v.e
+			//delay:calcDelay(s,delay2);
 		});
 
 		tl.to(elem,s,{
 			left:v.amp/2,
 			rotation:v.rot/2*1,
 			ease:v.e
+			//delay:calcDelay(s,delay2);
 		});
 
 		tl.to(elem,s,{
 			left:0,
 			rotation:0,
 			ease:v.e
+			//delay:calcDelay(s,delay2);
 		});
 
 		tl.call(obj.loop);

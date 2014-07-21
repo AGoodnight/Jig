@@ -81,7 +81,8 @@ figure{
 				<h1 id='header' style='position:relative;'>Jig: An Animation Library</h1>
 			</div>
 			<div class='col-lg-8'>
-				<p id='summary' style='position:relative;'>Jig is an instantiated object containing an individual timeline of <a href='http://www.greensock.com'>TimelineLite</a>. The result is the ability to write preset animation sequences as functions. Jig is an idea manifested and as demonstrated by 'WIGGLE' you can set your animations in beats per minute, potentially syncronizing them with music!</p>
+				<p id='summary' style='position:relative;'>Jig is an instantiated object containing an individual timeline of <a href='http://www.greensock.com'>TimelineLite</a>. The result is the ability to write preset animation sequences as functions. Jig is an idea manifested and as demonstrated by 'WIGGLE' you will have the option of setting your animations pace/speed in beats per minute, potentially syncronizing them with music!
+				There is no documentation yet as the code is still changing rapidly.</p>
 			</div>
 		</div>
 <!-- WIGGLE -->
@@ -93,9 +94,7 @@ figure{
 				</figure>
 			</div>
 			<div class = 'col-md-8'>
-					<pre>wiggle( element, {parameters});
-
-wiggle('wiggle',{bpm:120, ease:'easeInOut', rotation:20, aloofness:20, amplitude:20, repeat:'forever'});</pre>
+					<pre>toggle('wiggle',wiggle,{bpm:120, ease:'easeInOut', rotation:20, aloofness:20, amplitude:20, repeat:'forever'})</pre>
 			</div>
 		</div>
 			
@@ -108,9 +107,7 @@ wiggle('wiggle',{bpm:120, ease:'easeInOut', rotation:20, aloofness:20, amplitude
 			</div>
 
 			<div class='col-md-8'>
-				<pre>jump( element, {parameters});
-
-jump('jump',{aloofness:20,exaggeration:10,amplitude:140, speed:.4, repeat:'forever'});</pre>	 
+				<pre>jig('jump',jump,{aloofness:20,exaggeration:10,amplitude:100, speed:.4, repeat:2})</pre>	 
 			</div>
 		</div>
 
