@@ -62,6 +62,7 @@ to do....
 				if(party[g].settings.name instanceof Array){
 					for(var i in party[g]){
 						console.log(party[g][i].seed);
+						// seems to be working without this actually doing anything...... so..... testing.
 					}
 				}else{
 					j = document.getElementById(party[g].settings.name).getAttribute('partyid');
@@ -208,7 +209,7 @@ to do....
 		//---------------------------------------------------
 
 		if(jigIndex(elem) === -1){
-			var instance = new preset(model,elem,parameters);
+			var instance = new preset(model,elem,parameters,delay);
 			instance.init();
 		};
 		
@@ -278,12 +279,19 @@ to do....
 			if(index == undefined ){
 				if(obj.settings.repeat === 'forever' || obj.stats.reps<obj.settings.repeat){ 
 					obj.anim();	
+					console.log('repeat: '+obj.settings.repeat)
 				}else{
 					obj.stats.complete = true;
 					removeJig(obj);
 				}
 			}else{
-				obj.anims[index]();
+				if(obj.settings.repeat === 'forever' || obj.stats.reps<obj.settings.repeat){ 
+					obj.anims[index]();
+					console.log('repeat: '+obj.settings.repeat)
+				}else{
+					obj.stats.complete = true;
+					removeJig(obj);
+				}
 				//console.log('this featured is not yet supported - go to github https://github.com/AGoodnight/Jig')
 			}	
 
