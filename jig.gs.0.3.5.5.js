@@ -33,6 +33,30 @@ to do....
 	gl = new TimelineLite();
 	party = []; // a place for presets or 'jigs' to hang out after they have been instantiated
 
+	appendToGlobal = function(jig){
+		if(jig instanceof Array){
+			for(var i in jig){
+				// We want our animations to run at times independent of one another
+				// -----------------------------------------------------------------
+				gl.add(jig[i].timeline,'-='+gl.duration());
+			}
+		}else{
+			gl.add(jig[i].timeline,'-='+gl.duration());
+		}
+	};
+	
+	removeFromGlobal = function(jig){
+		if(jig instanceof Array){
+			for(var i in jig){
+				// We want our animations to run at times independent of one another
+				// -----------------------------------------------------------------
+				gl.remove(jig[i].timeline);
+			}
+		}else{
+			gl.remove(jig[i].timeline);
+		}
+	};
+
 	// lets you set a function as an object literal along with paramaters without running the function
 	// -----------------------------------------------------------------------------------------------
 	partial = function(func /*, 0..n args */) {
@@ -49,37 +73,6 @@ to do....
 		var n = Math.round(Math.random()*num);
 		if(n > num){
 			rand(num);
-		}else{
-			return n;
-		}
-	};
-
-	// Returns a random number used to identify elements and presets, this is used to eliminate instance stacking
-	// ----------------------------------------------------------------------------------------------------------
-	randomSeed = function(){
-		var j;
-		var n = rand(100000);
-		////console.log('New seed: '+n);
-
-		if(party.length > 0){
-			for (var g in party){
-				
-				if(party[g].settings.name instanceof Array){
-					for(var i in party[g]){
-						//console.log(party[g][i].seed);
-						// seems to be working without this actually doing anything...... so..... testing.
-					}
-				}else{
-					j = document.getElementById(party[g].settings.name).getAttribute('partyid');
-				}
-
-				if(j===n){
-					n = rand(100000);
-				}else{
-					return n;
-				}
-
-			}
 		}else{
 			return n;
 		}
@@ -186,30 +179,6 @@ to do....
 
 		console.log(arr);
 		return arr;
-	};
-
-	appendToGlobal = function(jig){
-		if(jig instanceof Array){
-			for(var i in jig){
-				// We want our animations to run at times independent of one another
-				// -----------------------------------------------------------------
-				gl.add(jig[i].timeline,'-='+gl.duration());
-			}
-		}else{
-			gl.add(jig[i].timeline,'-='+gl.duration());
-		}
-	};
-	
-	removeFromGlobal = function(jig){
-		if(jig instanceof Array){
-			for(var i in jig){
-				// We want our animations to run at times independent of one another
-				// -----------------------------------------------------------------
-				gl.remove(jig[i].timeline);
-			}
-		}else{
-			gl.remove(jig[i].timeline);
-		}
 	};
 
 	// Used to detect instance stacking
@@ -510,34 +479,23 @@ to do....
 
 		for(var i in dom){
 				
+			obj.stats.reps.push(0);
+			tl = new TimelineLite();
+			dl = delay;
+			obj.timeline.append(tl,dl);
+
 			if(dom[i].tagName == name){
 				thisDom = document.getElementsByTagName(name);
-				obj.stats.reps.push(0);
-				tl = new TimelineLite();
-				dl = delay;
-				obj.timeline.append(tl,dl);
 				obj.anims[i] = partial(model,obj,thisDom[i],vars,tl,dl,i);
 			}else if(dom[i].className == name){
 				thisDom = document.getElementsByClassName(name);
-				obj.stats.reps.push(0);
-				tl = new TimelineLite();
-				dl = delay;
-				obj.timeline.append(tl,dl);
 				obj.anims[i] = partial(model,obj,thisDom[i],vars,tl,dl,i);
 			}else if(dom[i].id == name){
 				thisDom = document.getElementById(name);
-				obj.stats.reps.push(0);
-				tl = new TimelineLite();
-				dl = delay;
-				obj.timeline.append(tl,dl);
 				obj.anims[i] = partial(model,obj,thisDom,vars,tl,dl,i);
 			}else{
 				console.log('---------------'+name[i]+'----------------');
 				thisDom = document.getElementById(name[i]);
-				obj.stats.reps.push(0);
-				tl = new TimelineLite();
-				dl = delay;
-				obj.timeline.append(tl,dl);
 				obj.anims[i] = partial(model,obj,thisDom,vars,tl,dl,i);
 			}
 			
