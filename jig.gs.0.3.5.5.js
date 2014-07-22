@@ -15,19 +15,47 @@ testing....
 1. Eradication of old jigs
 2. The ability to pause animations using toggle();
 3. support arrays ('className')
+4. killJig - support arrays - 2823
 
 to do....
-0. killJig - support arrays - 2823
-1. isArrayLike (jquery)
-1. jive
-2. jiggle
-3. shake
-4. flutter
-5. drag
+1. Global Timeline
+2. jive
+3. jiggle
+4. shake
+5. flutter
 6. BPM support
 */
 
 (function(document){
+
+	// Global Timeline
+	// ---------------
+	gl = new TimelineLite();
+	party = []; // a place for presets or 'jigs' to hang out after they have been instantiated
+
+	appendToGlobal = function(jig){
+		if(jig instanceof Array){
+			for(var i in jig){
+				// We want our animations to run at times independent of one another
+				// -----------------------------------------------------------------
+				gl.add(jig[i].timeline,'-='+gl.duration());
+			}
+		}else{
+			gl.add(jig[i].timeline,'-='+gl.duration());
+		}
+	};
+	
+	removeFromGlobal = function(jig){
+		if(jig instanceof Array){
+			for(var i in jig){
+				// We want our animations to run at times independent of one another
+				// -----------------------------------------------------------------
+				gl.remove(jig[i].timeline);
+			}
+		}else{
+			gl.remove(jig[i].timeline);
+		}
+	};
 
 	// lets you set a function as an object literal along with paramaters without running the function
 	// -----------------------------------------------------------------------------------------------
@@ -45,37 +73,6 @@ to do....
 		var n = Math.round(Math.random()*num);
 		if(n > num){
 			rand(num);
-		}else{
-			return n;
-		}
-	};
-
-	// Returns a random number used to identify elements and presets, this is used to eliminate instance stacking
-	// ----------------------------------------------------------------------------------------------------------
-	randomSeed = function(){
-		var j;
-		var n = rand(100000);
-		////console.log('New seed: '+n);
-
-		if(party.length > 0){
-			for (var g in party){
-				
-				if(party[g].settings.name instanceof Array){
-					for(var i in party[g]){
-						//console.log(party[g][i].seed);
-						// seems to be working without this actually doing anything...... so..... testing.
-					}
-				}else{
-					j = document.getElementById(party[g].settings.name).getAttribute('partyid');
-				}
-
-				if(j===n){
-					n = rand(100000);
-				}else{
-					return n;
-				}
-
-			}
 		}else{
 			return n;
 		}
@@ -107,62 +104,108 @@ to do....
   			return arr;
 	};
 
+	// Removes the prefix from your selector
+	// -------------------------------------
+	getName=function(selector){
+		var name;
+		var selection;
+
+		if(selector instanceof Array || selector instanceof Object){
+			selection = [];
+			for(var i in selector){
+				selection.push(selector[i].substr(1))
+			}
+			name = selection;
+		}else{
+			switch(selector[0]){
+
+				case '.':
+					selection = selector.substr(1);
+					name = document.getElementsByClassName(selection);
+					name = name[0].className;
+				break;
+
+				case '#':
+					selection = selector.substr(1);
+					name = document.getElementById(selection);
+					name = name.id
+				break;
+
+				default:
+					name = Array.prototype.slice.call(document.getElementsByTagName(selector));
+					name = name[0].tagName
+				break;
+			}
+		}
+
+		return name;
+	};
+
+	// Returns the DOM object associated with your selector queue
+	// ----------------------------------------------------------
+	getDom=function(selector){
+		if(selector instanceof Array || selector instanceof Object){
+			arr = selector;
+		}else{
+			var arr = [];
+			var htmlObject;
+			var func;
+
+			switch(selector[0]){
+				case '.':
+					selection = selector.substr(1);
+					htmlObject = Array.prototype.slice.call(document.getElementsByClassName(selection));
+					for(var i in htmlObject){
+						arr.push(htmlObject[i]);
+					}
+				break;
+				case '#':
+					selection = selector.substr(1);
+					console.log(selection);
+					htmlObject = document.getElementById(selection);
+					arr = [htmlObject];
+				break;
+				default:
+					selection = selector;
+					htmlObject = Array.prototype.slice.call(document.getElementsByTagName(selection));
+					for(var i in htmlObject){
+						arr.push(htmlObject[i]);
+					}
+				break;
+			}
+
+			
+		}
+
+		console.log(arr);
+		return arr;
+	};
+
 	// Used to detect instance stacking
 	// --------------------------------
-	jigIndex = function(elem){
-		
-		var dom;
+	jigIndex = function(name,domObj){
+		//console.log(name,domObj);
+		var g=0;
 		//-------------------------------------------------------------
-		// Determines if the dom element havs an attribute of 'partyid'
-		if(elem instanceof Array || elem instanceof Object){
-			for(var i in elem){
-				try{
-					dom = document.getElementById(elem[i]).getAttribute('partyid')
-				}catch(err){
-					dom = document.getElementsByTagName(elem[i]);
-					
+		// Determines if the dom name havs an attribute of 'partyid'
+		if(party.length>0){
+			for(var i in party){
+				if(party[i].settings.name == name){
+					//console.log(name+' exists in party');
+					return i
+					break;
+				}else{
+					g++
 				}
-			}
-		}else{
-			dom = document.getElementById(elem).getAttribute('partyid');
-		};
 
-		
-
-		if(dom != null){
-			var g=0;
-			var j;
-			//----------------------------------------------------
-			/* loops through the party to try and find an instance 
-			of the passed dom elements 'partyid' if it finds it, 
-			it returns it's index.*/
-			if(party.length>0){
-				for(var i in party){
-				
-					j = party[g].settings.seed;
-					if(j == dom){
-						return i;
-						break;
-
-					}else{
-						g++;
-					}
-				}
-				//----------------------------------------------------
-				// if the instance of the jig is not found, return -1
 				if(g === party.length){
 					return -1;
-				};
-
-			}else{
-				// if the party is empty return -1
-				return -1;
-			};
-				
-		}else{
+				}
+			}
+		}else{	
+			//console.log('party is empty');
 			return -1;
-
-		};		
+		}	
 	};
 
 	// Sets the DOM elements paramters back to default and calls removeJig()
@@ -203,25 +246,27 @@ to do....
 	// -------------------------------------------------------------------
 	toggle = function(elem,model,parameters,spacing,random){
 
+			var name = getName(elem);
+			var domObj = getDom(elem);
 			var elements;
 			//----------------------------------------------------
 			// if the element has not been made a jig object yet
 			//---------------------------------------------------
-			if(jigIndex(elem) === -1){
+			if(jigIndex(name,domObj) === -1){
 				
 				if(random){
-					elements = mixUp(elem);
+					elements = mixUp(domObj);
 				}else{
 					elements = elem;
 				}
 
-				var instance = new preset(model,elements,parameters,spacing);
+				var instance = new preset(model,name,parameters,spacing,domObj);
 				instance.init();
 			}else{
 			//----------------------------------------
 			// if the element is already a jig object
 			//----------------------------------------
-				var i = jigIndex(elem);
+				var i = jigIndex(name,domObj);
 
 				if(party[i].stats.playing){
 					party[i].pause();
@@ -234,31 +279,22 @@ to do....
 
 	// The single instanceof a jig animation
 	//--------------------------------------
-	jig = function(elem,model,parameters,delay){
+	jig = function(elem,model,parameters,delay,random,callBack){
 		
-		/*var el = decode(elem);
-
-		console.log('-----------------------');*/
+		var name = getName(elem);
+		var domObj = getDom(elem);
 		//---------------------------------------------------
 		// if the element has not been made a jig object yet
 		//---------------------------------------------------
-		if(jigIndex(elem) === -1){
-			var instance = new preset(model,elem,parameters,delay);
+		if(jigIndex(name,domObj) === -1){
+			var instance = new preset(model,name,parameters,delay,domObj,callBack);
 			instance.init();
 		};
 	};
 
-	function decode(selector){
-		if(selector instanceof Array || selector instanceof Object){
-
-		}
-	}
-
-	var party = []; // a place for presets or 'jigs' to hang out after they have been instantiated
-
 	//Instance Constructor
 	//--------------------
-	function preset(model,element,o,delay){
+	function preset(model,element,o,delay,domObj,callBack){
 
 		var obj = {};
 		var tl,
@@ -268,10 +304,12 @@ to do....
 
 		obj.anim;
 		obj.anims=[];
+		obj.callBack = callBack;
 		
 		obj.settings = {
 			seed:0,
 			name:element,
+			dom:domObj,
 			
 			speed:1,
 
@@ -317,6 +355,9 @@ to do....
 					obj.anim();	
 				}else{
 					obj.stats.complete = true;
+					if(callBack != undefined){
+						obj.callBack();
+					}
 					removeJig(obj);
 				}		
 
@@ -326,8 +367,11 @@ to do....
 					obj.anims[index]();
 				}else{
 					obj.stats.groupComplete++
-					if(obj.stats.groupComplete == (obj.settings.name.length) ){
+					if(obj.stats.groupComplete == (obj.settings.dom.length) ){
 						obj.stats.complete = true;
+						if(callBack != undefined){
+							obj.callBack();
+						}
 						removeJig(obj);
 					};
 				}
@@ -358,24 +402,13 @@ to do....
 				obj.stats.paused = false;
 
 				if(obj.settings.repeat === 0){	
-					// if it has no repeat set by user or a repeat of 0;
-					if(obj.anims.length < 1){
-						obj.anim();
-					}else{
-						for(var i in obj.anims){
-							obj.anims[i]();
-
-						}
+					for(var i in obj.anims){
+						obj.anims[i]();
 					}
 
 				}else{
-					// if it loops or repeats
-					if(obj.anims.length > 0){
-						for(var i in obj.anims){
-							obj.loop(i);
-						}
-					}else{
-						obj.loop();
+					for(var i in obj.anims){
+						obj.loop(i);
 					}
 				}
 			}
@@ -429,46 +462,45 @@ to do....
 		// this creates the primary timeline (obj.timeline) for the preset
 		// ---------------------------------------------------
 		obj.timeline = new TimelineLite({delay:obj.settings.delay});
-		obj.settings.seed = randomSeed();
+	
+
+		//obj.settings.seed = randomSeed();
 
 		// Determine if we need to handle the lement as an array or a single DOM element
 		// ----------------------------------------------------------------------------
-		if(element instanceof Array || element instanceof Object){
-			obj.anims = [];
-			obj.stats.reps = [];
-			// As an array
-			// -----------
-			for(var i in element){
+		var dom = obj.settings.dom;
+		var name = obj.settings.name;
+		var thisDom;
 
-				// assign a seed to each DOM element
-				try{
-					document.getElementById(
-					document.getElementById(element[i]).getAttribute('id')
-					).setAttribute('partyid',obj.settings.seed);
-				}catch(err){
-					console.log(element[i])
-					console.log('no id');
-				};
+		console.log('domObj: '+dom);
+
+		obj.anims = [];
+		obj.stats.reps = [];
+
+		for(var i in dom){
 				
-				// sets reps as an array to keep track of them on an element basis
-				obj.stats.reps.push(0);
+			obj.stats.reps.push(0);
+			tl = new TimelineLite();
+			dl = delay;
+			obj.timeline.append(tl,dl);
 
-				// Make a timeline for each item in the array and append it to the primary timeline
-				tl = new TimelineLite();
-				dl = delay;
-				obj.timeline.append(tl,dl);
-				// assign to anims for easy reference
-				console.log(dl);
-				obj.anims[i] = partial(model,obj,element[i],vars,tl,dl,i);
-			};
-		}else{
-			// As a single DOM element
-			// -----------------------
-			dl = 0;
-			obj.anim = partial(model,obj,element,vars,obj.timeline,dl);
-			document.getElementById(obj.settings.name).setAttribute('partyid',obj.settings.seed);
-			obj.stats.reps = 0;
+			if(dom[i].tagName == name){
+				thisDom = document.getElementsByTagName(name);
+				obj.anims[i] = partial(model,obj,thisDom[i],vars,tl,dl,i);
+			}else if(dom[i].className == name){
+				thisDom = document.getElementsByClassName(name);
+				obj.anims[i] = partial(model,obj,thisDom[i],vars,tl,dl,i);
+			}else if(dom[i].id == name){
+				thisDom = document.getElementById(name);
+				obj.anims[i] = partial(model,obj,thisDom,vars,tl,dl,i);
+			}else{
+				console.log('---------------'+name[i]+'----------------');
+				thisDom = document.getElementById(name[i]);
+				obj.anims[i] = partial(model,obj,thisDom,vars,tl,dl,i);
+			}
+			
 		}
+	
 
 		// Push this preset object to the party array
 		// ------------------------------------------
@@ -525,7 +557,6 @@ to do....
 		var v = vars;
 		var tl = timeline;
 		var s = [v.speed/8, v.speed/3, v.speed/6,v.speed/8];
-		
 		// PARAM: aloofness
 		v.bol = v.bol ? false : true;
 		b = v.bol ? v.aloof+'deg' : (-1*v.aloof)+'deg';
@@ -653,7 +684,6 @@ to do....
 
 		var v = vars;
 		var tl = timeline;
-
 		// PARAM: exaggeration
 		var ex = (1*v.exag)/100;
 		
@@ -662,7 +692,8 @@ to do....
 			top:-v.sy,
 			rotation:v.rot,
 			scale:v.ss,
-			opacity:v.opaS
+			opacity:v.opaS,
+			scaleX:(1-ex)
 		});
 		tl.to(elem,v.speed,{
 			left:v.ex,
@@ -670,96 +701,54 @@ to do....
 			rotation:0,
 			scale:v.es,
 			ease:v.e,
-			opacity:v.opaE
+			opacity:v.opaE,
+			scaleX:1
 		});
+
 
 
 		tl.call(obj.loop,[index])
 
 	};
 
+	pulse=function(obj,elem,vars,timeline,delay2,index){
 
-	/*fly={};
+		var v = vars;
+		var tl = timeline;
+		// PARAM: exaggeration
+		var ex = (1*v.exag)/100;
+		
+		tl.to(elem,v.speed/2,{
+			scale:v.es,
+			rotation:v.rot
+		});
 
-	fly.from = function(elem,obj){
-	
-		var _me = new preset(elem,obj);
-		var _tl = _me.timeline;
+		tl.to(elem,v.speed/2,{
+			scale:v.ss,
+			rotation:0
+		});
 
-		_me.anim = function(vars){
-			
-			var v = vars;
-
-			_tl.to(elem,0,{
-			  left:v.sx,
-			  top:-v.sy,
-			  rotation:v.rot,
-			  scale:v.ss,
-			  opacity:v.opaS
-			});
-			console.log(v.ss);
-			//arrival
-			_tl.to(elem,v.speed,{
-			  left:v.ex,
-			  top:v.ey,
-			  rotation:0,
-			  scale:v.es,
-			  ease:v.e,
-			  opacity:v.opaE
-			});
-
-			_tl.call(_me.loop);
-
-		};
-
-		_me.init();
-	};
-
-	pulse=function(elem,obj){
-
-		var _me = new preset(elem,obj);
-		var _tl = _me.timeline;
-
-		_me.anim = function(vars){
-
-			var v = vars;
-
-			_tl.to(elem,v.speed/2,{
-				scale:v.es,
-				rotation:v.rot
-			});
-
-			_tl.to(elem,v.speed/2,{
-				scale:v.ss,
-				rotation:0
-			});
-
-			_tl.call(_me.loop);
-		};
-
-		_me.init();
-	
-	};
-
-	spin=function(elem,obj){
-
-		var _me = new preset(elem,obj);
-		var _tl = _me.timeline;
-
-		_me.anim = function(vars){
-			var v = vars;
-			_tl.to(elem,v.speed,{
-				ease:v.ease,
-				rotation:'+='+v.rot
-			})
-			_tl.call(_me.loop);
-		}
-
-		_me.init();
+		tl.call(obj.loop,[index])
 
 	};
 
-	sideStep = function(elem,obj){
+	spin=function(obj,elem,vars,timeline,delay2,index){
+
+		var v = vars;
+		var tl = timeline;
+		// PARAM: exaggeration
+		var ex = (1*v.exag)/100;
+		
+		tl.to(elem,v.speed,{
+			ease:v.ease,
+			rotation:'+='+v.rot
+		});
+
+		tl.call(obj.loop,[index])
+
+	};
+
+	/*sideStep = function(elem,obj){
 	
 		var _me = new preset(elem,obj);
 		var _tl = _me.timeline;
