@@ -88,7 +88,7 @@ figure{
 <!-- WIGGLE -->
 		<div class='row'>
 
-			<div class='col-md-4'>
+			<div class='col-md-6'>
 				<figure onclick="toggle(['wiggle1','wiggle2','wiggle3','wiggle4','wiggle5','wiggle6'],wiggle,{bpm:120, ease:'easeInOut', rotation:20, aloofness:20, amplitude:20, repeat:10},.1)">
 					<div id='wiggle1' class='block'>w</div>
 					<div id='wiggle2' class='block'>i</div>
@@ -98,21 +98,21 @@ figure{
 					<div id='wiggle6' class='block'>e</div>
 				</figure>
 			</div>
-			<div class = 'col-md-8'>
+			<div class = 'col-md-6'>
 					<pre>toggle(wiggle,['wiggle1','wiggle2','wiggle3','wiggle4','wiggle5'],{bpm:120, ease:'easeInOut', rotation:20, aloofness:20, amplitude:20, repeat:'forever'})</pre>
 			</div>
 		</div>
 			
 <!-- JUMP -->
 		<div class='row'>
-			<div class='col-md-4'>
+			<div class='col-md-6'>
 				<!-- Look into ways to manage EVENT BUBBLING -->
 				<figure onmouseover="jig('jump',jump,{aloofness:20,exaggeration:10,amplitude:100, speed:1, repeat:100})" onmouseout="killJig('jump')">
 					<div id='jump' class='block'>jump</div>
 				</figure>
 			</div>
 
-			<div class='col-md-8'>
+			<div class='col-md-6'>
 				<pre>jig('jump',jump,{aloofness:20,exaggeration:10,amplitude:100, speed:.4, repeat:2})</pre>	 
 			</div>
 		</div>
@@ -149,36 +149,38 @@ pulse('pulse',{endScale:.8, speed:.5, repeat:'forever'})</pre>
 		</div>
 -->
 <!-- FLY -->
-	<!--	<div class='row'>	
-			<div class='col-md-4'>
-				<figure onclick="fly.from('fly0',{
+	<div class='row'>	
+			<div class='col-md-6'>
+				<figure onclick="jig(['fly0','fly1','fly2'],fly,{
 						startX:600, 
 						startY:-100, 
 						startScale:0, 
 						rotation:40, 
 						speed:.5, 
 						ease:'easeOutExpo',
-						startOpacity:0});" >
-					<div id='fly0' class='block'>fly.from</div>
+						startOpacity:0},.6);" >
+					<div id='fly0' class='block'>fly</div>
+					<div id='fly1' class='block'>fly</div>
+					<div id='fly2' class='block'>fly</div>
 				</figure>
 			</div>
 
-			<div class='col-md-8'>
+			<div class='col-md-6'>
 					
 					<pre>fly.from( element, {parameters});
 
-fly.from('fly0',{startX:50, startY:-50, startScale:0, rotation:40, speed:.5, ease:'easeOutExpo',startOpacity:0});</pre>
+fly('fly0',{startX:50, startY:-50, startScale:0, rotation:40, speed:.5, ease:'easeOutExpo',startOpacity:0});</pre>
 			</div>
-		</div>-->
+		</div>
 
 <!-- PLOP -->			
-	<!--	<div class='row'>	
+	<div class='row'>	
 			<div class='col-md-6'>
-				<figure onclick="each(['plop1','plop2','plop3'],plop,  .2, {
+				<figure onclick="jig(['plop1','plop2','plop3'],plop,{
 							speed:.6,
 							startY:'800px',
 							endY:0,
-							exaggeration:10})">
+							exaggeration:10},.2)">
 					<div id='plop1' class='block'>plop</div>
 					<div id='plop2' class='block'>plop</div>
 					<div id='plop3' class='block'>plop</div>
@@ -190,7 +192,7 @@ fly.from('fly0',{startX:50, startY:-50, startScale:0, rotation:40, speed:.5, eas
 each(['plop1','plop2','plop3'],plop, .2, {speed:.6,startY:'800px',endY:0, exaggeration:10});</pre>
 				 
 			</div>
-		</div>-->
+		</div>
 
 <!-- ILLUMINATE -->
 
@@ -269,7 +271,8 @@ each(['plop1','plop2','plop3'],plop, .2, {speed:.6,startY:'800px',endY:0, exagge
 <script src='vendors/greensock/plugins/CSSPlugin.min.js'></script>
 <script src='jig.gs.0.3.5.js'></script>
 <script type='text/javascript'>
-	
+
+
 
 		/*fly.from(document.getElementById('header'),{speed:.6,startOpacity:0,startY:-10});
 		fly.from(document.getElementById('summary'),{speed:.6,startOpacity:0,startY:-20});
