@@ -33,15 +33,25 @@ to do....
 	gl = new TimelineLite();
 	party = []; // a place for presets or 'jigs' to hang out after they have been instantiated
 
-	appendToGlobal = function(jig){
+	appendToGlobal = function(jig,append){
+
 		if(jig instanceof Array){
 			for(var i in jig){
+				console.log(party)
 				// We want our animations to run at times independent of one another
 				// -----------------------------------------------------------------
-				gl.add(jig[i].timeline,'-='+gl.duration());
+				if(!append){
+					gl.add(jig[i].timeline,'-='+gl.duration());
+				}else{
+					gl.add(jig[i].timeline);
+				}
 			}
 		}else{
-			gl.add(jig[i].timeline,'-='+gl.duration());
+			if(!append){
+				gl.add(jig.timeline,'-='+gl.duration());
+			}else{
+				gl.add(jig.timeline);
+			}
 		}
 	};
 	
@@ -139,6 +149,14 @@ to do....
 		}
 
 		return name;
+	};
+
+	getJig = function(selector){
+		for(var i in party){
+			if(String(party[i].settings.name).toLowerCase() == selector){
+				return party[i];
+			}
+		}
 	};
 
 	// Returns the DOM object associated with your selector queue

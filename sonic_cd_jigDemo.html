@@ -9,10 +9,42 @@
 }
 .row{
 	margin:20px 0 20px 0;
+	padding:20px;
+	background:white;
+	overflow:hidden;
+	position:relative;
 }
 h2{
 	position:relative;
 }
+h3{
+
+}
+
+.planet{
+	background-image:url('http://info.sonicretro.org/images/a/a5/LittlePlanet.png');
+	width:227px;
+	height:220px;
+	position:absolute;
+	top:100px;
+	left:100px;
+}
+
+.col-md-12 h1{
+	text-align:center;
+	padding:40px;
+	background:rgba(0,0,0,.05);
+	font-size:60px;
+}
+
+
+.navbar-header span{
+	display;block;
+	margin:0 auto;
+	font-size:22px;
+	font-weight:bold;
+}
+
 #imgr{
 	cursor:pointer;
 }
@@ -21,6 +53,12 @@ figure{
 	position:relative;
 }
 
+body{
+	background-color:rgb(20,20,80);
+	background-size:cover;
+}
+
+
 </style>
 </head>
 
@@ -28,6 +66,8 @@ figure{
 
 <nav id='navigation' class='navbar navbar-default navbar-fixsed-top'>
 <div class='container'>
+
+		<div class='planet'>.</div>
 	<div class='navbar-header'>
 		<button type='button' class='navbar-toggle' data-toggle='collapse' data-target='.navbar-collapse'>
 			<span class='sr-only'>Toggle Navigation</span>
@@ -35,7 +75,6 @@ figure{
 			<span class='icon-bar'></span>
 			<span class='icon-bar'></span>
 		</button>
-		<h1 id='title'>Sonic CD Levels</h1>
 	</div>
 	<div class="collapse navbar-collapse">
 		<ul class='nav navbar-nav'>
@@ -51,6 +90,10 @@ figure{
 </div>
 </nav>
 <div class='container'>
+	<!--<section id='introMovie' class='jumbotron'>
+	<iframe width="960" height="720" src="http://www.youtube.com/embed/RS2y_BoeRCw" frameborder="0" allowfullscreen></iframe>
+	</section>-->
+	<section class='row'><div class='col-md-12'> <a><h1>What is Sonic CD?</h1></a></div></section>
 	<section class='row'>
 		<figure class='col-md-4'>
 			<img onclick='gl.pause();' src='http://soniczone0.com/games/soniccd/palmtreepanic/scd-pp-indeximg.png'>
@@ -81,13 +124,26 @@ figure{
 <script type='text/javascript'>
 function handlePage(){
 
-	jig('figure',plop,{startY:1000,exaggeration:1},.3);
+	jig('figure',fly,{startX:1000,startOpacity:0},.3);
 	//jig('.col-md-4',fly,{rotation:10,startOpacity:0,startY:40},.2);
 	//jig('.col-md-8',fly,{rotation:10,startOpacity:0,startY:-40},.3);
-	jig(['#navigation','#title'],fly,{startOpacity:0},.3);
+	toggle('.planet',spin,{rotation:360,speed:20,repeat:'forever'})
+	jig('.row',plop,{startY:1000,speed:.8,exaggeration:10},.2)
+	jig(['#navigation'],fly,{startOpacity:0},.3);
 	jig('h2',wiggle,{amplitude:10,speed:.8,repeat:'forever'},.1);
 	jig('li',wiggle,{amplitude:10,repeat:'forever'},.3);
-	appendToGlobal(party);
+
+
+	//appendToGlobal(party,false);
+	var Jig = getJig(['navigation']);
+	appendToGlobal(Jig,true);
+	var Jig = getJig(['figure']);
+	appendToGlobal(Jig,true);
+
+	//var Jig = getJig('h2');
+	//console.log(jig)
+	//appendToGlobal(Jig,false)
+	//appendToGlobal(Jig,false);
 	//jig('h1',spin,{rotation:360, speed:10, repeat:'forever'})
 	//jig('#navigation',fly)
 	//jig(['navigation','navigation','navigation'],fly)
