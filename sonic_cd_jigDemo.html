@@ -2,64 +2,8 @@
 <html>
 <head>
 <link href='css/bootstrap.css' rel='stylesheet'></link>
-<style>
-
-.btn{
-	position:relative;
-}
-.row{
-	margin:20px 0 20px 0;
-	padding:20px;
-	background:white;
-	overflow:hidden;
-	position:relative;
-}
-h2{
-	position:relative;
-}
-h3{
-
-}
-
-.planet{
-	background-image:url('http://info.sonicretro.org/images/a/a5/LittlePlanet.png');
-	width:227px;
-	height:220px;
-	position:absolute;
-	top:100px;
-	left:100px;
-}
-
-.col-md-12 h1{
-	text-align:center;
-	padding:40px;
-	background:rgba(0,0,0,.05);
-	font-size:60px;
-}
-
-
-.navbar-header span{
-	display;block;
-	margin:0 auto;
-	font-size:22px;
-	font-weight:bold;
-}
-
-#imgr{
-	cursor:pointer;
-}
-
-figure{
-	position:relative;
-}
-
-body{
-	background-color:rgb(20,20,80);
-	background-size:cover;
-}
-
-
-</style>
+<link href='http://fonts.googleapis.com/css?family=Audiowide|Roboto:400,700,500,300' rel='stylesheet' type='text/css'>
+<link href='css/soniccd.css' rel='stylesheet'></link>
 </head>
 
 <body onload="handlePage()">
@@ -67,8 +11,9 @@ body{
 <nav id='navigation' class='navbar navbar-default navbar-fixsed-top'>
 <div class='container'>
 
-		<div class='planet'>.</div>
+		<div id='planet' class='planet'>.</div>
 	<div class='navbar-header'>
+
 		<button type='button' class='navbar-toggle' data-toggle='collapse' data-target='.navbar-collapse'>
 			<span class='sr-only'>Toggle Navigation</span>
 			<span class='icon-bar'></span>
@@ -88,12 +33,22 @@ body{
 		</ul>
 	</div>
 </div>
-</nav>
 <div class='container'>
-	<!--<section id='introMovie' class='jumbotron'>
-	<iframe width="960" height="720" src="http://www.youtube.com/embed/RS2y_BoeRCw" frameborder="0" allowfullscreen></iframe>
-	</section>-->
-	<section class='row'><div class='col-md-12'> <a><h1>What is Sonic CD?</h1></a></div></section>
+	<div id='controlArea'>
+		<div id='scrubber'></div>
+		<div id='dragger'></div>
+	</div>
+</div>
+
+</nav>
+
+
+<div class='container'>
+	
+	<!-- Start Introduction -->
+	<section class='row'><div id='top' class='col-md-12'> <a><h1>Sonic CD</h1></a><p>Dr. Robotnik's latest scheme involves the mysterious Little Planet, which appears on the last month of every year over Never Lake. The Little Planet houses the seven Time Stones, with which the holder obtains the ability to travel through time and space. With the control of time, nothing could stop the Eggman! Not to freak, because Sonic the Hedgehog is on the case! Unfortunately, Robotnik has decided to unleash Metal Sonic to keep the hedgehog hero at bay; and kidnap Amy Rose to further complicate the problem. Infact, Robotnik's already made use of the Little Planet's lack of any boundaries on time, and has placed robot machines in the past so he controls the future. Now Sonic's got to stop Robotnik, destroy the robot machines, collect the seven Time Stones, save Amy Rose, and deal with Metal Sonic on a tiny planet where time has no meaning. A hedgehog's work is never done....</p></div></section>
+	
+	<!-- Start Levels -->
 	<section class='row'>
 		<figure class='col-md-4'>
 			<img onclick='gl.pause();' src='http://soniczone0.com/games/soniccd/palmtreepanic/scd-pp-indeximg.png'>
@@ -114,42 +69,54 @@ body{
 		</figure>
 	</section>	
 
+	<section class='row'>
+		<figure class='col-md-4'>
+			<img id='imgr' onclick='toggle("img",spin,{rotation:360,speed:.4,ease:"easeInOutExpo"})' src='http://soniczone0.com/games/soniccd/tidaltempest/scd-tt-indeximg.png'>
+		</figure>
+		<figure class='col-md-8'>
+			<h2>Tidal Tempest</h2><p>Sonic, seemingly, experiments with drugs in his most visually bizarre, backward, psychedelic level in history. This is Sonic CD's standard bouncy/pinball stage (coming in unusually early in the game), with bumpers, flippers, springs and other typical paraphernalia, but the appearance and location of the level is just such a mixed bag of random stuff that it's almost beyond explanation and classification. Amy manages to get herself kidnapped by Metal Sonic at the beginning of the stage, and you must bounce and flip your way to the patience-challenging pinball table of a boss.</p>
+			<button id='collisionBtn' type='button' class='btn btn-primary'onclick="toggle('#collisionBtn', jump,{amplitude:100,aloofness:20,exaggeration:10,repeat:4});">More Info</button>
+		</figure>
+	</section>	
+
+	<section class='row'>
+		<figure class='col-md-4'>
+			<img id='imgr' onclick='toggle("img",spin,{rotation:360,speed:.4,ease:"easeInOutExpo"})' src='http://soniczone0.com/games/soniccd/quartzquadrant/scd-qq-indeximg.png'>
+		</figure>
+		<figure class='col-md-8'>
+			<h2>Quartz Quadrant</h2><p>Sonic, seemingly, experiments with drugs in his most visually bizarre, backward, psychedelic level in history. This is Sonic CD's standard bouncy/pinball stage (coming in unusually early in the game), with bumpers, flippers, springs and other typical paraphernalia, but the appearance and location of the level is just such a mixed bag of random stuff that it's almost beyond explanation and classification. Amy manages to get herself kidnapped by Metal Sonic at the beginning of the stage, and you must bounce and flip your way to the patience-challenging pinball table of a boss.</p>
+			<button id='collisionBtn' type='button' class='btn btn-primary'onclick="toggle('#collisionBtn', jump,{amplitude:100,aloofness:20,exaggeration:10,repeat:4});">More Info</button>
+		</figure>
+	</section>	
+
+	<section class='row'>
+		<figure class='col-md-4'>
+			<img id='imgr' onclick='toggle("img",spin,{rotation:360,speed:.4,ease:"easeInOutExpo"})' src='http://soniczone0.com/games/soniccd/wackyworkbench/scd-ww-indeximg.png'>
+		</figure>
+		<figure class='col-md-8'>
+			<h2>Wacky Workbench</h2><p>Sonic, seemingly, experiments with drugs in his most visually bizarre, backward, psychedelic level in history. This is Sonic CD's standard bouncy/pinball stage (coming in unusually early in the game), with bumpers, flippers, springs and other typical paraphernalia, but the appearance and location of the level is just such a mixed bag of random stuff that it's almost beyond explanation and classification. Amy manages to get herself kidnapped by Metal Sonic at the beginning of the stage, and you must bounce and flip your way to the patience-challenging pinball table of a boss.</p>
+			<button id='collisionBtn' type='button' class='btn btn-primary'onclick="toggle('#collisionBtn', jump,{amplitude:100,aloofness:20,exaggeration:10,repeat:4});">More Info</button>
+		</figure>
+	</section>	
+
+	<!-- Start Video -->
+	<section id='introMovie' class='row'>
+		<iframe class='movie' width="960" height="720" src="http://www.youtube.com/embed/RS2y_BoeRCw" frameborder="0" allowfullscreen></iframe>
+		<h2 style='text-align:center;'>When I was 10, this was the shit. It still is.</h2>
+	</section>
+
 </div>
+
 
 </body>
 <script src='vendors/greensock/TweenLite.min.js'></script>
+<script src='vendors/greensock/utils/Draggable.min.js'></script>
 <script src='vendors/greensock/TimelineLite.min.js'></script>
 <script src='vendors/greensock/plugins/CSSPlugin.min.js'></script>
+<script src='presets.js'></script>
 <script src='jig.gs.0.3.5.5.js'></script>
-<script type='text/javascript'>
-function handlePage(){
+<script src='js/soniccd.js'></script>
 
-	jig('figure',fly,{startX:1000,startOpacity:0},.3);
-	//jig('.col-md-4',fly,{rotation:10,startOpacity:0,startY:40},.2);
-	//jig('.col-md-8',fly,{rotation:10,startOpacity:0,startY:-40},.3);
-	toggle('.planet',spin,{rotation:360,speed:20,repeat:'forever'})
-	jig('.row',plop,{startY:1000,speed:.8,exaggeration:10},.2)
-	jig(['#navigation'],fly,{startOpacity:0},.3);
-	jig('h2',wiggle,{amplitude:10,speed:.8,repeat:'forever'},.1);
-	jig('li',wiggle,{amplitude:10,repeat:'forever'},.3);
-
-
-	//appendToGlobal(party,false);
-	var Jig = getJig(['navigation']);
-	appendToGlobal(Jig,true);
-	var Jig = getJig(['figure']);
-	appendToGlobal(Jig,true);
-
-	//var Jig = getJig('h2');
-	//console.log(jig)
-	//appendToGlobal(Jig,false)
-	//appendToGlobal(Jig,false);
-	//jig('h1',spin,{rotation:360, speed:10, repeat:'forever'})
-	//jig('#navigation',fly)
-	//jig(['navigation','navigation','navigation'],fly)
-	//setTimeout(function(){gl.restart();},3000)
-
-};
 </script>
 
 </html>
