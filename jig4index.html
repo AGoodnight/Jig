@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link href='css/bootstrap.css' rel='stylesheet'></link>
+<style>
+.block{
+	width:100px;
+	height:100px;
+	position:relative;
+}
+
+#amy{
+	background-color:rgb(200,100,100);
+}
+#sonic{
+	background-color:rgb(0,20,100);
+}
+#tails{
+	background-color:rgb(200,300,100);
+}
+
+</style>
+</head>
+
+<body>
+<div id='holder'>
+<button class='btn-lg btn-primary' id='sally'>Sally</button>
+<div class='block' id='amy'></div>
+<div class='block' id='tails'></div>
+<div class='block' id='sonic'></div>
+</div
+
+</body>
+<script src='vendors/greensock/TweenLite.min.js'></script>
+<script src='vendors/greensock/TimelineLite.min.js'></script>
+<script src='vendors/greensock/plugins/CSSPlugin.min.js'></script>
+<script src='jig.gs.0.4.js'></script>
+<script type='text/javascript'>
+
+jig('#sally').toggle('.block',1,{
+	amplitude:10,
+	repeat:2,
+	offset:.2,
+	preset:'wiggle'
+});
+
+	
+</script>
+
+</html>

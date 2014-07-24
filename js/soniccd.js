@@ -41,11 +41,11 @@ function handlePage(){
 		repeat:'forever'
 	});
 
-	jig(['#top'],sonar);
+	//jig(['#top'],sonar);
 
-	assignToGlobal(party,false,['planet','top']);
-	var Jig = getJig('top');
-	assignToGlobal(Jig,true);
+	assignToGlobal(party,false,['planet']);
+	/*var Jig = getJig('top');
+	assignToGlobal(Jig,true);*/
 
 	//addTojig('.planet',wiggle,{amplitude:20,speed:.4});
 
