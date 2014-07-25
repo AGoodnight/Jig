@@ -1,0 +1,114 @@
+//Minutes Seconds Miliseconds  Max Miliseconds 
+/*
+ * function timestampToMilliSeconds
+ * Input: timestamp : string in the format MM:SS:MS
+ * MM must be 0+, SS Must be between 0 and 59, MS is optional, but it must be between 0 and 999.  Decimal points are not allowed
+*/
+
+function timestampToMilliSeconds(timestamp)
+{
+	//local variables
+	var timeStampParts; //The array that will contain the parts of the TimeStamp
+	var hasMilliseconds = false; //Did the time Stamp contain Milliseconds
+	var conversionFailed = false;  //This will be set if the conversion fails for some reason
+	var minutes; //this is the number of minutes in the timestamp
+	var seconds; //this is the number of seconds in the timestamp
+	var milliseconds; //this is the number of milliseconds in the timestamp
+	var msReturnValue = 0; //This is the value to return
+	
+	//Error Checking
+	//Input must be a string
+	if (typeof timestamp != 'string')
+	{
+		return false;
+	}
+	//There must be one or two colons.  This check is made by splitting the time stamp around the colons.  We will need these parts later anyway.
+	timeStampParts = timestamp.split(":");
+	if (timeStampParts.length < 2 || timeStampParts > 3)
+	{
+		return false;
+	}
+	
+	//someone though they could sneak a decimal point into the timestamp.
+	if (timestamp.split(".").length > 1)
+	{
+		return false;
+	}
+	
+	//End Error Checking
+	
+	//Check to see if the timestamp has a Milliseconds section
+	if (timeStampParts.length == 3)
+	{
+		hasMilliseconds = true;
+	}
+	
+	//Minutes is the first value, seconds is the second, and milliseconds, if included is the third one
+	//Try and covnert the parts into integers
+	
+	//Convert Minutes
+	if (isNaN(timeStampParts[0]))
+	{
+		conversionFailed = true;
+		minutes = 0;
+	}
+	else
+	{
+		minutes = parseInt(timeStampParts[0]);
+	}
+	
+	//Convert Seconds
+	if (isNaN(timeStampParts[1]))
+	{
+		conversionFailed = true;
+		seconds = 0;
+	}
+	else
+	{
+		seconds = parseInt(timeStampParts[1]);
+	}
+	
+	//convert Milliseconds
+	if (hasMilliseconds)
+	{
+		if (isNaN(timeStampParts[2]))
+		{
+			conversionFailed = true;
+			milliseconds = 0;
+		}
+		else
+		{
+			milliseconds = parseInt(timeStampParts[2]);
+		}
+	}
+	else
+	{
+		milliseconds = 0;
+	}
+	
+	
+	
+	//conversion has been completed.  Try and Build the Timestamp
+	if (!conversionFailed )
+	{
+		//check the bounds for the numbers
+		if (minutes >=0 && seconds >=0 && seconds < 60 && milliseconds >=0 && milliseconds < 1000)
+		{
+			msReturnValue = minutes * 60000 + seconds * 1000 + milliseconds;
+		}
+		else 
+		{
+			msReturnValue = false;
+		}
+	}
+	else
+	{
+		msReturnValue = false;
+	}
+	
+	
+	//Handle the final return value
+	return msReturnValue;
+	
+}
+

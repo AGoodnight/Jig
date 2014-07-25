@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link href='css/bootstrap.css' rel='stylesheet'></link>
+<style>
+
+.block{
+	margin:20px 3px 20px 3px;
+	padding:30px;
+	background-color:black;
+	position:relative;
+	float:left;
+	color:rgb(0,0,0);
+	text-transform:uppercase;
+	font-size:30px;
+	font-weight:bold;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+
+	-webkit-transition:color .4s;
+
+}
+
+.block:hover{
+	color:rgb(260,260,260);
+}
+
+figure{
+	width:100%;
+	display:block;
+	height:150px;
+	cursor:pointer;
+}
+
+.blog-header{
+	margin-top:70px;
+}
+
+.blog-header p{
+	padding-top:10px;
+}
+
+.row{
+	padding:0px 0 100px 0;
+}
+
+.col-md-4 figure{
+
+}
+
+.col-md-6 pre{
+	margin:20px 0px 0px 0px;
+}
+
+
+.col-md-8 pre{
+	margin:20px 0px 0px 0px;
+}
+
+#header .col-lg-16{
+	padding:20px 20px 0 20px;
+}
+
+#header .col-lg-8{
+	padding:20px 20px 0 20px;
+}
+
+</style>
+</head>
+
+<body>
+	
+	<div class='container marketing'>
+		<div class='planet'>.</div>
+	
+		<div id='header' class='row'>
+			<div class='col-lg-16'>
+				<h1 id='header' style='position:relative;'>Jig: An Animation Library</h1>
+			</div>
+			<div class='col-lg-8'>
+				<p id='summary' style='position:relative;'>Jig is an instantiated object containing an individual timeline of <a href='http://www.greensock.com'>TimelineLite</a>. The result is the ability to write preset animation sequences as functions. Jig is an idea manifested and as demonstrated by 'WIGGLE' you will have the option of setting your animations pace/speed in beats per minute, potentially syncronizing them with music!
+				There is no documentation yet as the code is still changing rapidly.</p>
+			</div>
+		</div>
+<!-- WIGGLE -->
+		<div class='row'>
+
+			<div class='col-md-4'>
+				<figure onclick="toggle(['wiggle1','wiggle2','wiggle3','wiggle4','wiggle5','wiggle6'],wiggle,{bpm:120, ease:'easeInOut', rotation:20, aloofness:20, amplitude:20, repeat:10},.1,true)">
+					<div id='wiggle1' class='block'>w</div>
+					<div id='wiggle2' class='block'>i</div>
+					<div id='wiggle3' class='block'>g</div>
+					<div id='wiggle4' class='block'>g</div>
+					<div id='wiggle5' class='block'>l</div>
+					<div id='wiggle6' class='block'>e</div>
+				</figure>
+			</div>
+			<div class = 'col-md-8'>
+					<pre>toggle(wiggle,['wiggle1','wiggle2','wiggle3','wiggle4','wiggle5'],{bpm:120, ease:'easeInOut', rotation:20, aloofness:20, amplitude:20, repeat:'forever'})</pre>
+			</div>
+		</div>
+			
+<!-- JUMP -->
+		<div class='row'>
+			<div class='col-md-4'>
+				<!-- Look into ways to manage EVENT BUBBLING -->
+				<figure onmouseover="jig('jump',jump,{aloofness:20,exaggeration:10,amplitude:100, speed:1, repeat:100})" onmouseout="killJig('jump')">
+					<div id='jump' class='block'>jump</div>
+				</figure>
+			</div>
+
+			<div class='col-md-8'>
+				<pre>jig('jump',jump,{aloofness:20,exaggeration:10,amplitude:100, speed:.4, repeat:2})</pre>	 
+			</div>
+		</div>
+
+<!-- SPIN -->
+<!--		<div class='row'>
+			<div class='col-md-4'>
+				<figure onclick="spin('spin',{rotation:360, speed:2})">
+					<div id='spin' class='block'>spin</div>
+				</figure>
+			</div>
+			<div class='col-md-8'>
+			
+					<pre>spin, element, {parameters});
+
+spin('spin',{rotation:360, speed:2, repeat:'forever'});</pre>
+				
+			</div>
+		</div>-->
+
+
+<!-- PULSE -->
+	<!--	<div class='row'>
+			<div class='col-md-4'>
+				<figure onclick="pulse('pulse',{endScale:.8, speed:.5})"> 
+					<div id='pulse' class='block'>pulse</div>
+				</figure>
+			</div>
+			<div class='col-md-8'>
+					<pre>pulse(element, {paramters})
+
+pulse('pulse',{endScale:.8, speed:.5, repeat:'forever'})</pre>
+			</div>
+		</div>
+-->
+<!-- FLY -->
+	<!--	<div class='row'>	
+			<div class='col-md-4'>
+				<figure onclick="fly.from('fly0',{
+						startX:600, 
+						startY:-100, 
+						startScale:0, 
+						rotation:40, 
+						speed:.5, 
+						ease:'easeOutExpo',
+						startOpacity:0});" >
+					<div id='fly0' class='block'>fly.from</div>
+				</figure>
+			</div>
+
+			<div class='col-md-8'>
+					
+					<pre>fly.from( element, {parameters});
+
+fly.from('fly0',{startX:50, startY:-50, startScale:0, rotation:40, speed:.5, ease:'easeOutExpo',startOpacity:0});</pre>
+			</div>
+		</div>-->
+
+<!-- PLOP -->			
+	<!--	<div class='row'>	
+			<div class='col-md-6'>
+				<figure onclick="each(['plop1','plop2','plop3'],plop,  .2, {
+							speed:.6,
+							startY:'800px',
+							endY:0,
+							exaggeration:10})">
+					<div id='plop1' class='block'>plop</div>
+					<div id='plop2' class='block'>plop</div>
+					<div id='plop3' class='block'>plop</div>
+				</figure>
+			</div>
+			<div class='col-md-6'>
+					<pre>plop( element, {parameters});
+
+each(['plop1','plop2','plop3'],plop, .2, {speed:.6,startY:'800px',endY:0, exaggeration:10});</pre>
+				 
+			</div>
+		</div>-->
+
+<!-- ILLUMINATE -->
+
+			<!--<div class='col-md-4'>
+				<h3>Iluminate</h3>
+				<figure>
+					<div id='iluminate' class='block'></div>
+				</figure>
+				<div>
+					<p>light up or pulse</p>
+					<p><button onclick="iluminate('iluminate',{amount:50, speed:.5, repeat:6})">Start</button></p>
+					<pre>iluminate( element, {paramters})
+
+  /*paramaters:{
+    intensity:1,
+    diffuse:'20px',
+    strength:10,
+    speed:1
+  }
+				
+					</pre>
+				 </div>
+			</div>-->
+
+
+<!-- SIDE STEP -->
+
+			<!--<div class='col-md-4'>
+				<h3>sideStep</h3>
+				<figure>
+					<div id='sideStep' class='block'></div>
+				</figure>
+				<div>
+					<p>Side to side</p>
+					<p><button onclick="sideStep('sidestep')">Start</button></p>
+					<pre>sideStep( element, {paramters})</pre>
+				</div>
+			</div>-->
+
+
+<!-- FLUTTER -->
+
+			<!--<div class='col-md-4'>
+				<h3>Flutter</h3>
+				<figure>
+					<div id='spin' class='block'></div>
+				</figure>
+				<div>
+					<p>Wiggle the motion</p>
+					<p><button onclick="spin('spin',{amount:50, speed:.5, repeat:6})">Start</button></p>
+					<pre>spin( element, {paramters})</pre>
+				</div>
+			</div>-->
+
+<!-- CLOUDLY -->
+			
+		<!--	<div class='col-md-4'>
+				<h3>Cloudly</h3>
+				<figure>
+					<div id='cloudly' class='block'></div>
+				</figure>
+				<div>
+				<p>Fall with a plop</p>
+				<p><button onclick="cloudly('cloudly',{amount:50, speed:.5, repeat:6})">Start</button></p>
+				<pre>cloudly( element, {paramters})=</pre>
+				</div>
+			</div>
+		</div>
+	</div>-->
+	
+	
+
+</body>
+<script src='vendors/greensock/TweenLite.min.js'></script>
+<script src='vendors/greensock/TimelineLite.min.js'></script>
+<script src='vendors/greensock/plugins/CSSPlugin.min.js'></script>
+<script src='jig.gs.0.3.5.js'></script>
+<script type='text/javascript'>
+	
+
+		/*fly.from(document.getElementById('header'),{speed:.6,startOpacity:0,startY:-10});
+		fly.from(document.getElementById('summary'),{speed:.6,startOpacity:0,startY:-20});
+		each(document.getElementsByClassName('col-md-4'),fly.from,0,{startY:-40,startOpacity:0,speed:.5},true);
+		each(document.getElementsByClassName('col-md-8'),fly.from,0,{startY:-90,startOpacity:0,speed:.5},true);*/
+	
+	
+</script>
+
+</html>
