@@ -22,6 +22,8 @@ jive = function(name){
 		active:false
 	};
 
+	tl.currentMark = 0;
+
 	jv = tl;
 	return tl;
 };
@@ -34,236 +36,201 @@ TimelineLite.prototype.togglePlayback =function(){
 		jv.data.active = true;
 		//console.log(jv.data.active)
 	}
-}
+};
 TimelineLite.prototype.freeze = function(){
 	this.pause();
 	disableInterface();
-}
+};
 TimelineLite.prototype.thaw = function(){
 	this.play();
 	enableInterface();
-}
+};
 TimelineLite.prototype.callJig = function(selector){
 	for(var i in jigs){
 		if(jigs[i].data.who===selector){
 			//console.log(jigs[i].data.name);
 		}
 	}
-}
+};
+TimelineLite.prototype.proceed = function(){
+	this.currentMark++
+	this.scrubber.newBounds();
+};
+
 
 // JIG AND JIGGLE
 // ========================
-jig = function(selector,options){
-	// a jig is a jive independent timeline
-	var tl = new TimelineLite();
-	tl.type='jig';
+Constructor = function(selector,options,target){
+	var tl = new TimelineLite()
 	// store our settings in the data object, 'data' is shorter than 'settings'
-	tl.data = {
-		name:'untitled', //Optional name
-		who:selector, //Original selector value
-		dom:domArray(selector), // DOM reference
+	tl.data = {};
+	tl.data.who = selector; //Original selector value
+	tl.data.dom = domArray(selector); // DOM reference
 
-		target:undefined,
-		preset:'pulse',
-		
-		//timing
-		delay:0,
-		speed:1,
-
-		//scaling
-		scale:1,
-		startScale:1,
-		endScale:1,
-		startHeight:1,
-		endHeight:1,
-		startWidth:1,
-		endWidth:1,
-
-		//rotation
-		rotation:0,
-		startRotation:0,
-		endRotation:0,
-
-		//traversing
-		x:0,
-		y:0,
-		startX:0,
-		startY:0,
-		endX:0,
-		endY:0,
-
-		//opacity
-		opacity:1,
-		startOpacity:1,
-		endOpacity:1,
-		
-		//repeat
-		repeat:0,
-		reps:[0],
-
-		origin:'%50 %50'
+	if(target == undefined){
+		tl.data.target = tl.data.dom;
+	}else{
+		tl.data.target = domArray(target);
 	};
-
-	setData(options,tl);
-	jigs.push(tl);	
 	return tl;
-}
-jiggle = function(selector,options,timeStamp){
-	// a jiggle is a jive dependent timeline
-	var tl = new TimelineLite();
+};
+jig = function(selector,options,target){
+	var tl;
+	tl = Constructor(selector,options,target);
+	tl.type='jig';
+	jigs.push(tl);
+	return tl;
+};
+jiggle = function(selector,options,timeStamp,target){
+	var tl = Constructor(selector,options,target);
 	tl.type='jiggle';
-	
-	tl.data = {
-		name:'untitled', //Optional name
-		who:selector, //Original selector value
-		dom:domArray(selector), // DOM reference
-
-		target:undefined,
-		preset:'pulse',
-		
-		//timing
-		delay:0,
-		speed:1,
-
-		//scaling
-		scale:1,
-		startScale:1,
-		endScale:1,
-		startHeight:1,
-		endHeight:1,
-		startWidth:1,
-		endWidth:1,
-
-		//rotation
-		rotation:0,
-		startRotation:0,
-		endRotation:0,
-
-		//traversing
-		x:0,
-		y:0,
-		startX:0,
-		startY:0,
-		endX:0,
-		endY:0,
-
-		//opacity
-		opacity:1,
-		startOpacity:1,
-		endOpacity:1,
-		
-		//repeat
-		repeat:0,
-		reps:[0],
-
-		origin:'%50 %50'
-	};
-
-	setData(options,tl);
 	jiggles.push(tl);	
 	return tl;
 };
-// functions ------------------------
-TimelineLite.prototype.rollover = function(preset,options){
-	// preset = a function declared as a string or object
-		/* if it is a string it will search the presets object, 
-		otherwise it will search for a custom function declared elsewhere*/
-	// target = an array or string that identifies waht is going to be animated according to the preset
-	// this creates a rollover event which executes a timeline animation on the target/s or the element assigned this event
-	var trigger = domArray(this.data.who);
-	var tl = new TimelineLite();
-	var _this = this;
-	
-	setData(options,this);
-	
-	// Is this affecting the trigger or a target?
-	if(this.data.target === undefined){
-		this.data.target = trigger
-	}else{
-		this.data.target = domArray(this.data.target);
-	}
-	// is the preset in the presets object or declared elsewhere?
-	if(typeof preset === 'string'){
-		this.data.preset = getPreset(preset);
-	}else{
-		this.data.preset = preset;
-	}
 
-	// event
+// functions ------------------------
+var buildData = function(){
+	return {
+		name:'untitled', //Optional name
+		who:undefined, //Original selector value
+		dom:undefined, // DOM reference
+
+		target:undefined,
+		preset:undefined,
+		
+		//relative
+		amplitude:undefined,
+		life:undefined,
+
+		//timing
+		delay:0,
+		speed:undefined,
+
+		//scaling
+		scale:undefined,
+		startScale:undefined,
+		endScale:undefined,
+		startHeight:undefined,
+		endHeight:undefined,
+		startWidth:undefined,
+		endWidth:undefined,
+
+		//rotation
+		rotation:undefined,
+		startRotation:undefined,
+		endRotation:undefined,
+
+		//traversing
+		x:undefined,
+		y:undefined,
+		startX:undefined,
+		startY:undefined,
+		endX:undefined,
+		endY:undefined,
+
+		//opacity
+		opacity:undefined,
+		startOpacity:undefined,
+		endOpacity:undefined,
+		
+		//repeat
+		repeat:0,
+		reps:[0],
+
+		origin:'%50 %50'
+	};
+};
+var setData = function(options,me){
+	for(var j in options){
+		for(var i in me.data){
+			if(j==i){
+				me.data[i] = options[j]
+			}
+		}
+	};
+};
+var extendTimeline = function(preset,options,parent){
+	var tl = new TimelineLite();
+	tl.data = buildData();
+	tl.data.active = false;
+	setData(options,tl);
+	// Determine preset
+	// ----------------
+	if(typeof preset === 'string'){
+		tl.data.preset = getPreset(preset);
+	}else{
+		tl.data.preset = preset;
+	};
+
+	tl.loop = function(i){
+		if(tl.data.repeat > tl.data.reps[i]){
+			console.log(tl.data.repeat+' > '+tl.data.reps[i]);
+			tl.data.reps[i]++;
+			tl.data.preset(parent.data.target,tl,tl.data)
+		}else{
+			tl.data.active = false;
+			tl.data.reps[i]=0;
+			console.log('complete');
+		}
+	};
+
+	return tl;
+};
+
+TimelineLite.prototype.rollover = function(preset,options){
+	
+	var tl = extendTimeline(preset,options,this);
+	var trigger = this.data.target;
+
 	for(var i in trigger){
 		trigger[i].onmouseover = function(){
-			_this.data.preset(_this.data.target,tl,_this.data);	
-		};
-		trigger[i].onmouseout = function(){
-			_this.reset('linear',_this.data.target);
-		};
+			if(!tl.data.active){
+				tl.data.active = true;
+				tl.data.preset(this.data.target,tl,tl.data);	
+				}
+
+		}.bind(this)
 	};
 
-	// chaining
 	return this;
 };
-
-TimelineLite.prototype.auto = function(preset,options){
+TimelineLite.prototype.auto = function(preset,sync,options){
 	// auto play, no user interaction
-	var trigger = domArray(this.data.who);
-	var tl = new TimelineLite();
-	setData(options,this);
-
-
-	if(this.data.target === undefined){
-		this.data.target = trigger
-	}else{
-		this.data.target = domArray(target);
-	};
-
-	if(typeof preset === 'string'){
-		this.data.preset = getPreset(preset);
-	}else{
-		this.data.preset = preset;
-	};
 	var wait = 0;
+	var tl = extendTimeline(preset,options);
+
+	// Assign Animations
+	// -----------------
 	for(var i in this.data.target){
-		wait += this.data.delay;
-		console.log(wait)
+		wait += tl.data.delay;
 		var ttl = new TimelineLite();
-		this.data.preset(this.data.target[i],ttl,this.data,wait);	
-		tl.unshift(ttl);
+
+		tl.data.preset(this.data.target[i],ttl,tl.data,wait);	
+
+		if(sync == undefined ){
+			tl.add(ttl,0);
+		}else{
+			tl.add(ttl,sync);
+		}
 	};
 
+	// If this is a jiggle it is not appended to the jive object
+	// ---------------------------------------------------------
 	if(this.type === 'jiggle'){
-		jv.unshift(tl)
+		if(sync == undefined ){
+			jv.add(tl,0);
+		}else{
+			jv.add(tl,sync)
+		}
 	}
+
+		//console.log(tl.data);
 
 	return this;
 };
-
-TimelineLite.prototype.loop=function(){
-	
-	//console.log(this.data.name)
-	
-	if(this.data.reps<this.data.repeat){
-		this.data.preset(this.data.target,tl,this.data);
-	}
-};
-
 // TIMELINELITE - new functions
 // ============================
-TimelineLite.prototype.unshift = function(tl,delay){
-		// tl = timeline instance
-		// time = a delay either in milliseconds or a timestamp format to offset the start of the timeline instance in relation to the jives 0 point.
-		//syncs up a 'jig' (TimelinLite instance) with a delay from the start of 'thisJive (jv)'
-		var td = (this.totalDuration())+delay;
-		this.add(tl,'-='+td);
-		//console.log('pushed '+tl)
-};
-TimelineLite.prototype.sync = function(tl,time){
-	// tl = timeline instance
-	// time = a timestamp indicating when to start the timeline in the jive 
-	// syncs up a 'jig' (TimelinLite instance) with a timestamp relative to 'thisJive (jv)'
-	var when = timeToMs(time);
-	this.add(tl,'-='+when);
-	//console.log('pushed '+o)
-};
+
 TimelineLite.prototype.trigger = function(funcs){
 	// funcs = array or object
 	// executes functions passed to i
@@ -277,30 +244,37 @@ TimelineLite.prototype.reset= function(target){
 	//transition the target's CSS and JS to what it was before the timeline animated.
 };
 TimelineLite.prototype.getTimeStamp = function(){
-	console.log(tsToMs('2:10'));
-}
+	//console.log(tsToMs('2:10'));
+};
 
 //OTHER FUNCTIONS
 //===============
 
-partial = function(func /*, 0..n args */) {
+var newJig = function(selector){
+	//console.log(jigs[i].data.name);
+	//console.log(selector)
+	if(jigs.length === 0){
+		return true;
+	}else{
+		for(var i in jigs){
+			//console.log(jigs[i].data.who+' ----- '+selector)
+			if(jigs[i].data.who == selector){
+
+				return false;
+			}else{
+				return true;
+			}
+		}
+	}
+};
+
+var partial = function(func /*, 0..n args */) {
   	var args = Array.prototype.slice.call(arguments).splice(1);
   	return function() {
     	var allArguments = args.concat(Array.prototype.slice.call(arguments));
     	return func.apply(this, allArguments);
  	};
 };
-
-
-var setData = function(options,me){
-	for(var j in options){
-		for(var i in me.data){
-			if(j==i){
-				me.data[i] = options[j]
-			}
-		}
-	};
-}
 
 var getPreset = function(str){
 	var err=0;
@@ -337,7 +311,7 @@ var removePrefix = function(o){
 		return name;
 };
 
-filterMe =function(str){
+var filterMe =function(str){
 	// for testing the dom selector
 	var f = str.split(' ');
 	var nodes = [];
@@ -348,17 +322,16 @@ filterMe =function(str){
 			for(var i in g.parent)
 			var p = g.parentNode
 			if(p === nodes[i-1]){
-				//console.log(p)
+				console.log(p)
 			}else{
 				var z = p.parentNode
 				if(z===nodes[i-1]){
-					//console.log(z)
+					console.log(z)
 				}
 			}
 		}
 		nodes.push(g)
 	}
-
 };
 
 var domArray = function(o){
@@ -507,6 +480,19 @@ var tsToMs = function(timestamp){
 	
 	//Handle the final return value
 	return msReturnValue;
+}; 
+
+var compareDefaults = function(d,obj){
+	for(var i in d){
+		for(var j in obj){
+			if(i === j){
+				if(obj[j] === undefined){
+					obj[j] = d[i];
+				}
+			}
+		}
+	}
+	return obj;
 };
 
 
@@ -516,36 +502,70 @@ var presets = [
 
 		['pulse',
 			(function(){
-				//console.log('pulsing');
+				
+				
+				
 			})
-		],
-		
+		],	
 		['wiggle',
 			(function(target,tl,settings,delay){
+				console.log(target)
+				defaults={speed:1, amplitude:10};
+				settings = compareDefaults(defaults,settings);
+
+				randomize = function(value){
+					if(settings.bol == true){
+						bol = false;
+						k = Math.round(Math.random()*-1);
+					}else{
+						bol = true;
+						k = Math.round(Math.random()*1);
+					}
+					return Math.round(Math.random()*value*k)+2;
+				}
+
 				var s =[
-				settings.speed/2,
-				settings.speed/2
+					settings.speed/3,
+					settings.speed/3,
+					settings.speed/3
 				];
 
 				tl.to(target,s[0],{
 					delay:delay,
-					scale:settings.scale,
+					left:randomize(settings.amplitude),
+					top:randomize(settings.amplitude),
 					transformOrigin:settings.origin
 				});
 				tl.to(target,s[1],{
-					scale:1
+					left:randomize(settings.amplitude),
+					top:randomize(settings.amplitude)
 				});
-				//tl.call(tl.loop);
+				tl.to(target,s[2],{
+					left:0,
+					top:0
+				});
+
+				tl.call(
+					partial(tl.loop,0)
+				);
 			})
 		],
 		['fly',
 			(function(target,tl,settings,delay){
+
+				defaults={ speed:1, startX:-20, startY:0, startRotation:10, startScale:1,
+						   startOpacity:1, endOpacity:1, endScale:1, endX:0, endY:0, endRotation:0 };
+				
+				settings = compareDefaults(defaults,settings);
+
+
 				var s =[
 				settings.speed/2,
 				settings.speed/2
 				];
 
 				tl.fromTo(target,s[0],{
+
 					left:settings.startX,
 					top:settings.startY,
 					rotation:settings.startRotation,
@@ -554,15 +574,6 @@ var presets = [
 					transformOrigin:settings.origin
 				},
 				{
-					delay:delay,
-					scale:settings.endScale*.9,
-					opacity:settings.endOpacity*.5,
-					left:settings.endX,
-					top:settings.endY,
-					rotation:settings.endRotation*.5
-				});
-
-				tl.to(target,s[1],{
 					scale:settings.endScale,
 					opacity:settings.endOpacity,
 					left:settings.endX,
@@ -573,6 +584,11 @@ var presets = [
 		],
 		['pan',
 			(function(target,tl,settings,delay){
+
+				defaults={ speed:1, startX:100, endX:0, endY:0,};
+				
+				settings = compareDefaults(defaults,settings);
+
 				var s =settings.speed;
 
 				tl.fromTo(target,s,{
@@ -585,6 +601,43 @@ var presets = [
 					delay:delay,
 					left:settings.endX,
 					top:settings.endY
+				});
+
+			})
+		],
+		['fadeIn',
+			(function(target,tl,settings,delay){
+
+				defaults={ speed:1, startOpacity:0, endOpacity:1};
+				settings = compareDefaults(defaults,settings);
+
+				var s =settings.speed;
+
+				tl.fromTo(target,s,{
+					opacity:settings.startOpacity
+				},
+				{
+					delay:delay,
+					opacity:settings.endOpacity
+				});
+
+			})
+		],
+		['fadeOut',
+			(function(target,tl,settings,delay){
+
+				defaults={ speed:1, startOpacity:1, endOpacity:0};
+				
+				settings = compareDefaults(defaults,settings);
+
+				var s =settings.speed;
+
+				tl.fromTo(target,s,{
+					opacity:settings.startOpacity,
+				},
+				{
+					delay:delay,
+					opacity:settings.endOpacity
 				});
 
 			})

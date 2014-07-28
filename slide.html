@@ -2,13 +2,14 @@
 <html>
 <head>
 <link href='css/bootstrap.css' rel='stylesheet'></link>
-<link href='css/bootstrap-theme.min.css' rel='stylesheet'></link>
 <style>
 
 body {
   padding-top: 70px;
   padding-bottom: 30px;
 }
+
+h2{position:relative;}
 
 .theme-dropdown .dropdown-menu {
   position: static;
@@ -91,6 +92,13 @@ body {
 	font-weight:bold;
 }
 
+.marker{
+	background-color:yellow;
+	width:10px;
+	height:20px;
+	position:absolute;
+}
+
 li{
 	font-size:21px;
 }
@@ -121,6 +129,7 @@ li{
 	padding:30px;
 }
 
+
 </style>
 </head>
 
@@ -144,14 +153,23 @@ li{
 		<div class='jumbotron'>
 				
 				<div class='row'>
+
 					<div class='col-md-8'>
 						<h2>Mischief in Springfield</h2>
-						<ul>
+						
+						<ul id='list1'>
+						<li class='mock'>Bart: Milhouse!</li>
+						<li class='mock'>Milhouse: uh what is it?</li>
+						<li class='mock'>Bart: Homer's in the lorem ipsum</li>
+						</ul>
+					
+						<ul id='list2'>
 						<li class='mock'>Bart: Milhouse!</li>
 						<li class='mock'>Milhouse: uh what is it?</li>
 						<li class='mock'>Bart: Homer's in the lorem ipsum</li>
 						</ul>
 					</div>
+
 					<div class='col-md-4'>
 						<figure><img src='http://upload.wikimedia.org/wikipedia/en/a/aa/Bart_Simpson_200px.png'/></figure>
 						<figure style='margin-top:100px; margin-left:100px;'><img src='http://img1.wikia.nocookie.net/__cb20130126162334/simpsons/images/archive/9/91/20130918045526!Milhouse_Van_Houten_2.png'/></figure>
@@ -171,6 +189,10 @@ li{
 			<div id='scrubberArea'>
 				<div id='gutter'></div>
 				<div id='scrubber'></div>
+				<div id='spot1' class='marker'></div>
+				<div id='spot2' class='marker'></div>
+				<div id='spot3' class='marker'></div>
+				<div id='spot4' class='marker'></div>
 			</div>
 			<!-- Our Scene Menu -->
 			<div id='sceneMenu'>
@@ -191,77 +213,43 @@ li{
 <script src='scrubBar.gs.js'></script>
 <script type='text/javascript'>
 	
-	var thisJive = new jive('welcome');
+	var Jive = new jive('welcome');
+	console.log(Jive);
+
+	//jig('.shell').auto('fadeIn');
 	//----------------------
 	jig('#playbtn',{name:'Restart Scene'})
-		.rollover('wiggle',{
-			repeat:3,
-			speed:.3,
-			scale:1.3
-		})
+		.auto('fadeIn','.4')
+		.rollover('wiggle',{speed:.1,repeat:6})
 		.trigger(function(){
-			thisJive.togglePlayback();
-			thisJive.getTimeStamp();
-			thisJive.delay(0);
-			thisJive.restart();
-		}.bind(thisJive));
+			Jive.delay(0);
+			Jive.pause();
+		}.bind(Jive));
 
-	jiggle('li',{name:'Script'})
-		.auto('fly',{
-			startX:300,
-			delay:.1,
-			origin:'left',
-			startOpacity:0
-		});
+	jiggle('#list1',{name:'script 1'})	
+		.auto('fadeIn')
+		.auto('fadeOut','1')
+		.auto('fadeIn','4')
+		.auto('fadeOut','5');
 
-	jiggle('figure',{name:'Comrads'})
-		.auto('fly',{
-			startScale:2,
-			startOpacity:0,
-			startRotation:360,
-			delay:.2
-		});
+	jiggle('#list2',{name:'script 2'})
+		.auto('fadeIn','2')
+		.auto('fadeOut','3');
 
-	jig('h2',{name:'Mischief in Springfield'})
-		.auto('fly',{
-			startScale:2,
-			startOpacity:0,
-			startRotation:360,
-			delay:.2
-		});
+	jig('#back',{name:'springfield'})
+		.auto('fadeIn')
+		.auto('pan','0',{speed:10,startX:0,endX:-100,startY:0});
 
-	jig('#back',{name:'Background'})
-		.auto('pan',{
-			startX:10,
-			endX:-100,
-			speed:10
-		});
+	jig('h2',{name:'scene 1 title'})
+		.auto('fly','0',{startY:-200});
 
-	//filterMe('ul li');
+	jiggle('figure',{name:'comrades'})
+		.auto('fly','3',{startRotation:360,startScale:2,startOpacity:0})
 
-	/*jig('#scrub').rollover('pulse').handleScrub('pulse');
 
-	jig('#menuOpen').click('grow').trigger([
-		openMenu,
-		[playAudio,{src:'shwooop.mp3',volume:.4}],
-		thisJive.freeze
-	]);
-
-	jig('#next').rollover('jump').restart(cur++);
-
-	//----------------------
-	jig('#title').auto('plop');
-	jiggle('#list li').auto('fly');
-	jiggle('#img1','2:31:025').auto('grow').click('spin').trigger([
-		thisJive.freeze,
-		[playAudio,{src:'vo1.mp3',volume:.8,callback:thisJive.thaw}]
-	]);
-	jiggle('#img2','12:34').auto('fly');
-	jiggle('#img3','3').auto('plop');
-	jiggle('#cta').auto('plop');
-	jig('#cta').rollOver('jump').click(undefined)*/
-	thisJive.delay(1);
-	var scrubber = new scrubBar('#scrubber','#gutter',thisJive);
+	Jive.scrubber = scrub = new scrubBar('#scrubber','#gutter',Jive);
+	scrub.drawMarkers(document.getElementsByClassName('marker'));
+	scrub.newBounds();
 
 </script>
 
