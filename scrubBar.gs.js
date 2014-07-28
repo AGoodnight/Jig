@@ -1,19 +1,40 @@
 (function(document){
 
 	scrubBar = function(scrubber,gutter,timeline){
-		
-		//console.log(timeline)
+	
 		var _this = this;
 		this.scrubber = scrubber;
 		this.gutter = gutter;
 		this.tl = timeline;
 		this.width = 350;
-		this.drag = Draggable.create(scrubber,{type:"x",edgeResistance:1,bounds:gutter,onDrag:handleDrag ,onDragEnd:handleRelease})[0];
-		function handleDrag(){
+		this.drag = Draggable.create(scrubber,
+		{
+			type:"x",
+			edgeResistance:1,
+			bounds:gutter,
+			onDrag:this.handleDrag,
+			onDragEnd:this.handleRelease
+		})[0];
 
-			var max = _this.width;
-			var g = Math.round(Draggable.get(scrubber).x);
-			var td = timeline.totalDuration();
+		this.start();
+
+	};
+
+	scrubBar.prototype.start = function(){
+		setInterval(function(){
+			var cx = Draggable.get(this.scrubber).x;
+			var ct = this.tl.time();
+			var td = this.tl.totalDuration()
+			TweenLite.set(this.scrubber,{x:ct/td*350})
+			//console.log(timeline.time())
+		}.bind(this),10);
+	};
+
+	scrubBar.prototype.handleDrag = function(){
+		
+		var max = this.width;
+		var g = Math.round(Draggable.get(this.scrubber).x);
+		var td = this.tl.totalDuration();
 			
 			if(g>350){
 				g = max
@@ -23,21 +44,12 @@
 				g = g
 			}
 
-			timeline.seek(g/max*td);
-			timeline.pause();
-		};
-
-		function handleRelease(){ timeline.play(); };
-
-		setInterval(function(){
-			var cx = Draggable.get(scrubber).x;
-			var ct = timeline.time();
-			var td = timeline.totalDuration()
-			TweenLite.set(scrubber,{x:ct/td*350})
-			//console.log(timeline.time())
-		},10)
-
-		return this;
+		this.tl.seek(g/max*td);
+		this.tl.pause();
+	};
+	
+	scrubBar.prototype.handleRelease = function(){
+		this.tl.play(); 
 	};
 
 	scrubBar.prototype.newBounds = function(){
