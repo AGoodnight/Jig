@@ -17,9 +17,9 @@ jig( '#myDiv', { name:'theadore' })
     stopAt:'2:00:00:0000')
   .trigger(function(){
   
-    arthurcclarke();
-    starwars();
-    tng();
+    arthurcclarke(_root.varName);
+    starwars(_jig.varName);
+    tng( 5 );
     
     console.log('I have been clicked');
     
