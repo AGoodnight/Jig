@@ -12,8 +12,8 @@ jig('#myDiv').rollOver('wiggle');
 
 <pre>
 /* 
-This button can only be pressed during a short period of time on a timeline. 
-On rollover it jumps.
+This is a button.
+On rollover it jumps, but only at the right time.
 On click it spins and runs a few functions.
 */
 
