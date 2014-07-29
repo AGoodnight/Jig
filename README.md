@@ -23,8 +23,8 @@ jig( '#myDiv', { name:'theadore' })
     
     console.log('I have been clicked');
     
-    tuna = true;
-    mayo = false;
+    var tuna = true;
+    var mayo = false;
     
   }, 'spin', settings:{speed:.3, life:8});
 </pre>
