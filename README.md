@@ -12,7 +12,9 @@ jig('#myDiv').rollOver('wiggle');
 
 <pre>
 jig( '#myDiv', { name:'theadore' })
-  .rollover( 'jump', settings:{ speed:1, life:4, repeat:3 }, startAt:'1:41:22:0345', stopAt:'2:00:00:0000')
+  .rollover( 'jump', settings:{ speed:1, life:4, repeat:3 }, 
+    startAt:'1:41:22:0345', 
+    stopAt:'2:00:00:0000')
   .trigger(function(){
   
     arthurcclarke();
