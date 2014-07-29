@@ -12,7 +12,9 @@ jig('#myDiv').rollOver('wiggle');
 
 <pre>
 /* 
-This button can only be pressed at a certain time. Once rolloed over it begins to jump and once clicked it spins and runs a function.
+This button can only be pressed at a certain time. 
+On rollover it jumps.
+On click it spins and runs a few functions.
 */
 
 jig( '#myDiv', { name:'theadore' })
