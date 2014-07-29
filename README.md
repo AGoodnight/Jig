@@ -12,12 +12,12 @@ jig('#myDiv').rollOver('wiggle');
 
 <pre>
 /* 
-This button can only be pressed at a certain time. 
+This button can only be pressed at during a period of time on a timeline. 
 On rollover it jumps.
 On click it spins and runs a few functions.
 */
 
-jig( '#myDiv', { name:'theadore' })
+jig( Timeline, '#myDiv', { name:'theadore' })
   .rollover( 'jump', settings:{ speed:1, life:4, repeat:3 }, 
     startAt:'1:41:22:0345', 
     stopAt:'2:00:00:0000')
