@@ -17,14 +17,14 @@ jig( '#myDiv', { name:'theadore' })
     stopAt:'2:00:00:0000')
   .trigger(function(){
   
-    arthurcclarke(_root.varName);
-    starwars(_jig.varName);
-    tng( 5 );
-    
-    console.log('I have been clicked');
-    
     var tuna = true;
     var mayo = false;
+  
+    arthurcclarke(_root.varName);
+    starwars(_jig.varName);
+    tng( tuna );
+    
+    console.log('I have been clicked');
     
   }, 'spin', settings:{speed:.3, life:8});
 </pre>
