@@ -23,7 +23,7 @@ jig( '#myDiv', { name:'theadore' })
   }, 'spin', settings:{speed:.3, life:8});
 
 //This is the a button being aniamted on rollover and on click. It is also performing several functions.
-);
+});
 --------------
 
 To learn more about GSAP, a javascript library complete with TimelineLite and Tweenlite, visit http://www.greensock.com/gsap-js/
