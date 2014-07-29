@@ -8,9 +8,21 @@ While JQuery can do much of what Jig can and will be able to do, Jig's scope is 
 --------------
 
 jig( '#myDiv', { name:'theadore' })
-  .auto( 'jump', settings:{ speed:1, life:4, repeat:3 }, timestamp:'1:41:22:0345').auto
+  .rollover( 'jump', settings:{ speed:1, life:4, repeat:3 }, timestamp:'1:41:22:0345')
+  .trigger(function(){
+  
+    arthurcclarke();
+    starwars();
+    tng();
+    
+    console.log('I have been clicked');
+    
+    tuna = true
+    mayo = false
+    
+  }, 'spin', settings:{speed:.3, life:8});
 
-//This is the current template for a jig object, an animation.
+//This is the a button being aniamted on rollover and on click. It is also performing several functions.
 
 --------------
 
