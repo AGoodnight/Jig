@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head><link href='css/bootstrap.css' rel='stylesheet'></link>
+
+<body role='document'>
+
+<div id='black'>
+	<div id ='mockDiv'></div>
+	<ul>
+		<li>Item 1</li>
+		<li>Item 2</li>
+	</ul>
+</div>
+
+</body>
+<script src='vendors/greensock/TweenLite.min.js'></script>
+<script src='vendors/greensock/TimelineLite.min.js'></script>
+<script src='vendors/greensock/plugins/CSSPlugin.min.js'></script>
+<script src='vendors/greensock/utils/Draggable.min.js'></script>
+<script src='jigLite.gs.js'></script>
+<script type='text/javascript'>
+
+	var Jive = {message:'I am a timeline'};
+
+	jig('#black li',{
+		timeline:Jive,
+		name:'Black Jig'},1)
+		.auto('fadeIn',{ startRotation:0 }, 1);
+
+</script>
+
+</html>

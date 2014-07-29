@@ -39,6 +39,12 @@ h2{position:relative;}
 	width:800px;
 }
 
+#controlStrip button{
+	float:left;
+	position:relative;
+	margin:0 10px 0 10px;
+}
+
 .footer{
 	background-color:#222222;
 	overflow:hidden;
@@ -54,7 +60,7 @@ h2{position:relative;}
 }
 
 
-#scrubber{
+#scrub{
 	position:absolute;
 	width:50px;
 	height:20px;
@@ -62,17 +68,12 @@ h2{position:relative;}
 	padding:0;
 }
 
-#gutter{
+#gut{
 	position:absolute;
 	height:20px;
 	width:400px;
 	background:#888888;
 	padding:10px;
-}
-
-#playbtn{
-	float:left;
-	position:relative;
 }
 
 #sceneMenu{
@@ -157,23 +158,26 @@ li{
 					<div class='col-md-8'>
 						<h2>Mischief in Springfield</h2>
 						
-						<ul id='list1'>
+						<ul id='list1' style='position:absolute;'>
 						<li class='mock'>Bart: Milhouse!</li>
 						<li class='mock'>Milhouse: uh what is it?</li>
 						<li class='mock'>Bart: Homer's in the lorem ipsum</li>
 						</ul>
 					
-						<ul id='list2'>
-						<li class='mock'>Bart: Milhouse!</li>
-						<li class='mock'>Milhouse: uh what is it?</li>
-						<li class='mock'>Bart: Homer's in the lorem ipsum</li>
+						<ul id='list2' style='position:absolute;'>
+						<li class='mock'>Homer: Milhouse!</li>
+						<li class='mock'>Milhouse's Dad: uh what is it?</li>
 						</ul>
 					</div>
 
 					<div class='col-md-4'>
-						<figure><img src='http://upload.wikimedia.org/wikipedia/en/a/aa/Bart_Simpson_200px.png'/></figure>
-						<figure style='margin-top:100px; margin-left:100px;'><img src='http://img1.wikia.nocookie.net/__cb20130126162334/simpsons/images/archive/9/91/20130918045526!Milhouse_Van_Houten_2.png'/></figure>
-					
+						<figure class='comrads'><img src='http://upload.wikimedia.org/wikipedia/en/a/aa/Bart_Simpson_200px.png'/></figure>
+						<figure class='comrads' style='margin-top:100px; margin-left:100px;'><img src='http://img1.wikia.nocookie.net/__cb20130126162334/simpsons/images/archive/9/91/20130918045526!Milhouse_Van_Houten_2.png'/></figure>
+
+						<figure class='parents' style='margin-left:100px;'><img src='http://img4.wikia.nocookie.net/__cb20131109214056/simpsons/images/thumb/c/c8/Vanhoutenss.jpg/200px-Vanhoutenss.jpg'/></figure>
+						<figure class='parents' style='margin-left:-100px;'><img src='http://upload.wikimedia.org/wikipedia/en/0/02/Homer_Simpson_2006.png'/></figure>
+						
+			
 					</div>
 				</div>
 		
@@ -184,15 +188,13 @@ li{
 <div class='footer'>
 		<div id='controlStrip'>
 			<!-- Our Play Button-->
-			<button id='playbtn' class='btn-lg btn-primary'>Play</button>
+			<button id='playBtn' class='btn-lg btn-primary'>Play</button>
+			<button id='resumeBtn' class='btn-lg btn-primary'>Resume</button>
 			<!--Our Scrubber Bar-->
 			<div id='scrubberArea'>
-				<div id='gutter'></div>
-				<div id='scrubber'></div>
+				<div id='gut'></div>
+				<div id='scrub'></div>
 				<div id='spot1' class='marker'></div>
-				<div id='spot2' class='marker'></div>
-				<div id='spot3' class='marker'></div>
-				<div id='spot4' class='marker'></div>
 			</div>
 			<!-- Our Scene Menu -->
 			<div id='sceneMenu'>
@@ -209,47 +211,112 @@ li{
 <script src='vendors/greensock/TimelineLite.min.js'></script>
 <script src='vendors/greensock/plugins/CSSPlugin.min.js'></script>
 <script src='vendors/greensock/utils/Draggable.min.js'></script>
-<script src='jig.gs.0.5.js'></script>
-<script src='scrubBar.gs.js'></script>
+<script src='jig.gs.0.6.js'></script>
 <script type='text/javascript'>
 	
-	var Jive = new jive('welcome');
-	console.log(Jive);
+	var Jive = new jive('Main Timeline','scrubbie',{
+		scrubber: document.getElementById('scrub'),
+		gutter: document.getElementById('gut')
+	});
 
-	//jig('.shell').auto('fadeIn');
-	//----------------------
-	jig('#playbtn',{name:'Restart Scene'})
-		.auto('fadeIn','.4')
-		.rollover('wiggle',{speed:.1,repeat:6})
+	// ============================================================
+	// JIGS
+
+	jig('#playBtn',{name:'Restart Scene'})
+	
+		.rollover('wiggle',{
+			speed:.1,
+			repeat:6
+		})
 		.trigger(function(){
-			Jive.delay(0);
-			Jive.pause();
-		}.bind(Jive));
+				Jive.delay(0);
+				Jive.togglePlayback();
+			}.bind(Jive)
+		);
 
-	jiggle('#list1',{name:'script 1'})	
-		.auto('fadeIn')
-		.auto('fadeOut','1')
-		.auto('fadeIn','4')
-		.auto('fadeOut','5');
+	jig('#resumeBtn',{name:'Restart Scene'})
+	
+		.rollover('wiggle',{
+			speed:.5,
+			repeat:2
+		})
+		.trigger(function(){
+				Jive.delay(0);
+				Jive.proceed()
+			}.bind(Jive)
+		);
 
-	jiggle('#list2',{name:'script 2'})
-		.auto('fadeIn','2')
-		.auto('fadeOut','3');
 
 	jig('#back',{name:'springfield'})
 		.auto('fadeIn')
-		.auto('pan','0',{speed:10,startX:0,endX:-100,startY:0});
+		.auto('pan',0,{
+			speed:10,
+			startX:0,
+			endX:-100,
+			startY:0
+		});
 
 	jig('h2',{name:'scene 1 title'})
-		.auto('fly','0',{startY:-200});
+		.auto('fly',1,{
+			name:'h2',
+			startY:-100,
+			startRotation:40,
+			startOpacity:0,
+			speed:.4
+		})
+		.auto('wiggle',1.4,{speed:.1,repeat:4});
+	// ============================================================
+	// JIGGLES 
+	/*
+	Chaining is sequence sensitive, so in the below chain, placing the 'fadeOut' before the 'fadeIn' in this case would result in undesired affects do to how they are synced to the Jive timeline.
+	*/
+	// ---------------------------------------------------------------------------------------------------------------------
+	jiggle(Jive,'#list1',{name:'script 1'})	
+		.auto('fadeIn',1,{name:'IN'})
+		.auto('fadeOut',5,{name:'OUT'})
 
-	jiggle('figure',{name:'comrades'})
-		.auto('fly','3',{startRotation:360,startScale:2,startOpacity:0})
+	jiggle(Jive,'#list2',{name:'script 2'})
+		.auto('fadeIn',6,{name:'bullets 2 fadein'});
 
+	jiggle(Jive,'li',{name:'bullets drift'})
+		.auto('fly',1,{startOpacity:0,startX:200,stagger:.1})
+		.auto('fly',6,{startOpacity:0,startX:200,stagger:.1})
 
-	Jive.scrubber = scrub = new scrubBar('#scrubber','#gutter',Jive);
-	scrub.drawMarkers(document.getElementsByClassName('marker'));
-	scrub.newBounds();
+	jiggle(Jive,'.comrads',{name:'comrads'})
+		.auto('fly',1,{
+			startRotation:360,
+			startScale:2,
+			startOpacity:0,
+			name:'FLY'
+		})
+		.auto('fly',5,{
+			endRotation:360,
+			endScale:.5,
+			endOpacity:0,
+			name:'fly out bart and milhouse'
+		});
+
+	jiggle(Jive,'.parents',{name:'comrads'})
+		.auto('fly',6,{
+			startRotation:360,
+			startScale:2,
+			startOpacity:0
+		});
+
+	// ===========================================
+	// JIVE Setup
+	/*
+	Setting up the Jive after the Jigs and Jiggles results in the entire thing actually working
+	*/
+	// ------------------------------------------
+	Jive.addLabel('parents',4.9)
+
+	// You can set points in the timeline where the timeline pauses
+	Jive.controller.drawMarkers([
+		document.getElementById('spot1')
+	]);
+	Jive.controller.newBounds();
+	Jive.togglePlayback(false);
 
 
 </script>

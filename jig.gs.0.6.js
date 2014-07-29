@@ -8,13 +8,12 @@ credits: Greensock.com, Adam Goodnight, Jason Rutherford
 
 // GLOBALS
 // =======
-var jv;
 var jigs = [];
 var jiggles = [];
 
 // JIVE
 // =========================
-jive = function(name){
+jive = function(name,controller,c_options){
 	// a Jive is a timeline instance, it can be a scene or it can be a timeline within a scene.
 	var tl = new TimelineLite();
 	tl.data = {
@@ -22,34 +21,54 @@ jive = function(name){
 		active:false
 	};
 
-	tl.currentMark = 0;
+	switch(controller){
+		case 'scrubbie':
+			tl.controller = new scrubbie(c_options,tl);
+		break;
+		default:
+			//no controller created
+		break;
+	}
 
-	jv = tl;
-	return tl;};
+
+	tl.controller.start();
+	tl.currentMark = 0;
+	return tl;
+};
 // functions ---------------
-TimelineLite.prototype.togglePlayback =function(){
-	if(jv.data.active){
-		jv.data.active = false;
-		//console.log(jv.data.active)
+TimelineLite.prototype.togglePlayback =function(bol){
+	if( this.time() < this.totalDuration() ){
+		if(this.data.active || bol === false){
+			this.data.active = false;
+			this.pause();
+		}else{
+			this.data.active = true;
+			this.play();
+		}
 	}else{
-		jv.data.active = true;
-		//console.log(jv.data.active)
-	}};
+		this.data.active = true;
+		this.restart();
+	}
+};
 TimelineLite.prototype.freeze = function(){
 	this.pause();
-	disableInterface();};
+	disableInterface();
+};
 TimelineLite.prototype.thaw = function(){
 	this.play();
-	enableInterface();};
+	enableInterface();
+};
 TimelineLite.prototype.callJig = function(selector){
 	for(var i in jigs){
 		if(jigs[i].data.who===selector){
 			//console.log(jigs[i].data.name);
 		}
-	}};
+	}
+};
 TimelineLite.prototype.proceed = function(){
 	this.currentMark++
-	this.scrubber.newBounds();};
+	this.controller.newBounds();
+};
 
 
 // JIG AND JIGGLE
@@ -66,18 +85,26 @@ Constructor = function(selector,options,target){
 	}else{
 		tl.data.target = domArray(target);
 	};
-	return tl;};
+	return tl;
+};
 jig = function(selector,options,target){
 	var tl;
 	tl = Constructor(selector,options,target);
 	tl.type='jig';
+	tl.defaultOverwrite	= 'mix';
+	tl.chains = [];
 	jigs.push(tl);
-	return tl;};
-jiggle = function(selector,options,timeStamp,target){
+	return tl;
+};
+jiggle = function(thisJive,selector,options,timeStamp,target){
 	var tl = Constructor(selector,options,target);
 	tl.type='jiggle';
+	tl.defaultOverwrite	='mix';
+	tl.jv = thisJive;
+	tl.chains = [];
 	jiggles.push(tl);	
-	return tl;};
+	return tl;
+};
 
 // functions ------------------------
 var buildData = function(){
@@ -95,6 +122,7 @@ var buildData = function(){
 
 		//timing
 		delay:0,
+		stagger:0,
 		speed:undefined,
 
 		//scaling
@@ -129,7 +157,8 @@ var buildData = function(){
 		reps:[0],
 
 		origin:'%50 %50'
-	};};
+	};
+};
 var setData = function(options,me){
 	for(var j in options){
 		for(var i in me.data){
@@ -137,33 +166,33 @@ var setData = function(options,me){
 				me.data[i] = options[j]
 			}
 		}
-	};};
+	};
+};
 var extendTimeline = function(preset,options,parent){
-	var tl = new TimelineLite();
-	tl.data = buildData();
-	tl.data.active = false;
-	setData(options,tl);
+	var etl = new TimelineLite();
+	etl.data = buildData();
+	etl.data.active = false;
+	setData(options,etl);
 	// Determine preset
 	// ----------------
 	if(typeof preset === 'string'){
-		tl.data.preset = getPreset(preset);
+		etl.data.preset = getPreset(preset);
 	}else{
-		tl.data.preset = preset;
+		etl.data.preset = preset;
 	};
-
-	tl.loop = function(i){
-		if(tl.data.repeat > tl.data.reps[i]){
-			console.log(tl.data.repeat+' > '+tl.data.reps[i]);
-			tl.data.reps[i]++;
-			tl.data.preset(parent.data.target,tl,tl.data)
+	etl.loop = function(i){
+		if(etl.data.repeat > etl.data.reps[i] || etl.data.repeat == 'forever'){
+			console.log('looping')
+			etl.data.reps[i]++;
+			etl.data.preset(parent.data.target,etl,etl)
 		}else{
-			tl.data.active = false;
-			tl.data.reps[i]=0;
-			console.log('complete');
+			etl.data.active = false;
+			etl.data.reps[i]=0;
 		}
 	};
 
-	return tl;};
+	return etl;
+};
 
 TimelineLite.prototype.rollover = function(preset,options){
 	
@@ -174,46 +203,78 @@ TimelineLite.prototype.rollover = function(preset,options){
 		trigger[i].onmouseover = function(){
 			if(!tl.data.active){
 				tl.data.active = true;
-				tl.data.preset(this.data.target,tl,tl.data);	
+				tl.data.preset(this.data.target,tl,tl);	
 				}
 
 		}.bind(this)
 	};
 
-	return this;};
+	return this;
+};
 TimelineLite.prototype.auto = function(preset,sync,options){
 	// auto play, no user interaction
+	var tl = extendTimeline(preset,options,this);
 	var wait = 0;
-	var tl = extendTimeline(preset,options);
+	console.log(tl.data.speed+' -- '+tl.data.name);
 
+	if(this.chains.length>0){
+		tl.data.immediateRender = false;
+	}else{
+		tl.data.immediateRender = true;
+	}
 	// Assign Animations
 	// -----------------
 	for(var i in this.data.target){
-		wait += tl.data.delay;
 		var ttl = new TimelineLite();
 
-		tl.data.preset(this.data.target[i],ttl,tl.data,wait);	
-
-		if(sync == undefined ){
-			tl.add(ttl,0);
+		// Create Stagger
+		// --------------
+		if(i>0){
+			wait += tl.data.stagger;
 		}else{
-			tl.add(ttl,sync);
+			wait = 0;
 		}
+		
+		ttl.data = {};
+		ttl.data.stagger = wait;
+
+		// Set Preset to ttl instance
+		// --------------------------
+		tl.data.preset(
+			this.data.target[i],
+			ttl,
+			tl,
+			wait);	
+
+		tl.add(ttl,0);
+		
 	};
 
 	// If this is a jiggle it is not appended to the jive object
 	// ---------------------------------------------------------
 	if(this.type === 'jiggle'){
 		if(sync == undefined ){
-			jv.add(tl,0);
+			this.jv.sync(this.jv,tl,0);
 		}else{
-			jv.add(tl,sync)
+			this.jv.sync(this.jv,tl,sync)
+		}
+	}else{
+		if(sync == undefined ){
+			tl.delay(0);
+		}else{
+			tl.delay(sync);
 		}
 	}
 
+	// tthis creates a mock timeline instance, this allows us to change, otherwise the last chained element would also be the starting point of all the tweens.
+
+	this.chains.push(tl);
+	//console.log(this.jv)
+
 		//console.log(tl.data);
 
-	return this;};
+	return this;
+};
 
 // TIMELINELITE - new functions
 // ============================
@@ -224,11 +285,38 @@ TimelineLite.prototype.trigger = function(funcs){
 	var trigger = domArray(this.data.who)[0];
 	trigger.onmousedown=function(){
 		funcs();
-	};};
+	};
+};
 TimelineLite.prototype.reset= function(target){
 	//target = array/string
-	//transition the target's CSS and JS to what it was before the timeline animated.};
-TimelineLite.prototype.getTimeStamp = function(){};
+	//transition the target's CSS and JS to what it was before the timeline animated.
+};
+TimelineLite.prototype.getTimeStamp = function(tl){
+	console.log( Math.round(tl.time()*1000)/1000 +' seconds' );
+};
+TimelineLite.prototype.sync = function(j,tl,sync){
+	
+	var s = parseInt(sync*1000)/1000;
+	var td = j.totalDuration();
+	var g;
+
+	if(td == s){
+	//	console.log('EQUAL TO --- '+j.data.name+' --- '+tl.data.name+' --- '+j.totalDuration());
+		g = td-s; //console.log('+='+g);
+		j.add(tl,'+='+g)
+	}else if(td>s){
+		//console.log('GREATER THAN --- '+j.data.name+' --- '+tl.data.name+' --- '+j.totalDuration());
+		//console.log(sync,td-sync)
+		g = td-sync;//console.log('-='+g);
+		j.add(tl,'-='+g)
+	}else if(td<s){
+		//console.log('LESS THAN --- '+j.data.name+' --- '+tl.data.name+' --- '+j.totalDuration());
+		g = sync-td; //console.log('+='+g);
+		j.add(tl,'+='+g)
+	}
+
+	//j.add(tl,sync)
+};
 
 //OTHER FUNCTIONS
 //===============
@@ -491,10 +579,9 @@ var presets = [
 			})
 		],	
 		['wiggle',
-			(function(target,tl,settings,delay){
-				console.log(target)
+			(function(target,ttl,parent,delay){
 				defaults={speed:1, amplitude:10};
-				settings = compareDefaults(defaults,settings);
+				settings = compareDefaults(defaults,parent.data);
 
 				randomize = function(value){
 					if(settings.bol == true){
@@ -513,118 +600,218 @@ var presets = [
 					settings.speed/3
 				];
 
-				tl.to(target,s[0],{
-					delay:delay,
-					left:randomize(settings.amplitude),
-					top:randomize(settings.amplitude),
-					transformOrigin:settings.origin
-				});
-				tl.to(target,s[1],{
-					left:randomize(settings.amplitude),
-					top:randomize(settings.amplitude)
-				});
-				tl.to(target,s[2],{
-					left:0,
-					top:0
-				});
+				ttl.add( 
+					TweenLite.to(target,s[0],{
+						delay:ttl.data.stagger,
+						left:randomize(settings.amplitude),
+						top:randomize(settings.amplitude),
+						transformOrigin:settings.origin
+					})
+				);
+				ttl.add(
+					TweenLite.to(target,s[1],{
+						left:randomize(settings.amplitude),
+						top:randomize(settings.amplitude)
+					})
+				);
+				ttl.add(
+					TweenLite.to(target,s[2],{
+						left:0,
+						top:0
+					})
+				);
 
-				tl.call(
-					partial(tl.loop,0)
+				ttl.call(
+					partial(parent.loop,0)
 				);
 			})
 		],
 		['fly',
-			(function(target,tl,settings,delay){
+			(function(target,ttl,parent){
 
-				defaults={ speed:1, startX:-20, startY:0, startRotation:10, startScale:1,
-						   startOpacity:1, endOpacity:1, endScale:1, endX:0, endY:0, endRotation:0 };
-				
-				settings = compareDefaults(defaults,settings);
+				defaults={ speed:1, startX:0, startY:0, startRotation:0, startScale:1,
+						   startOpacity:1, endOpacity:1, endScale:1, endX:0, endY:0, endRotation:0 };		
+				settings = compareDefaults(defaults,parent.data);
+				var s = settings.speed
 
-
-				var s =[
-				settings.speed/2,
-				settings.speed/2
-				];
-
-				tl.fromTo(target,s[0],{
-
-					left:settings.startX,
-					top:settings.startY,
-					rotation:settings.startRotation,
-					scale:settings.startScale,
-					opacity:settings.startOpacity,
-					transformOrigin:settings.origin
-				},
-				{
-					scale:settings.endScale,
-					opacity:settings.endOpacity,
-					left:settings.endX,
-					top:settings.endY,
-					rotation:settings.endRotation
-				});
+				ttl.add(
+					TweenLite.fromTo(target,s,{
+						left:settings.startX,
+						top:settings.startY,
+						rotation:settings.startRotation,
+						scale:settings.startScale,
+						opacity:settings.startOpacity,
+						transformOrigin:settings.origin
+					},
+					{
+						delay:ttl.data.stagger,
+						scale:settings.endScale,
+						opacity:settings.endOpacity,
+						left:settings.endX,
+						top:settings.endY,
+						rotation:settings.endRotation,
+						immediateRender:settings.immediateRender
+					})
+				);
 			})
 		],
 		['pan',
-			(function(target,tl,settings,delay){
+			(function(target,ttl,parent,delay){
 
 				defaults={ speed:1, startX:100, endX:0, endY:0,};
-				
-				settings = compareDefaults(defaults,settings);
-
+				settings = compareDefaults(defaults,parent.data);
 				var s =settings.speed;
 
-				tl.fromTo(target,s,{
-					left:settings.startX,
-					top:settings.startY,
-					scale:settings.startScale,
-					transformOrigin:settings.origin
-				},
-				{
-					delay:delay,
-					left:settings.endX,
-					top:settings.endY
-				});
-
+				ttl.add(
+					TweenLite.fromTo(target,s,{
+						left:settings.startX,
+						top:settings.startY,
+						scale:settings.startScale,
+						transformOrigin:settings.origin
+					},
+					{
+						delay:delay,
+						left:settings.endX,
+						top:settings.endY
+					})
+				);
 			})
 		],
 		['fadeIn',
-			(function(target,tl,settings,delay){
+			(function(target,ttl,parent,delay){
 
 				defaults={ speed:1, startOpacity:0, endOpacity:1};
-				settings = compareDefaults(defaults,settings);
-
+				settings = compareDefaults(defaults,parent.data);
 				var s =settings.speed;
 
-				tl.fromTo(target,s,{
-					opacity:settings.startOpacity
-				},
-				{
-					delay:delay,
-					opacity:settings.endOpacity
-				});
-
+				ttl.add(
+					TweenLite.fromTo(target,s,{
+						opacity:settings.startOpacity
+					},
+					{
+						delay:delay,
+						opacity:settings.endOpacity,
+						immediateRender:settings.immediateRender
+					})
+				);
 			})
 		],
 		['fadeOut',
-			(function(target,tl,settings,delay){
+			(function(target,ttl,parent,delay){
 
-				defaults={ speed:1, startOpacity:1, endOpacity:0};
-				
-				settings = compareDefaults(defaults,settings);
-
+				defaults={ speed:1, startOpacity:1, endOpacity:0};	
+				settings = compareDefaults(defaults,parent.data);
 				var s =settings.speed;
 
-				tl.fromTo(target,s,{
-					opacity:settings.startOpacity,
-				},
-				{
-					delay:delay,
-					opacity:settings.endOpacity
-				});
-
+				ttl.add(
+					TweenLite.fromTo(target,s,{
+						opacity:settings.startOpacity,
+					},
+					{
+						delay:delay,
+						opacity:settings.endOpacity,
+						immediateRender:settings.immediateRender
+					})
+				);
 			})
 		]
-];
+	];
+
+// CONTROLLER TYPES
+// ================
+
+scrubbie = function(options,timeline){
+	
+	this.scrubber = options.scrubber;
+	this.gutter = options.gutter;
+	this.tl = timeline;
+	var width = 350;
+		
+	handleDrag = function(){
+		var max = width;
+		var g = Math.round(Draggable.get(options.scrubber).x);
+		var td = timeline.totalDuration();
+
+			if(g>this.width){
+				g = max
+			}else if(g<0){
+				g = 0
+			}else{
+				g = g
+			}
+
+		console.log(g/max*td)
+		timeline.seek(g/max*td);
+		timeline.pause();
+	};
+		
+	handleRelease = function(){
+		timeline.play(); 
+	};
+
+
+	this.drag = Draggable.create(options.scrubber,
+	{
+		type:"x",
+		edgeResistance:1,
+		bounds:options.gutter,
+		onDrag:handleDrag,
+		onDragEnd:handleRelease
+	})[0];
+};
+
+scrubbie.prototype.start = function(){	
+	if(!this.watch) {
+		this.watch = setInterval(function(){
+			var cx = Draggable.get(this.scrubber).x;
+			var ct = this.tl.time();
+			var td = this.tl.totalDuration()
+			TweenLite.set(this.scrubber,{x:ct/td*350})
+				//console.log(timeline.time())
+		}.bind(this),10);
+		this.stamp = setInterval(function(){
+			this.tl.getTimeStamp(this.tl);
+		}.bind(this),500)
+	};
+};
+
+scrubbie.prototype.newBounds = function(){
+	//console.log(this.tl.currentMark)
+	if(this.tl.currentMark >= this.marks.length){
+		this.drag.applyBounds(this.gutter);
+	}else{
+		this.tl.addPause(this.marks[this.tl.currentMark].time);
+		this.drag.applyBounds({
+			top:0,
+			left:0,
+			width:this.marks[this.tl.currentMark].pos,
+			height:0
+		});
+	}
+	this.tl.play();
+};
+
+scrubbie.prototype.drawMarkers = function(divs){
+	var j = 0;
+	var arr = [];
+
+	for(var i in this.tl._labels){
+
+		var lab = this.tl._labels[i];
+		var td = this.tl.totalDuration();
+		var w = this.width;
+
+		arr.push({
+			pos:lab/td*350,
+			time:this.tl._labels[i]
+		});
+
+		divs[j].style.left = String(lab/td*350)+'px';
+		j++
+	}
+
+	this.marks = arr;
+};
+
 
 })(document);
