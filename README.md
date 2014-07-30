@@ -17,7 +17,7 @@ On rollover it jumps, but only at the right time.
 On click it spins and runs a few functions.
 */
 
-jig( Timeline, '#myDiv', { name:'theadore' })
+jig('#myDiv', { name:'theadore' timeline:myTimeline })
   .rollover( 'jump', settings:{ speed:1, life:4, repeat:3 }, 
     startAt:'1:41:22:0345', 
     stopAt:'2:00:00:0000')
