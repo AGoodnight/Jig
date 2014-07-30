@@ -125,6 +125,8 @@ and so on
 		if( zig.data._repeat > (zig.data._reps+1) || zig.data._repeat === 'forever' ){
 			zig.data._reps++
 			zig.preset(jig.instances[zig.id],jig);
+		}else{
+			z.data._reps = 0;
 		}
 	};
 
