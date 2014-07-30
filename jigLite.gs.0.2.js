@@ -126,7 +126,7 @@ and so on
 			zig.data._reps++
 			zig.preset(jig.instances[zig.id],jig);
 		}else{
-			z.data._reps = 0;
+			zig.data._reps = 0;
 		}
 	};
 
