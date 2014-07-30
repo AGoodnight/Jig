@@ -17,10 +17,10 @@ On rollover it jumps, but only at the right time.
 On click it spins and runs a few functions.
 */
 
-jig('#myDiv', { name:'theadore' timeline:myTimeline }, sync:1)
-  .rollover( 'jump', settings:{ speed:1, life:4, repeat:3 }, 
+jig('#myDiv', { name:'theadore' timeline:myTimeline }, 1)
+  .rollover( 'jump', { speed:1, life:4, repeat:3 },{
     startAt:'1:41:22:0345', 
-    stopAt:'2:00:00:0000')
+    stopAt:'2:00:00:0000'})
   .trigger(function(){
   
     var tuna = true;
@@ -32,7 +32,7 @@ jig('#myDiv', { name:'theadore' timeline:myTimeline }, sync:1)
     
     console.log('I have been clicked');
     
-  }, 'spin', settings:{speed:.3, life:8});
+  }, 'spin', {speed:.3, life:8});
 </pre>
 
 To learn more about GSAP, a javascript library complete with TimelineLite and Tweenlite, visit http://www.greensock.com/gsap-js/
