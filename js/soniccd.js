@@ -52,7 +52,7 @@ function handlePage(){
 	// Set up our scrubbar
 	// -------------------
 	Draggable.create("#dragger",{type:"x",edgeResistance:.65,bounds:'#scrubber',onDrag:handleDrag ,onDragEnd:handleRelease});
-	TweenLite.to(document.getElementsByTagName('body'),.2,{opacity:1});
+	//TweenLite.to(document.getElementsByTagName('body'),.2,{opacity:1});
 
 	function handleDrag(){
 
