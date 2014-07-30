@@ -4,12 +4,14 @@
 
 <body role='document'>
 
-<div id='black'>
-	<div id ='mockDiv'></div>
-	<ul>
-		<li>Item 1</li>
-		<li>Item 2</li>
-	</ul>
+<div style='margin:0 auto; width:400px; margin-top:70px;'>
+	<div id='black' style='color:white; position:relative; background-color:black; padding:50px; font-size:40px;'>
+		<div id ='mockDiv'></div>
+		<ul>
+			<li>Item 1</li>
+			<li>Item 2</li>
+		</ul>
+	</div>
 </div>
 
 </body>
@@ -17,15 +19,63 @@
 <script src='vendors/greensock/TimelineLite.min.js'></script>
 <script src='vendors/greensock/plugins/CSSPlugin.min.js'></script>
 <script src='vendors/greensock/utils/Draggable.min.js'></script>
-<script src='jigLite.gs.js'></script>
+<script src='jigLite.gs.0.2.js'></script>
+<script src='eloquentFunctions.js'></script>
 <script type='text/javascript'>
 
 	var Jive = {message:'I am a timeline'};
 
-	jig('#black li',{
-		timeline:Jive,
-		name:'Black Jig'},1)
-		.auto('fadeIn',{ startRotation:0 }, 1);
+	// Simple Call
+	//======================================
+	var blackWiggle = Jig('#black')
+						.auto('wiggle',
+							{amplitude:20,repeat:2})
+						.auto('wiggle',2)
+						.auto('wiggle',{speed:.5,rotation:40},5)
+
+	var listWiggle = Jig('li')
+						.auto('wiggle',{speed:5,repeat:3});
+
+
+
+	// Extended Call
+	//======================================
+	/*var blackDiv = new Jig('#black li');
+
+	blackDiv.data = new JigSettings({ 
+		timeline:Jive, 
+		name:'Black Jig'
+	},{
+		startAt:'1:00',
+		endAt:'3:10'
+	});
+
+
+	blackDiv.auto('fadeIn',{ 
+				name:'Auto Zig', 
+				startRotation:0, 
+				repeat:'loop',
+				startAt:'1:23',
+				endAt:'1:56'
+			})
+			.auto('fadeOut',2);
+
+	console.log(blackDiv)
+	blackDiv.goToNext();
+	blackDiv.setJigNode('speed',20)*/
+
+	//======================================
+
+	/*document.write(
+		'<p>'+blackDiv.data.name+'</p>'+
+		'<p>'+blackDiv.data.startAt+'</p>'+
+		'<hr/>'+
+		'<p>'+blackDiv.instances[0].data.name+'</p>'+
+		'<p>'+blackDiv.instances[0].data.repeat+'</p>'+
+		'<hr/>'+
+		'<p>'+blackDiv.instances[1].data.name+'</p>'+
+		'<p>'+blackDiv.instances[1].data.startRotation+'</p>'
+		);*/
 
 </script>
 

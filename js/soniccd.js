@@ -2,9 +2,9 @@ function handlePage(){
 
 	// Jig should always come first unless it is dependnet on other variables
 	// ----------------------------------------------------------------------
-	jig(['#navigation'],fly,{
+	/*jig(['#navigation'],fly,{
 		startOpacity:0
-	},.3);
+	},.3);*/
 
 	jig('.row',plop,{
 		startScale:.3,

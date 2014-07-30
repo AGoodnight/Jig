@@ -7,14 +7,15 @@
 */
 
 	var jigs=[];
-	jig = function(nodeString,settings,sync){
+	Jig = function(nodeString,settings,sync){
 
-		var q = new extendedTimelineLite('jig',settings,sync);
+		var q = new ExtendedTimelineLite('jig',settings,sync);
 		q.data.nodeString = nodeString;
 		q.data.node = nodeSelector(nodeString);
 		
 		jigs.push(q);
 		return q;
+	
 	};
 
 	// How to use Jig
@@ -25,7 +26,7 @@
 		timeline:Jive, sync:1
 		});
 	*/
-	extendedTimelineLite = function(type,settings,sync){
+	ExtendedTimelineLite = function(type,settings,sync){
 		var lite = new TimelineLite();
 		lite.data = new jigNodes();
 		lite.type = type;
@@ -41,7 +42,14 @@
 		}
 
 		if( typeof sync === 'string' || typeof sync === 'number' ){
-			lite.data.sync = sync
+			lite.data.startAt = sync
+		}
+		if( typeof sync === 'object' ){
+			for(var i in sync){
+				if(lite.data.hasOwnProperty(i+'')){
+					lite.data[i] = sync[i];
+				}
+			}
 		}
 
 		return lite;
@@ -54,7 +62,8 @@
 				nodeType:'JIG',
 				// Timeline setup
 				name:'untitled',
-				sync:0,
+				startAt:0,
+				endAt:0,
 				timeline:undefined,
 
 				// DOM Traversing
@@ -106,7 +115,8 @@
 				nodeType:'ZIG',
 				// Timeline setup
 				name:'untitled',
-				sync:0,
+				startAt:0,
+				endAt:0,
 				timeline:undefined,
 				preset:undefined,
 				
@@ -255,17 +265,11 @@
 
 			var firstNode = findNode(parent[0],parent[1]);
 			
-			console.log('Elements ------')
+			//console.log('Elements ------')
 			
 			for(var i in firstNode){
 				var nodes = firstNode[i].childNodes;
-
-				for(var i in nodes){
-					if(nodes[i].nodeType === 1){ // make sure the node is an 'Element'
-						console.log(nodes[i]);
-					}
-				}
-
+				//console.log()
 			}
 		}
 	};
@@ -275,10 +279,11 @@
 		// this function is a prototyp eof the jig object
 		var jig = this;
 
-		var q = new extendedTimelineLite('zig',settings,sync);
+		var q = new ExtendedTimelineLite('zig',settings,sync);
 		jig.sync(jig,q,1);
-		
+		jig.instances.push(q);
 		return jig;	
+
 	};
 
 	TimelineLite.prototype.sync = function(jig,zig,sync){
@@ -300,6 +305,7 @@
 			jig.add(zig,'+='+g);
 			//console.log('LESS THAN --- '+jig.data.name+' --- '+zig.data.name+' --- '+jig.totalDuration());
 		}
+
 	};
 
 
