@@ -23,28 +23,4 @@ Jig('#black li',
 				{ name:'Auto Zig 2', startRotation:250, repeat:'loop'}, 3);
 </pre>
 
-<pre>
-/* 
-This is a button.
-On rollover it jumps, but only at the right time.
-On click it spins and runs a few functions.
-*/
-Jig('#myDiv', { name:'theadore' timeline:myTimeline }, 1)
-  .rollover( 'jump', { speed:1, life:4, repeat:3 },{
-    startAt:'1:41:22:0345', 
-    stopAt:'2:00:00:0000'})
-  .trigger(function(){
-  
-    var tuna = true;
-    var mayo = false;
-  
-    arthurcclarke(_root.varName);
-    starwars(_jig.varName);
-    tng( tuna );
-    
-    console.log('I have been clicked');
-    
-  }, 'spin', {speed:.3, life:8});
-</pre>
-
 To learn more about GSAP, a javascript library complete with TimelineLite and Tweenlite, visit http://www.greensock.com/gsap-js/
