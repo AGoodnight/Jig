@@ -13,14 +13,11 @@ var myButtons = Jig('.myclass').trigger(myFunction);
 </pre>
 
 <pre>
-Jig('#black li',
-			{ timeline:Jive, name:'Black Jig'},
-			{ startAt:1, endAt:2})
-			.auto('fadeIn',
-				{ name:'Auto Zig', startRotation:0, repeat:'loop'}, 
-				{ startAt:1, endAt:2})
-			.auto('fadeOut',
-				{ name:'Auto Zig 2', startRotation:250, repeat:'loop'}, 3);
+var blackWiggle = Jig('#black')
+			.auto('wiggle',
+				{amplitude:20,repeat:2})
+			.auto('wiggle',2)
+			.auto('wiggle',{speed:.5,rotation:40},5)
 </pre>
 
 To learn more about GSAP, a javascript library complete with TimelineLite and Tweenlite, visit http://www.greensock.com/gsap-js/
