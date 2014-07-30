@@ -13,6 +13,17 @@ var myButtons = Jig('.myclass').trigger(myFunction);
 </pre>
 
 <pre>
+Jig('#black li',
+			{ timeline:Jive, name:'Black Jig'},
+			{ startAt:1, endAt:2})
+			.auto('fadeIn',
+				{ name:'Auto Zig', startRotation:0, repeat:'loop'}, 
+				{ startAt:1, endAt:2})
+			.auto('fadeOut',
+				{ name:'Auto Zig 2', startRotation:250, repeat:'loop'}, 3);
+</pre>
+
+<pre>
 /* 
 This is a button.
 On rollover it jumps, but only at the right time.
