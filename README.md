@@ -7,7 +7,7 @@ While JQuery can do much of what Jig can and will be able to do, Jig's scope is 
 
 
 <pre>
-jig('#myDiv').rollOver('wiggle');
+var myButton = Jig('#myDiv').rollOver('wiggle');
 </pre>
 
 <pre>
@@ -16,8 +16,9 @@ This is a button.
 On rollover it jumps, but only at the right time.
 On click it spins and runs a few functions.
 */
+var myButton = 
 
-jig('#myDiv', { name:'theadore' timeline:myTimeline }, 1)
+Jig('#myDiv', { name:'theadore' timeline:myTimeline }, 1)
   .rollover( 'jump', { speed:1, life:4, repeat:3 },{
     startAt:'1:41:22:0345', 
     stopAt:'2:00:00:0000'})
