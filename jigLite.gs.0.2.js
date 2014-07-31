@@ -113,7 +113,6 @@ and so on
 		return jig;	
 
 	};*/
-	//toggle
 	//rollover
 	//rollout
 	//click
@@ -363,6 +362,7 @@ and so on
 				_startAt:0,
 				_endAt:0,
 				_timeline:undefined,
+				_toggle:undefined,
 
 				//timing
 				_delay:0,
@@ -398,6 +398,7 @@ and so on
 				_startAt:undefined,
 				_endAt:undefined,
 				_preset:undefined,
+				_toggle:undefined,
 				
 				//relative
 				_amplitude:undefined,
