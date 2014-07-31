@@ -51,9 +51,9 @@ and so on
 		var q = jig.filterArgs(preset,settings,sync);
 
 		if(q.data === undefined){
-			jig.sync(jig,q,0);
+			TimelineLite.sync(jig,q,0);
 		}else{
-			jig.sync(jig,q,q.data._startAt);
+			TimelineLite.sync(jig,q,q.data._startAt);
 		}
 
 		q.id = jig.instances.length;
