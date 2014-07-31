@@ -1,4 +1,4 @@
-(function(document){
+;(function(document){
 
 /*
 JIG COMPONENT for TimelineLite. 
@@ -42,11 +42,60 @@ and so on
 		return q;	
 	};
 
-	//ZIGS
+	//ZUGS & ZIGS
 	//===========================
 	
 	TimelineLite.prototype.auto = function(preset,settings,sync){	
 		
+		var wait = 0;
+		var jig = this;
+		var q = jig.filterArgs(preset,settings,sync)
+		var g = [];
+		var index = 0;
+
+		q.zigs = [];
+		q.childCounter = 0;
+		q._zigsDuration = 0;
+
+		for(var i in this.node){
+			if(typeof this.node[i] === 'object'){
+				g.push(jig.filterArgs(preset,settings,sync));
+				
+				if(g[index].data === undefined){
+					q.sync(g[index],0);
+				}else{
+					q.sync(g[index],g[index].data._startAt);
+				}
+
+				q.preset = library.find(preset);
+				q.preset(g[index],index,jig,wait);
+				q.zigs.push(g[index]);
+
+				if(q._zigsDuration === 0){
+					q._zigsDuration = q.zigs[index]._totalDuration
+				}else{
+					if(q.data._stagger != undefined){
+						var f = q.zigs[index]._totalDuration*q.data._stagger;
+						q._zigsDuration+=f;
+					}
+				}
+
+				index++
+				wait+=q.data._stagger
+
+			}
+		};
+
+		jig.sync(q,0)
+
+		q.id = jig.instances.length;
+		jig.instances.push(q);
+
+		return jig;	
+	};
+
+	/*TimelineLite.prototype.toggle = function(preset,settings,sync){
+
 		var jig = this;
 		var q = jig.filterArgs(preset,settings,sync);
 
@@ -62,8 +111,8 @@ and so on
 		q.preset(q,jig);
 
 		return jig;	
-	};
 
+	};*/
 	//toggle
 	//rollover
 	//rollout
@@ -71,6 +120,75 @@ and so on
 	//scrub
 	
 	//until( condition )
+	TimelineLite.prototype.until = function(condition,action,settings){
+		// loop or pause
+		var q;
+
+		/*if(action === 'loop'){
+			this.data._repeat = 'forever'
+		};*/
+
+		if(action === 'pause' || action === undefined){
+			
+			var wait=0;
+
+			for(var i in this.instances){
+				wait+=this.instances[i]._zigsDuration*this.instances[i].data._repeat
+				console.log('wait: '+wait);
+			}
+
+			this.call(
+				function(){
+					this.pause();
+					console.log('paused');
+				},
+				null,
+				this,
+				wait
+			);
+
+			
+		};
+
+		/*if(typeof action === 'string' && action != 'loop'){
+			q = jig.filterArgs(action,settings);
+			q.id = jig.instances.length;
+			jig.instances.push(q);
+			q.preset = library.find(preset);
+			q.preset(q,jig);
+		}*/
+
+		this.until_Interval = setInterval( function(){
+
+			//console.log(window.rabbit)
+			if(condition){
+
+				console.log('condition met');
+				this.data._repeat = 0;
+				this.data._reps = 0;
+
+				this.play();
+
+				clearInterval(this.until_Interval);
+
+			}
+
+		}.bind(this),100)
+
+		return this;
+	};
+
+	//trigger
+	TimelineLite.prototype.trigger = function(func){
+
+		for(var i in this.node){
+			this.node[i].onclick = function(){
+				func();
+			}
+		}
+
+		return this;
+	};
 
 
 	//PROTOTYPES
@@ -123,13 +241,28 @@ and so on
 		}
 	};
 
-	TimelineLite.prototype.loop = function(jig,zig,id){
+	TimelineLite.prototype.loop = function(jig,zig,zug,index){
 		if( zig.data._repeat > (zig.data._reps+1) || zig.data._repeat === 'forever' ){
 			zig.data._reps++
-			zig.preset(jig.instances[zig.id],jig);
+			zug.preset(zig,index,jig);
 		}else{
 			zig.data._reps = 0;
+			zig._active = false;
+			console.log('zig is !active');
 		}
+
+		for(var i in zug.zigs){
+			if(!zug.zigs[i]._active && zug.childCounter < zug.zigs.length){
+				zug.childCounter++
+				console.log(zug.childCounter)
+			};
+		};
+
+		if(zug.childCounter > zug.zigs.length-1){
+			zug_active = false
+			console.log('zug is !active');
+		}
+
 	};
 
 	//CONSTRUCTORS
@@ -371,7 +504,7 @@ and so on
 					break;
 					//if a class
 					case '.':
-						arr[1] = o.substr(0);
+						arr[1] = o.substr(1);
 						arr[0] = o[0];
 					break;
 					//if a tag or anything else
@@ -421,7 +554,6 @@ and so on
 		if(splitN.length < 2){
 
 			// simple selection
-
 			var parent = removePrefix(splitN[0]);
 			thisNode = findNode(parent[0],parent[1]);
 			
@@ -432,11 +564,11 @@ and so on
 
 			var firstNode = findNode(parent[0],parent[1]);
 			
-			console.log('Elements ------')
+			//console.log('Elements ------')
 			
 			for(var i in firstNode){
 				var nodes = firstNode[i].childNodes;
-				console.log(nodes)
+				//console.log(nodes)
 			}
 		}
 
@@ -448,7 +580,7 @@ and so on
 			if(d.hasOwnProperty(i)){
 				if(obj[i] != undefined){
 					d[i] = obj[i]
-					console.log(obj[i])
+					//console.log(obj[i])
 				}
 			}
 		}	
@@ -464,13 +596,13 @@ and so on
 		}.bind(library),
 
 		presets:{
-			
 			// Most presets will support 3D transform
-
-			wiggle:function(zig,jig,delay,id){
-
-				var target = jig.node;
+			
+			wiggle:function(zig,index,jig,delay,id){
+				//console.log(jig,index)
+				var target = jig.node[index];
 				var settings = zig.data;
+				var zug = this;
 				// Pre-defined settings
 				// -------------------
 				var d={
@@ -490,6 +622,11 @@ and so on
 					v._speed/5,
 					v._speed/5
 				];
+
+				zig.call(function(){
+					console.log('zig is active');
+					this._active = true;
+				});
 
 				zig.add(
 					TweenLite.to(target,s[0],{
@@ -535,7 +672,8 @@ and so on
 
 				zig.call(
 					function(){
-						jig.loop.call(this,jig,zig,id);
+						//TimelineLite.prototype.loop = function(jig,zig,zug,index)
+						jig.loop.call(this,jig,zig,zug,index);
 					}
 				);
 			},
@@ -550,7 +688,7 @@ and so on
 			},
 
 			spin:function(zig,jig,delay,id){
-			},
+			}
 
 		}
 

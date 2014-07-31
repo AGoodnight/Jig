@@ -5,8 +5,14 @@
 <body role='document'>
 
 <div style='margin:0 auto; width:400px; margin-top:70px;'>
-	<div id='black' style='color:white; position:relative; background-color:black; padding:50px; font-size:40px;'>
-		<div id ='mockDiv'></div>
+	<div class='black' style='color:white; position:relative; background-color:black; padding:50px; font-size:40px;'>
+		<ul>
+			<li>Item 1</li>
+			<li>Item 2</li>
+		</ul>
+	</div>
+
+	<div class='black' style='color:white; position:relative; background-color:black; padding:50px; font-size:40px;'>
 		<ul>
 			<li>Item 1</li>
 			<li>Item 2</li>
@@ -24,17 +30,25 @@
 <script type='text/javascript'>
 
 	var Jive = {message:'I am a timeline'};
+	rabbit = false;
+	//setInterval(function(){console.log(rabbit)},100)
 
 	// Simple Call
 	//======================================
-	var blackWiggle = Jig('#black')
-						.auto('wiggle',
-							{amplitude:20,repeat:2})
-						.auto('wiggle',2)
-						.auto('wiggle',{speed:.5,rotation:40},5)
+	var blackWiggle = Jig('.black')
 
-	var listWiggle = Jig('li')
-						.auto('wiggle',{speed:5,repeat:3});
+						.trigger(function(){
+							rabbit = true;
+							console.log(window.rabbit);
+							})
+
+						.auto('wiggle',
+							{amplitude:20,repeat:2,stagger:.1})
+
+						.until(window.rabbit)
+
+						.auto('wiggle',
+							{amplitude:20,speed:.3},3);
 
 
 
