@@ -51,9 +51,9 @@ and so on
 		var q = jig.filterArgs(preset,settings,sync);
 
 		if(q.data === undefined){
-			jig.sync(jig,q,0);
+			jig.sync(q,0);
 		}else{
-			jig.sync(jig,q,q.data._startAt);
+			jig.sync(q,q.data._startAt);
 		}
 
 		q.id = jig.instances.length;
@@ -93,23 +93,23 @@ and so on
 		return q
 	};
 
-	TimelineLite.prototype.sync = function(parent,child,time){
+	TimelineLite.prototype.sync = function(child,time){
 	
 		var s = parseInt(time*1000)/1000;
-		var td = parent.totalDuration();
+		var td = this.totalDuration();
 		var g;
 
 		if(td == s){
 			g = td-s; //console.log('+='+g);
-			parent.add(child,'+='+g);
+			this.add(child,'+='+g);
 			//console.log('EQUAL TO --- '+jig.data.name+' --- '+zig.data.name+' --- '+jig.totalDuration());
 		}else if(td>s){	
 			g = td-s;//console.log('-='+g);
-			parent.add(child,'-='+g);
+			this.add(child,'-='+g);
 			//console.log('GREATER THAN --- '+jig.data.name+' --- '+zig.data.name+' --- '+jig.totalDuration());
 		}else if(td<s){	
 			g = time-td; //console.log('+='+g);
-			parent.add(child,'+='+g);
+			this.add(child,'+='+g);
 			//console.log('LESS THAN --- '+jig.data.name+' --- '+zig.data.name+' --- '+jig.totalDuration());
 		}
 	};
