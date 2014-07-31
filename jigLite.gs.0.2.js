@@ -69,6 +69,8 @@ and so on
 	//rollout
 	//click
 	//scrub
+	
+	//until( condition )
 
 
 	//PROTOTYPES
