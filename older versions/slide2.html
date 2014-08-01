@@ -25,7 +25,7 @@
 <script src='vendors/greensock/TimelineLite.min.js'></script>
 <script src='vendors/greensock/plugins/CSSPlugin.min.js'></script>
 <script src='vendors/greensock/utils/Draggable.min.js'></script>
-<script src='jigLite.gs.0.2.js'></script>
+<script src='jigLite.gs.0.2.5.js'></script>
 <script src='eloquentFunctions.js'></script>
 <script type='text/javascript'>
 
@@ -37,18 +37,8 @@
 	//======================================
 	var blackWiggle = Jig('.black')
 
-						.trigger(function(){
-							rabbit = true;
-							console.log(window.rabbit);
-							})
-
 						.auto('wiggle',
-							{amplitude:20,repeat:2,stagger:.1})
-
-						.until(window.rabbit)
-
-						.auto('wiggle',
-							{amplitude:20,speed:.3},3);
+							{amplitude:20,repeat:2,stagger:.1,toggle:true})
 
 
 
