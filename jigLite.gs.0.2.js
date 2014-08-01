@@ -489,6 +489,7 @@ and so on
 	//FUNCTIONS
 	//============================
 	nodeSelector = function(nodeString){
+		//https://developer.mozilla.org/en-US/docs/Web/API/document.querySelectorAll
 
 		var DOM = document.body.childNodes
 
