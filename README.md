@@ -7,9 +7,9 @@ While JQuery can do much of what Jig can and will be able to do, Jig's scope is 
 
 
 <pre>
-Jig('#myDiv').rollOver('wiggle');
+Jig('#myDiv').wiggle('quickly');
 
-var myButtons = Jig('.myclass').wiggle('lively');
+var myButtons = Jig('.myclass').wiggle('sluggishly');
 </pre>
 
 <pre>
