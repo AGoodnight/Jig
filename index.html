@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+.dolphin{
+	background-color:rgb(0,30,200);
+	padding:30px;
+	font-size:20px;
+	position:relative;
+	display:inline-block;
+	color:white;
+}
+button{
+	position:relative;
+}
+
+</style>
+</head>
+<body>
+
+<button id='seal'>Seal</button>
+<div class='dolphin'>Dolphin</div><div id ='flipper' class='dolphin'>Dolphin</div>
+
+</body>
+<script src='vendors/greensock/TweenLite.min.js'></script>
+<script src='vendors/greensock/TimelineLite.min.js'></script>
+<script src='vendors/greensock/plugins/CSSPlugin.min.js'></script>
+<script src='vendors/greensock/utils/Draggable.min.js'></script>
+<script src='jigLite.0.3.gs.js' type='text/javascript'></script>
+<script>
+
+/*var f = new Jig('.dolphin')
+			.mouse('#seal',true,'click')
+			.wiggle('lively',{repeat:2,stagger:.1})
+			.wiggle('lively',{stagger:.1});
+
+var f2 = new Jig('#flipper')
+			.wiggle('lively',{},1)
+			.wiggle('lively',{},3)
+			.wiggle('lively',{},6)
+			.wiggle('lively',{},10)
+			.play();*/
+
+/*var g = new Jig('#seal')
+			.mouse('self',false,'rollover')
+			.wiggle('lively');*/
+var t = new Jig('.dolphin')
+			.wiggle('lively',{repeat:'forever'})
+			.play();
+
+
+console.log( Jig('.dolphin').node[0].onmouseover )
+console.log( Jig('#seal').node[0].onmouseover )
+//console.log( g.instances);
+
+
+
+</script>
+</html
