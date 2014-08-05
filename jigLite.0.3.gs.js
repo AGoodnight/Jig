@@ -55,112 +55,100 @@ and so on
 			_active:false
 		};
 
-		q.instancs = [];
 		q.defaultOverwrite = 'none';
 		q.type = 'jig'
 
+		q.instances = [];
 		q.nodeString = nodeString;
 		q.node = nodeSelector(nodeString);
+		q.target = undefined;
 		
 		// Used for Toggle and paused Jigs
 		// -------------------------------
-		if(trigger !== undefined){
-			q.trigger = nodeSelector(trigger);
+		if(trigger != undefined){
+			q.data._trigger = nodeSelector(trigger);
+			//console.log(q.data._trigger);
 		}else{
-			q.trigger = q.node;
+			q.data._trigger = q.node;
 		}
+
+		q.pause();
 
 		return q;	
 	};
 
-	//ZUGS & ZIGS
+	//PUBLIC FUNCTIONS
 	//===========================
 
-	TimelineLite.prototype.zig = function(preset,settings,sync){	
+	TimelineLite.prototype.wiggle = function(preset,settings,startAt){	
 		
-		var q = new Zig(preset,settings,sync);
+		var q = new ZigAnimation(this,'wiggle',preset,settings);
+		this.add(q,startAt);
+		this.instances.push(q);
+		return this;	
+	};
+	TimelineLite.prototype.mouse = function(trigger,tog,method){
+		
+		_t = this;
 
-		// Local variables
-		// ------------------------
-		var wait, index = 0;
-		var loops = 0;
-
-
-		// Looping
-		// ------------------------
-		loops = q.data._repeat;
-
-		// Set a Ziggle for each node in Jig
-		// ------------------------
-		for(var i in this.node){
-			if(typeof this.node[i] === 'object'){
-
-				var at;
-				var ziggle = new Ziggle();
-				
-				// Determine how many instances of the Zig we need
-				// ------------------------------------------------
-				for(var i = 0 ; i<loops ;i++ ){
-
-					var timeline = new preset.build(ziggle,index,jig,wait);
-					ziggle.add(timeline);
-
-				}
-
-
-				if(q.data._startAt !== undefined){
-					at = ziggle._stagger * i;
-				}else{
-					at = q.data._startTime + ziggle._stagger * i;
-				}
-
-				q.sync(ziggle,at);
-
-				wait+=q.data._stagger;
-				index++
-				//q.pause();
-				/*g.push();
-				
-				q.preset = library.find(preset);
-				
-				
-				
-				q.zigs.push(g[index]);
-
-				if(q._zigsDuration === 0){
-					q._zigsDuration = q.zigs[index]._totalDuration;
-				}else{
-					if(q.data._stagger != undefined){
-						var f = q.zigs[index]._totalDuration*q.data._stagger;
-						q._zigsDuration+=f;
-					};
-				};
-
-				if(g[index].data === undefined){
-					q.sync(g[index],0);
-				}else{
-					q.sync(g[index],g[index].data._startAt);
-				};
-
-				index++;
-				wait+=q.data._stagger;*/
-
-			}
+		if(tog){
+			this.data._toggle = true;
+		}else{
+			this.data._toggle = false;
 		};
 
-		jig.sync(q,0);
-		//q.toggle(settings);
 
-		q.id = jig.instances.length;
-		jig.instances.push(q);
+		// Set Trigger
+		if(trigger === 'self' || trigger === undefined){
+			_t.data._trigger = _t.node;
+			console.log(_t.node)
+		}else if(typeof trigger === 'string'){
+			_t.data._trigger = nodeSelector(trigger);
+		};
 
-		return jig;	
+
+		// Set Mouse Mode
+		for(var i in _t.data._trigger){
+			
+			switch(method){
+
+				case 'click':
+					if(_t.data._toggle){
+						_t.data._trigger[i].onmousedown = function(){
+							toggle.apply(this,[_t]);
+						};
+					}else{
+						_t.data._trigger[i].onmousedown = function(){
+							execute.apply(this,[_t]);
+						};
+					}
+				break;
+
+				case 'rollover':
+					if(_t.data._toggle){
+						_t.data._trigger[i].onmouseover = function(){
+							execute.apply(this,[_t]);
+						}
+						_t.data._trigger[i].onmouseout = function(){
+							halt.apply(this,[_t]);
+						};
+					}else{
+						_t.data._trigger[i].onmouseover = function(){
+							execute.apply(this,[_t]);
+						};
+					}
+				break;
+
+			}
+		}
+
+		return _t;
 	};
 
 
 	//CONSTRUCTORS
 	//============================
-	function Zig(){
+	function Zig(settings){
 		
 		var q = new TimelineLite();
 		q.defaultOverwrite = 'none';
@@ -182,15 +170,15 @@ and so on
 				_endAt:undefined,
 				_toggle:undefined,
 				_parent:undefined,
-				_preset:library[preset],
+				_preset:undefined,
 
 				//relative
 				_amplitude:undefined,
 				_life:undefined,
 
 				//timing
-				_delay:undefined,
-				_stagger:undefined,
+				_delay:0,
+				_stagger:0,
 				_speed:undefined,
 
 				//transform
@@ -248,30 +236,79 @@ and so on
 				_active:false,
 				_toggled:false
 		};
+
+		q.data = replaceSettings(settings,q.data);
 		
 		return q;
+
 	};
+	function ZigAnimation(jig,behavior,preset,settings){
 
-	function Ziggle(){
+		var timeline;
+		var q = new Zig(settings);
+		// Local variables
+		// ------------------------
+		var loops = offset = stagger = 0
 
-		var q = new TimelineLite();
-		q.immediateRender = false;
-		q.defaultOverwrite = 'none';
+		q.data._preset = new Preset(behavior,preset);
+		q.data = filterSettings(q.data._preset[1],q.data);
 
-		q.data = {
+		loops = q.data._repeat;
+		offset = q.data._stagger;
+		
+
+		// Looping
+		// ------------------------
+		loops = q.data._repeat;
+
+		if(loops != 'forever'){
+			for(var n in jig.node){
+
+				var ziggle = new TimelineLite();
 			
-			_type:'ZIGGLE',
-			_repeat:0,
-			_reps:0,
-			_active:false
-		
-		};
+				for(var i = -1 ; i<loops ; i++){
 
+					// a new ew ziggle instance per loop
+					var tl = new TimelineLite();
+					//console.log(tl)
+					tl = q.data._preset[0]( tl, q, n, jig, 0);
+					ziggle.sync(tl,i);
+					
+				}
+
+				q.ziggles.push(ziggle);
+
+				if(offset === 'random'){
+					stagger = Math.random();
+				}else if(typeof offset ==='number'){
+					stagger = parseInt(n)*offset;
+				}
+				
+				q.add(ziggle,stagger);
+
+			}
+		}else{
+			for(var n in jig.node){
+				var ziggle = new TimelineLite();
+				var tl = new TimelineLite();
+				tl = q.data._preset[0]( tl, q, n, jig, 0);
+				ziggle.sync(tl,0);
+				q.ziggles.push(ziggle);
+
+				if(offset === 'random'){
+					stagger = Math.random();
+				}else if(typeof offset ==='number'){
+					stagger = parseInt(n)*offset
+				}
+				
+				q.add(ziggle,stagger);
+			}
+		}
 		return q;
 	};
 
 
-	//FUNCTIONS
+	//OTHER FUNCTIONS
 	//============================
 	nodeSelector = function(nodeString){
 		//https://developer.mozilla.org/en-US/docs/Web/API/document.querySelectorAll
@@ -361,19 +398,88 @@ and so on
 
 		return thisNode;
 	};
-	modify = function(defaults,settings){
+	filterSettings = function(defaults,settings){
 
-		for(var i in settings){
-			if(settings[i] === undefined){
+		var s = settings;
+
+		for(var i in s){
+			if(s[i] === undefined){
 				for(var j in defaults){
 					if(j === i){
-						settings[i] = defaults[j];
+						s[i] = defaults[j];
 					}
 				}
 			}
 		}
 		
-		return settings;
+		return s;
+	};
+	replaceSettings = function(passed,settings){
+
+		var s = settings;
+
+		for(var i in s){
+			for(var j in passed){
+				if('_'+j === i){
+					s['_'+j] = passed[j];
+
+				}
+			}
+			
+		}
+		
+		return s;
+	};	
+
+	function toggle(_t){
+			if(_t.data._active){
+				_t.data._active = false;
+				_t.pause();
+			}else{
+				_t.data._active = true;
+				_t.play();
+			}
+	};
+	function execute(_t){
+			if(!_t.data._active){
+				_t.data._active = true;
+				_t.play();
+			}
+	};
+	function halt(_t){
+			
+			if(_t.data._active){
+				_t.data._active = false;
+				_t.pause();
+			}
+	};
+		
+	TimelineLite.prototype.sync = function(child,time){
+	
+		var s = parseInt(time*1000)/1000;
+		var td = this.totalDuration();
+		var g;
+
+		if(td == s){
+			g = td-s; //console.log('+='+g);
+			this.add(child,'+='+g);
+			//console.log('EQUAL TO --- '+jig.data.name+' --- '+zig.data.name+' --- '+jig.totalDuration());
+		}else if(td>s){	
+			g = td-s;//console.log('-='+g);
+			this.add(child,'-='+g);
+			//console.log('GREATER THAN --- '+jig.data.name+' --- '+zig.data.name+' --- '+jig.totalDuration());
+		}else if(td<s){	
+			g = time-td; //console.log('+='+g);
+			this.add(child,'+='+g);
+			//console.log('LESS THAN --- '+jig.data.name+' --- '+zig.data.name+' --- '+jig.totalDuration());
+		}
+	};
+	TimelineLite.prototype.loop = function(){
+		if(this.data._repeat === 'forever'){
+			//for(var j in this.ziggles){
+				console.log(this)
+			}
+		}
 	};
 
 	//PRESETS
@@ -384,20 +490,24 @@ and so on
 				// Pre-defined settings
 				// -------------------
 				defaults:{
-					_speed:1, 
-					_amplitude:10,
-					_rotation:20,
-					_origin:'50% 50%'
+					lively:{
+						_speed:1, 
+						_amplitude:10,
+						_rotation:20,
+						_origin:'50% 50%'
+					}
 				},
 
-				build:function(zig,index,jig,delay,id){
+				build:function(ziggle,zig,index,jig,delay){
 
-					target = jig.node[index];
+					actor = jig.node[index];
+					//console.log(jig.node[index])
+					//console.log(actor)
 
 					// our settings represented by a simple 'v'
 					// ---------------------------------------
 					v = zig.data;
-					console.log(v)
+					console.log(v._repeat)
 
 					// our total duration split into the neccessary chunks
 					// ---------------------------------------------------
@@ -409,15 +519,8 @@ and so on
 						v._speed/5
 					];
 
-					zig.pause();
-
-					zig.call(function(){
-						console.log('zig is active');
-						this._active = true;
-					});
-
-					zig.add(
-						TweenLite.to(target,s[0],{
+					ziggle.add(
+						TweenLite.to(actor,s[0],{
 							transformOrigin:v._origin,
 							delay:delay,
 							x:v._amplitude*-1,
@@ -426,42 +529,57 @@ and so on
 						})
 					);
 
-					zig.add(
-						TweenLite.to(target,s[1],{
+					ziggle.add(
+						TweenLite.to(actor,s[1],{
 							x:v._amplitude,
 							rotation:v._rotation,
 							ease:v._e
 						})
 					);
 
-					zig.add(
-						TweenLite.to(target,s[2],{
+					ziggle.add(
+						TweenLite.to(actor,s[2],{
 							x:v._amplitude/2*-1,
 							rotation:v._rotation/2*-1,
 							ease:v._e
 						})
 					);
 
-					zig.add(
-						TweenLite.to(target,s[3],{
+					ziggle.add(
+						TweenLite.to(actor,s[3],{
 							x:v._amplitude/2,
 							rotation:v._rotation/2,
 							ease:v._e
 						})
 					);
 
-					zig.add(
-						TweenLite.to(target,s[4],{
+					ziggle.add(
+						TweenLite.to(actor,s[4],{
 							x:0,
 							rotation:0,
 							ease:v._e
 						})
 					);
 
-					return zig;
+					ziggle.call(
+						zig.loop.bind(zig)
+					)
+
+					return ziggle;
 				}
 			},
 	};
+	Preset = function(type,vari){
+		
+		var p = [library[type].build];
+		if(vari != undefined){
+			vari = library[type].defaults[vari];
+			p.push(vari)
+		};
+
+		return p;
+	};
+	
 
 
 
