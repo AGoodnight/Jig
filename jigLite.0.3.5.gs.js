@@ -83,9 +83,10 @@ and so on
 	TimelineLite.prototype.wiggle = function(preset,settings,startAt){	
 		
 		var q = new ZigAnimation(this,'wiggle',preset,settings);
-		this.add(q,startAt);
+		this.add(q,q.startAt);
 		this.instances.push(q);
-		return this;	
+		return this;
+
 	};
 	TimelineLite.prototype.mouse = function(trigger,tog,method){
 		
@@ -231,7 +232,7 @@ and so on
 				
 				//repeat
 				_reps:0,
-				_repeat:0,
+				_repeat:undefined,
 
 				//state
 				_active:false,
@@ -278,12 +279,24 @@ and so on
 
 		//loop
 		q.loop = function(i){
-			var topLevel = this.data._parent.data._parent
-			var lowerlevel = this.data._parent
 
-			if()
-			var func = lowerlevel.data._preset[0].apply(this,this.data._presettings)
+			var toplevel = this.data._parent.data._parent
+			var lowerlevel = this.data._parent
 			
+			
+			//console.log(lowerlevel.data._reps)
+			//console.log(this.data._reps)
+
+			var g = lowerlevel.data._reps;
+			var r = lowerlevel.data._repeat;
+			console.log(g+' > '+r)
+			if( r >= g ){
+				
+				this.data._reps++;
+				this.data._parent.data._reps++
+				var func = lowerlevel.data._preset[0].apply(this,this.data._presettings)
+			};
+
 		};
 		
 		return q;
@@ -294,20 +307,17 @@ and so on
 
 		var timeline;
 		var q = new Zig(settings);
+		var stagger;
+		var duration;
 		// Local variables
 		// ------------------------
 		var loops = offset = stagger = 0
 
 		q.data._preset = new Preset(behavior,preset);
-		q.data = filterSettings(q.data._preset[1],q.data);
+		q.data = filterSettings(q.data._preset[1],q.data); 
+		jig.startAt = 0;
 
-		loops = q.data._repeat;
 		offset = q.data._stagger;
-		
-
-		// Looping
-		// ------------------------
-		loops = q.data._repeat;
 
 			for(var n in jig.node){
 
@@ -323,11 +333,19 @@ and so on
 				}else if(typeof offset ==='number'){
 					stagger = parseInt(n)*offset;
 				}
-				
+				console.log(ziggle.data._repeat)
+				console.log('start: '+jig.startAt+' - - '+q.data._name);
+
 				q.add(ziggle,stagger);
 				q.ziggles.push(ziggle);
 
+				if(n === 0){
+					duration+=ziggle.totalDuration();
+				}
+
 			}
+
+			//q.startAt += duration
 		
 		return q;
 	};
@@ -432,6 +450,7 @@ and so on
 				for(var j in defaults){
 					if(j === i){
 						s[i] = defaults[j];
+						
 					}
 				}
 			}
@@ -513,7 +532,22 @@ and so on
 						_speed:1, 
 						_amplitude:10,
 						_rotation:20,
-						_origin:'50% 50%'
+						_origin:'50% 50%',
+						_repeat:1
+					},
+					calmly:{
+						_speed:3, 
+						_amplitude:3,
+						_rotation:8,
+						_origin:'50% 50%',
+						_repeat:0
+					},
+					feverishly:{
+						_speed:.2, 
+						_amplitude:10,
+						_rotation:0,
+						_origin:'50% 50%',
+						_repeat:6
 					}
 				},
 
@@ -526,16 +560,16 @@ and so on
 					// our settings represented by a simple 'v'
 					// ---------------------------------------
 					v = zig.data;
-					console.log('repeat: '+v._repeat)
+					//console.log('repeat: '+v._repeat)
 
 					// our total duration split into the neccessary chunks
 					// ---------------------------------------------------
 					s = [
+						v._speed/8,
+						v._speed/7,
+						v._speed/6,
 						v._speed/5,
-						v._speed/5,
-						v._speed/5,
-						v._speed/5,
-						v._speed/5
+						v._speed/4
 					];
 
 					ziggle.add(
