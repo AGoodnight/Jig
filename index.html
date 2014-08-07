@@ -18,8 +18,7 @@ button{
 </head>
 <body>
 
-<button id='seal'>Seal</button>
-<div class='dolphin'>Dolphin</div><div id ='flipper' class='dolphin'>Dolphin</div>
+<button id='seal'>Seal</button><div id ='flipper' class='dolphin'>Dolphin</div>
 
 </body>
 <script src='vendors/greensock/TweenLite.min.js'></script>
@@ -41,9 +40,9 @@ var f2 = new Jig('#flipper')
 			.wiggle('lively',{},10)
 			.play();*/
 
-/*var g = new Jig('#seal')
+var g = new Jig('#seal')
 			.mouse('self',false,'rollover')
-			.wiggle('lively');*/
+			.wiggle('lively');
 var t = new Jig('.dolphin')
 			.wiggle('lively',{name:'live'})
 			.wiggle('feverishly',{name:'fever'})
