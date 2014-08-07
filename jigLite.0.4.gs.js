@@ -27,7 +27,7 @@ and so on
 */
 
 /*To Do
-1. Parent Child Selector functionality
+1. Create Effects Functionality
 */
 
 	var nugget = 0;
@@ -327,7 +327,7 @@ and so on
 
 	};
 
-	function ZigAnimation(jig,behavior,preset,settings){
+	function ZigAnimation(jig,behavior,presetArr,settings){
 
 		var timeline;
 		var q = new Zig(settings);
@@ -338,22 +338,36 @@ and so on
 		// ------------------------
 		var loops = offset = stagger = 0
 
-		q.data._preset = new Preset(behavior,preset);
-		q.data = filterSettings(q.data._preset[1],q.data); 
-		q.startAt = 0;
 
-		offset = q.data._stagger;
+		// Determine Presets
+		for(var n in jig.node){
+			for(var i in presetArr){
 
-			for(var n in jig.node){
+				// build ziggle
+				q.data._preset = new Preset(behavior,presetArr[0]);
+				q.data = filterSettings(q.data._preset[1],q.data); 
+
+				q.startAt = 0;
+				offset = q.data._stagger;
 
 				var ziggle = new Ziggle();
 				ziggle = q.data._preset[0].apply(this, [ziggle, q, n, jig, 0]);
 				ziggle.data._presettings = [ziggle,q,n,jig,0];
+				
+				// built effect 
+
+				ziggle.call(function(){
+					ziggle.loop(index);
+					//console.log(ziggle)
+				})
+
+				// append effect to ziggle
+
 				ziggle.data._reps = q.data._reps;
 				ziggle.data._repeat = q.data._repeat;
 				ziggle.data._parent = q;
 				ziggle.data._id = [jig.zigs.length,parseInt(n)];
-				
+					
 				if(offset === 'random'){
 					stagger = Math.random();
 				}else if(typeof offset ==='number'){
@@ -364,14 +378,15 @@ and so on
 				q.ziggles.push(ziggle);
 
 			}
+		};
 
-			if(q.data._repeat > 0){
-				q.startAt = q.totalDuration()*q.data._repeat
-			}else{
-				q.startAt = q.totalDuration()
-			}
+		if(q.data._repeat > 0){
+			q.startAt = q.totalDuration()*q.data._repeat
+		}else{
+			q.startAt = q.totalDuration()
+		}
 
-			jig.zigs.push(q);
+		jig.zigs.push(q);
 		
 		return q;
 	};
@@ -667,15 +682,27 @@ and so on
 							ease:v._e
 						})
 					);
-					ziggle.call(function(){
-						ziggle.loop(index);
-						//console.log(ziggle)
-					})
 
 					return ziggle;
 				}
 			},
 	};
+
+	var effects = {
+
+		bounce:{
+
+			build:function(ziggle,zig,index,jig,delay){
+
+				var effect = new TimelineLite();
+				effect = zig.data._preset[0].apply(this, [effect, zig, jig, 0]);
+
+			}
+
+		}
+
+	}
+
 	Preset = function(type,vari){
 		
 		var p = [library[type].build];
