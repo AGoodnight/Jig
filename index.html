@@ -18,8 +18,9 @@ button{
 </head>
 <body>
 
-<button id='seal'>Seal</button>
-<div class='dolphin'>Dolphin</div><div id ='flipper' class='dolphin'>Dolphin</div>
+<button id='seal'>Restart</button>
+<button id='sealion'>Pause/Play</button>
+<div class='dolphin'>Dolphin</div><div class='dolphin'>Dolphin</div><div class='dolphin'>Dolphin</div><div class='dolphin'>Dolphin</div><div id ='flipper' class='dolphin'>Dolphin</div>
 
 </body>
 <script src='vendors/greensock/TweenLite.min.js'></script>
@@ -41,17 +42,29 @@ var f2 = new Jig('#flipper')
 			.wiggle('lively',{},10)
 			.play();*/
 
-/*var g = new Jig('#seal')
+var h = new Jig('#seal').wiggle('feverishly');
+ 
+var g = new Jig('#seal', {name:'Seals'})
 			.mouse('self',false,'rollover')
-			.wiggle('lively');*/
-var t = new Jig('.dolphin')
+			.wiggle('lively')
+			
+
+var t = new Jig('.dolphin', {name:'Dolphins'})
+
+			.mouse('#sealion',true,'click')
+			.mouse('#seal',false,'click')
 			.wiggle('lively',{name:'live'})
 			.wiggle('feverishly',{name:'fever'})
 			.wiggle('calmly',{name:'calm'})
-			.play();
+			.wiggle('lively',{name:'live',repeat:3,stagger:.1})
+			.wiggle('calmly',{name:'calm'})
+			.onComplete(function(){
+				//h.go();
+			})
+			.go();
 
 
-console.log( Jig('.dolphin').node[0].onmouseover )
+console.log( Jig('#seal').node[0].onmousedown )
 console.log( Jig('#seal').node[0].onmouseover )
 //console.log( g.instances);
 

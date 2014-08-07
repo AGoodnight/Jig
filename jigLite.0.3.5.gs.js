@@ -30,10 +30,10 @@ and so on
 1. Parent Child Selector functionality
 */
 
-	
+	var nugget = 0;
 	//JIG
 	//===========================
-	Jig = function(nodeString,trigger){
+	Jig = function(nodeString,settings){
 
 		var q = new TimelineLite();
 		
@@ -55,6 +55,9 @@ and so on
 			_active:false
 		};
 
+
+		q.data = replaceSettings(settings,q.data);
+
 		q.defaultOverwrite = 'none';
 		q.type = 'jig'
 
@@ -62,15 +65,10 @@ and so on
 		q.nodeString = nodeString;
 		q.node = nodeSelector(nodeString);
 		q.target = undefined;
-		
-		// Used for Toggle and paused Jigs
-		// -------------------------------
-		if(trigger != undefined){
-			q.data._trigger = nodeSelector(trigger);
-			//console.log(q.data._trigger);
-		}else{
-			q.data._trigger = q.node;
-		}
+
+		q.startAt = 0;
+		q.zigs = [];
+		q.lastZiggle = undefined;
 
 		q.pause();
 
@@ -83,14 +81,15 @@ and so on
 	TimelineLite.prototype.wiggle = function(preset,settings,startAt){	
 		
 		var q = new ZigAnimation(this,'wiggle',preset,settings);
-		this.add(q,q.startAt);
+		this.add(q,this.startAt);
+		this.startAt+=q.startAt;
 		this.instances.push(q);
 		return this;
 
 	};
 	TimelineLite.prototype.mouse = function(trigger,tog,method){
 		
-		_t = this;
+		var _t = this;
 
 		if(tog){
 			this.data._toggle = true;
@@ -106,6 +105,7 @@ and so on
 		}else if(typeof trigger === 'string'){
 			_t.data._trigger = nodeSelector(trigger);
 		};
+
 
 
 		// Set Mouse Mode
@@ -144,6 +144,13 @@ and so on
 		}
 
 		return _t;
+	};
+	TimelineLite.prototype.onComplete = function(func,delay){
+		setTimeout(function(){
+			func();
+		},this.totalDuration()*1000)
+
+		return this;
 	};
 
 
@@ -280,22 +287,39 @@ and so on
 		//loop
 		q.loop = function(i){
 
-			var toplevel = this.data._parent.data._parent
-			var lowerlevel = this.data._parent
-			
-			
-			//console.log(lowerlevel.data._reps)
-			//console.log(this.data._reps)
+			var looping = false;
 
-			var g = lowerlevel.data._reps;
-			var r = lowerlevel.data._repeat;
-			console.log(g+' > '+r)
-			if( r >= g ){
+			var thisJig = this.data._parent.data._parent
+			var thisZig = this.data._parent
+
+			var g = this.data._reps;
+			var r = this.data._repeat;
+
+			if( r > g ){
 				
 				this.data._reps++;
-				this.data._parent.data._reps++
-				var func = lowerlevel.data._preset[0].apply(this,this.data._presettings)
-			};
+				var func = thisZig.data._preset[0].apply(this,this.data._presettings)
+			
+			}else{
+				thisZig.data._complete = true;
+				thisZig.data._active = false;
+					//	console.log('++++> Zig Complete: '+thisZig.data._name)
+			}
+
+			var jDur = thisJig.totalDuration();
+			var jTime = thisJig.time();
+
+
+			if(this.data._id[0] === thisJig.lastZiggle){
+				looping = true;
+			}
+			thisJig.lastZiggle = this.data._id[0];
+
+			if(jDur === jTime && this.data._id[1] === (thisJig.node.length-1) ){
+				thisJig.data._complete = true;
+				thisJig.data._active = true;
+						console.log('====> Jig Complete: '+thisJig.data._name+' ---- zigs: '+this.data._id)
+			}
 
 		};
 		
@@ -307,6 +331,7 @@ and so on
 
 		var timeline;
 		var q = new Zig(settings);
+		q.data._parent = jig;
 		var stagger;
 		var duration;
 		// Local variables
@@ -315,37 +340,38 @@ and so on
 
 		q.data._preset = new Preset(behavior,preset);
 		q.data = filterSettings(q.data._preset[1],q.data); 
-		jig.startAt = 0;
+		q.startAt = 0;
 
 		offset = q.data._stagger;
 
 			for(var n in jig.node){
 
-				var ziggle = new Ziggle({name:'topziggle'});
+				var ziggle = new Ziggle();
 				ziggle = q.data._preset[0].apply(this, [ziggle, q, n, jig, 0]);
 				ziggle.data._presettings = [ziggle,q,n,jig,0];
 				ziggle.data._reps = q.data._reps;
 				ziggle.data._repeat = q.data._repeat;
 				ziggle.data._parent = q;
+				ziggle.data._id = [jig.zigs.length,parseInt(n)];
 				
 				if(offset === 'random'){
 					stagger = Math.random();
 				}else if(typeof offset ==='number'){
 					stagger = parseInt(n)*offset;
 				}
-				console.log(ziggle.data._repeat)
-				console.log('start: '+jig.startAt+' - - '+q.data._name);
 
-				q.add(ziggle,stagger);
+				q.add(ziggle,stagger*n);
 				q.ziggles.push(ziggle);
-
-				if(n === 0){
-					duration+=ziggle.totalDuration();
-				}
 
 			}
 
-			//q.startAt += duration
+			if(q.data._repeat > 0){
+				q.startAt = q.totalDuration()*q.data._repeat
+			}else{
+				q.startAt = q.totalDuration()
+			}
+
+			jig.zigs.push(q);
 		
 		return q;
 	};
@@ -476,28 +502,56 @@ and so on
 	};	
 
 	function toggle(_t){
-			if(_t.data._active){
-				_t.data._active = false;
-				_t.pause();
-			}else{
-				_t.data._active = true;
-				_t.play();
-			}
+		if(_t.data._active){
+			halt(_t);
+		}else{
+			execute(_t);
+		}	
 	};
+
 	function execute(_t){
+		if(_t.data._complete){	
+			console.log('need to restart');
+			_t.data._complete = false;
+			_t.data._active = true;
+			_t.restart();	
+			console.log('==== playing ====');
+		}else{	
 			if(!_t.data._active){
 				_t.data._active = true;
 				_t.play();
+
+				console.log('==== playing ====');
+				console.log(_t)
 			}
+		}
 	};
+
 	function halt(_t){
 			
 			if(_t.data._active){
 				_t.data._active = false;
 				_t.pause();
+				console.log('==== paused ====');
 			}
 	};
+
+	function newID(){
+		return nugget++
+	}
 		
+	TimelineLite.prototype.go = function(){
+		this.data._active = true;
+		this.play();
+		console.log('==== playing ====');
+	}
+
+	TimelineLite.prototype.halt = function(){
+		this.data._active = false
+		this.pause();
+		console.log('==== paused ====');
+	}
+
 	TimelineLite.prototype.sync = function(child,time){
 	
 		var s = parseInt(time*1000)/1000;
@@ -533,7 +587,7 @@ and so on
 						_amplitude:10,
 						_rotation:20,
 						_origin:'50% 50%',
-						_repeat:1
+						_repeat:0
 					},
 					calmly:{
 						_speed:3, 
@@ -547,7 +601,7 @@ and so on
 						_amplitude:10,
 						_rotation:0,
 						_origin:'50% 50%',
-						_repeat:6
+						_repeat:5
 					}
 				},
 
