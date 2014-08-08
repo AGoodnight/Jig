@@ -75,18 +75,18 @@ and so on
 		return q;	
 	};
 
-	//PUBLIC FUNCTIONS
-	//===========================
-
-	TimelineLite.prototype.wiggle = function(presetArr,settings,startAt){	
-		
-		var q = new ZigAnimation(this,'wiggle',presetArr,settings);
-		this.add(q,this.startAt);
-		this.startAt+=q.startAt;
-		this.instances.push(q);
-		return this;
-
+	//PUBLIC CONSTRUCTORS
+	//=====================
+	TimelineLite.prototype.wiggle = function(presetArr,settings,syncAt){
+		return this.buildZig('wiggle',presetArr,settings,syncAt);		
 	};
+	TimelineLite.prototype.jump = function(presetArr,settings,syncAt){
+		return this.buildZig('jump',presetArr,settings,syncAt);
+	};
+	TimelineLite.prototype.plop = function(presetArr,settings,syncAt){
+		return this.buildZig('plop',presetArr,settings,syncAt);
+	};
+
 	TimelineLite.prototype.mouse = function(trigger,tog,method){
 		
 		var _t = this;
@@ -154,8 +154,90 @@ and so on
 	};
 
 
-	//CONSTRUCTORS
-	//============================
+
+	//PUBLIC FUNCTIONS/CONSTRUCTORS (ADVANCED USERS)
+	//================================================
+	TimelineLite.prototype.buildZig = function(type,presetArr,settings,syncAt){	
+		
+		var q = new ZigAnimation(this,type,presetArr,settings);
+		
+		if(syncAt != undefined){
+			this.add(q,syncAt);
+		}else{
+			this.add(q,this.startAt);
+		}
+
+		this.startAt+=q.startAt;
+		this.instances.push(q);
+		return this;
+	};
+
+	// these functions are _complete status independent
+	TimelineLite.prototype.go = function(){
+		this.data._active = true;
+		this.play();
+	};
+	TimelineLite.prototype.halt = function(){
+		this.data._active = false
+		this.pause();
+	};
+	TimelineLite.prototype.sync = function(child,time){
+	
+		var s = parseInt(time*1000)/1000;
+		var td = this.totalDuration();
+		var g;
+
+		if(td == s){
+			g = td-s; //console.log('+='+g);
+			this.add(child,'+='+g);
+			//console.log('EQUAL TO --- '+jig.data.name+' --- '+zig.data.name+' --- '+jig.totalDuration());
+		}else if(td>s){	
+			g = td-s;//console.log('-='+g);
+			this.add(child,'-='+g);
+			//console.log('GREATER THAN --- '+jig.data.name+' --- '+zig.data.name+' --- '+jig.totalDuration());
+		}else if(td<s){	
+			g = time-td; //console.log('+='+g);
+			this.add(child,'+='+g);
+			//console.log('LESS THAN --- '+jig.data.name+' --- '+zig.data.name+' --- '+jig.totalDuration());
+		}
+	};
+
+
+	// These functions are _complete status dependent and standalone
+	function toggle(_t){
+		if(_t.data._active){
+			halt(_t);
+		}else{
+			execute(_t);
+		}	
+	};
+
+	function execute(_t){
+		if(_t.data._complete){	
+			_t.data._complete = false;
+			_t.data._active = true;
+			_t.restart();	
+		}else{	
+			if(!_t.data._active){
+				_t.data._active = true;
+				_t.play();
+
+				console.log(_t)
+			}
+		}
+	};
+
+	function halt(_t){
+			
+			if(_t.data._active){
+				_t.data._active = false;
+				_t.pause();
+			}
+	};
+
+
+	//PRIVATE CONSTRUCTORS
+	//==============
 	function Zig(settings){
 		
 		var q = new TimelineLite();
@@ -251,7 +333,6 @@ and so on
 		//loop
 		
 		return q;
-
 	};
 
 	function Ziggle(settings){
@@ -324,7 +405,6 @@ and so on
 		};
 		
 		return q;
-
 	};
 
 	function ZigAnimation(jig,behavior,preset,settings){
@@ -347,7 +427,7 @@ and so on
 			for(var n in jig.node){
 
 				var ziggle = new Ziggle();
-				ziggle = q.data._preset[0].apply(this, [ziggle, q, n, jig, 0]);
+				ziggle = q.data._preset[0].apply(this, [ziggle, q, n, jig, stagger]);
 				ziggle.data._presettings = [ziggle,q,n,jig,0];
 				ziggle.data._reps = q.data._reps;
 				ziggle.data._repeat = q.data._repeat;
@@ -360,7 +440,7 @@ and so on
 					stagger = parseInt(n)*offset;
 				}
 
-				q.add(ziggle,stagger*n);
+				q.add(ziggle,stagger);
 				q.ziggles.push(ziggle);
 
 			}
@@ -377,7 +457,7 @@ and so on
 	};
 
 
-	//OTHER FUNCTIONS
+	//PRIVATE FUNCTIONS
 	//============================
 	nodeSelector = function(nodeString){
 		//https://developer.mozilla.org/en-US/docs/Web/API/document.querySelectorAll
@@ -500,79 +580,6 @@ and so on
 		
 		return s;
 	};	
-
-	function toggle(_t){
-		if(_t.data._active){
-			halt(_t);
-		}else{
-			execute(_t);
-		}	
-	};
-
-	function execute(_t){
-		if(_t.data._complete){	
-			console.log('need to restart');
-			_t.data._complete = false;
-			_t.data._active = true;
-			_t.restart();	
-			console.log('==== playing ====');
-		}else{	
-			if(!_t.data._active){
-				_t.data._active = true;
-				_t.play();
-
-				console.log('==== playing ====');
-				console.log(_t)
-			}
-		}
-	};
-
-	function halt(_t){
-			
-			if(_t.data._active){
-				_t.data._active = false;
-				_t.pause();
-				console.log('==== paused ====');
-			}
-	};
-
-	function newID(){
-		return nugget++
-	}
-		
-	TimelineLite.prototype.go = function(){
-		this.data._active = true;
-		this.play();
-		console.log('==== playing ====');
-	}
-
-	TimelineLite.prototype.halt = function(){
-		this.data._active = false
-		this.pause();
-		console.log('==== paused ====');
-	}
-
-	TimelineLite.prototype.sync = function(child,time){
-	
-		var s = parseInt(time*1000)/1000;
-		var td = this.totalDuration();
-		var g;
-
-		if(td == s){
-			g = td-s; //console.log('+='+g);
-			this.add(child,'+='+g);
-			//console.log('EQUAL TO --- '+jig.data.name+' --- '+zig.data.name+' --- '+jig.totalDuration());
-		}else if(td>s){	
-			g = td-s;//console.log('-='+g);
-			this.add(child,'-='+g);
-			//console.log('GREATER THAN --- '+jig.data.name+' --- '+zig.data.name+' --- '+jig.totalDuration());
-		}else if(td<s){	
-			g = time-td; //console.log('+='+g);
-			this.add(child,'+='+g);
-			//console.log('LESS THAN --- '+jig.data.name+' --- '+zig.data.name+' --- '+jig.totalDuration());
-		}
-	};
-	
 
 	//PRESETS
 	//============================

@@ -351,7 +351,7 @@ and so on
 				offset = q.data._stagger;
 
 				var ziggle = new Ziggle();
-				ziggle = q.data._preset[0].apply(this, [ziggle, q, n, jig, 0]);
+				ziggle = q.data._preset[0].apply(this, [ziggle, q, n, jig, stagger]);
 				ziggle.data._presettings = [ziggle,q,n,jig,0];
 				
 				// built effect 
@@ -374,7 +374,7 @@ and so on
 					stagger = parseInt(n)*offset;
 				}
 
-				q.add(ziggle,stagger*n);
+				q.add(ziggle,stagger);
 				q.ziggles.push(ziggle);
 
 			}

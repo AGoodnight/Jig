@@ -20,7 +20,7 @@ button{
 
 <button id='seal'>Restart</button>
 <button id='sealion'>Pause/Play</button>
-<div class='dolphin'>Dolphin</div><div class='dolphin'>Dolphin</div><div class='dolphin'>Dolphin</div><div class='dolphin'>Dolphin</div><div id ='flipper' class='dolphin'>Dolphin</div>
+<div class='dolphin'>Dolphin</div>
 
 </body>
 <script src='vendors/greensock/TweenLite.min.js'></script>
@@ -53,14 +53,7 @@ var t = new Jig('.dolphin', {name:'Dolphins'})
 
 			.mouse('#sealion',true,'click')
 			.mouse('#seal',false,'click')
-			.wiggle('lively',{name:'live'})
-			.wiggle('feverishly',{name:'fever'})
-			.wiggle('calmly',{name:'calm'})
-			.wiggle('lively',{name:'live',repeat:3,stagger:.1})
-			.wiggle('calmly',{name:'calm'})
-			.onComplete(function(){
-				//h.go();
-			})
+			.wiggle('lively',{name:'live'},2).wiggle('lively',{name:'live'},4).wiggle('lively',{name:'live'},6)
 			.go();
 
 
