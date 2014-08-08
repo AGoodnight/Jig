@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link href='css/bootstrap.css' rel='stylesheet'></link>
+<link href='http://fonts.googleapis.com/css?family=Fugaz+One|Source+Sans+Pro:300,400,700|Luckiest+Guy' rel='stylesheet' type='text/css'>
+<style>
+
+body{
+	background:rgb(20,20,20);
+	color:rgb(120,120,120);
+}
+
+#hero{
+	font: 80px 'Fugaz One',cursive;
+}
+#tagline{
+	font: 400 22px 'Source Sans Pro',sans-serif;
+}
+#getit{
+	font: 400 16px 'Source Sans Pro',sans-serif;
+}
+.tabs{
+	margin-top:0;
+	overflow:hidden;
+}
+
+#zigMenu ul{
+	margin:0;
+	padding:0;
+	text-align:left;
+}
+
+#zigMenu li{
+	padding:2px;
+	cursor:pointer;
+	list-style:none;
+	border:black solid 1px;
+	border-radius:5px;
+	margin:10px 0 10px 0;
+	padding:10px;
+}
+
+pre{
+	font-size:24px;
+	color:rgb(200,200,200);
+	background-color:rgb(100,100,100);
+}
+
+.header{
+	width:400px;
+	margin:0 auto;
+	text-align:center;
+}
+.block{
+	color:white;
+	padding:20px;
+	background:black;
+	display:inline-block;
+	position:relative;
+	cursor:pointer;
+}
+
+.projector{
+	border:1px solid rgb(200,200,200);
+	height:200px;
+}
+
+.jumbotron{
+	border:solid 1px rgb(200,200,200);
+}
+
+</style>
+</head>
+<body>
+<div class='container'>
+	<div class='row'>
+		<div id='hero'>
+			JigLite
+		</div>
+		<div id='tagline'>
+			Animation for everyone powered by <a href='http://www.greensock.com'>TimelineLite</a>
+		</div>
+	</div>
+
+	<div class='jumbotron'>
+		
+		<div class='row'>
+			<div id='demo' class='col-md-4'>		
+				<div class='tabs'>
+					<ul>
+						<li>mouse('click')</li>
+						<li>mouse('rollover')</li>
+					</ul>
+				</div>
+				<div class='projector'>
+					<div class='block'>
+						Wiggle
+					</div>
+				</div>
+			</div>
+
+			<div id='code' class='col-md-6'>
+				<pre class='clipboard'>
+jig('.block').click().wiggle();
+				</pre>
+			</div>
+			<div id='zigMenu' class='col-md-2'>
+				<h3>Built In Zigs</h3>
+					<ul>
+						<li>wiggle();</li>
+						<li>wiggle();</li>
+						<li>wiggle();</li>
+						<li>wiggle();</li>
+						<li>wiggle();</li>
+					</ul>
+			</div>
+		</div>
+
+	</div>
+
+	<div id='getit' class='row'>
+		<form action ='http://www.github.com/agoodnight/jig'>
+			<input type='submit' value = 'GitHub Repository'>
+		</form>
+		<span style='color:red;'>JigLite is still in alpha, so there is no stable release yet</span>
+	</div>
+
+	<div id='docs' class='container'>
+
+		<div class='row'>
+			<h1>Jigs, Zigs & Ziggles</h1>
+			<p>In the past, applications like flash made it easy to manage animations intended for web, using an actual timeline interface. However since then flash has become rather 'cluncky' and expensive to boot. The concept behind these crazy names is to mimick that timeline, but in a way that you can keep in you head. So each of these crazy names have a relationship with one another.</p>
+
+			<p>Enter TimelineLite, an intuitve animation platform. TimelineLite is a very powerful platform which you can learn more about at greensock.com. By using TimelineLite as Jigs core functionality, Jig actually extends TImelineLite for a specific purpose, so this means you can control zigs and ziggles with TimelineLites native functions like 'play()' and 'totalDuration()'</p>
+
+			<pre> jig();</pre>
+			<p>A jig is the object that contains tha animation for a particular DOM element. In theory ( since Jig is still in alpha) You can have as many jigs as you want for a DOM element, but it is easier just to append all your animation to the DOM element in one chain. The jig exhists so the developer can simply inspect the jig's object and have all the information and control needed of the jigs DOM elements animations. SO a jig holds the timeline that is related to the jigs DOM element and then you can append that timeline to any other timeline you wish, using TimelineLite.</p>
+
+			<pre> buildZig();</pre>
+			<p>Zigs are timelines that control a preset animation like 'wiggle', each instance of 'wiggle has it's own Zig.</p>
+
+			<pre>Ziggle</pre>
+			<p>Finally Ziggles are the tiny pieces of a zig animation, if your zig animation is part of a jig that is targeting an arry of items, like a class, then your zig will have many ziggles, each ziggle related to each item in your jigs array of DOM elements, however the zig will still be the primary cpontroller of all these ziggles.</p>
+
+			<p>So in conclusion, these quick little words exhist to distiguish between a potentially confusing system of anonymous instances of timelines created by TimelineLite. They just make it more realtable by giving each anonaymous timeline a standardized label.</p>
+
+
+		</div>
+
+		<div class='row'>
+			<h1>jig</h1>
+			<p>jig(page element);</br>A page element can be identified by either it's class, id, or it's type (tagname). Once you have created a jig instance with jig(), you can then append jigs constructor functions to utilize jigs features. buildZig is the base function for constructors like 'wiggle', 'jump' and 'plop'. These are all buildZig instances, the only reason they exhist is to make it shorter and sweeter when writing the behavior.</p>
+
+			<pre> jig(page element).buildZig() //wiggle().jump().plop()</pre>
+		</div>
+
+		<div class='row'>
+			<h1>buildZig</h1>
+			<p>jig(page element);</br>A page element can be identified by either it's class, id, or it's type (tagname). Once you have created a jig instance with jig(), you can then append jigs constructor functions to utilize jigs features. buildZig is the base function for constructors like 'wiggle', 'jump' and 'plop'. These are all buildZig instances, the only reason they exhist is to make it shorter and sweeter when writing the behavior.</p>
+
+			<pre> jig(page element).buildZig() //wiggle().jump().plop()</pre>
+		</div>
+
+		<div class='row'>
+			<h1>wiggle</h1><h4>and other preset animations</h4>
+			<p>jig(page element);</br>A page element can be identified by either it's class, id, or it's type (tagname). Once you have created a jig instance with jig(), you can then append jigs constructor functions to utilize jigs features. buildZig is the base function for constructors like 'wiggle', 'jump' and 'plop'. These are all buildZig instances, the only reason they exhist is to make it shorter and sweeter when writing the behavior.</p>
+
+			<pre> jig(page element).buildZig() //wiggle().jump().plop()</pre>
+		</div>
+
+		<div class='row'>
+			<h1>mouse</h1>
+			<p>jig(page element);</br>A page element can be identified by either it's class, id, or it's type (tagname). Once you have created a jig instance with jig(), you can then append jigs constructor functions to utilize jigs features. buildZig is the base function for constructors like 'wiggle', 'jump' and 'plop'. These are all buildZig instances, the only reason they exhist is to make it shorter and sweeter when writing the behavior.</p>
+
+			<pre> jig(page element).buildZig() //wiggle().jump().plop()</pre>
+		</div>
+
+		<div class='row'>
+			<h1>onComplete</h1>
+			<p>jig(page element);</br>A page element can be identified by either it's class, id, or it's type (tagname). Once you have created a jig instance with jig(), you can then append jigs constructor functions to utilize jigs features. buildZig is the base function for constructors like 'wiggle', 'jump' and 'plop'. These are all buildZig instances, the only reason they exhist is to make it shorter and sweeter when writing the behavior.</p>
+
+			<pre> jig(page element).buildZig() //wiggle().jump().plop()</pre>
+		</div>
+
+	</div>
+</div>
+
+</body>
+
+
+
+<script src='vendors/greensock/TweenLite.min.js'></script>
+<script src='vendors/greensock/TimelineLite.min.js'></script>
+<script src='vendors/greensock/plugins/CSSPlugin.min.js'></script>
+<script src='vendors/greensock/utils/Draggable.min.js'></script>
+<script src='jigLite.0.3.5.gs.js' type='text/javascript'></script>
+<script>
+
+var wiggle = jig('.block').click().wiggle();
+
+</script>
+</html>

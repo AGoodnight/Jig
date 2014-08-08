@@ -42,23 +42,20 @@ var f2 = new Jig('#flipper')
 			.wiggle('lively',{},10)
 			.play();*/
 
-var h = new Jig('#seal').wiggle('feverishly');
+/*var h = new Jig('#seal').wiggle('feverishly');
  
 var g = new Jig('#seal', {name:'Seals'})
 			.mouse('self',false,'rollover')
 			.wiggle('lively')
-			
+			*/
 
-var t = new Jig('.dolphin', {name:'Dolphins'})
-
+var t = new jig('.dolphin', {name:'Dolphins'})
 			.mouse('#sealion',true,'click')
 			.mouse('#seal',false,'click')
-			.wiggle('lively',{name:'live'},2).wiggle('lively',{name:'live'},4).wiggle('lively',{name:'live'},6)
-			.go();
+			.wiggle('lively')
+			.play();
 
 
-console.log( Jig('#seal').node[0].onmousedown )
-console.log( Jig('#seal').node[0].onmouseover )
 //console.log( g.instances);
 
 

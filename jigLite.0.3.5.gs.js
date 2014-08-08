@@ -26,14 +26,10 @@ Graphics are Zigs,
 and so on
 */
 
-/*To Do
-1. Parent Child Selector functionality
-*/
-
-	var nugget = 0;
-	//JIG
-	//===========================
-	Jig = function(nodeString,settings){
+	//======
+	// JIG
+	//======
+	jig = function(nodeString,settings){
 
 		var q = new TimelineLite();
 		
@@ -75,16 +71,96 @@ and so on
 		return q;	
 	};
 
-	//PUBLIC CONSTRUCTORS
 	//=====================
-	TimelineLite.prototype.wiggle = function(presetArr,settings,syncAt){
-		return this.buildZig('wiggle',presetArr,settings,syncAt);		
+	// PUBLIC CONSTRUCTORS
+	//=====================
+	TimelineLite.prototype.wiggle = function(preset,settings,syncAt){
+		return this.buildZig('wiggle',preset,settings,syncAt);		
 	};
-	TimelineLite.prototype.jump = function(presetArr,settings,syncAt){
-		return this.buildZig('jump',presetArr,settings,syncAt);
+	TimelineLite.prototype.jump = function(preset,settings,syncAt){
+		return this.buildZig('jump',preset,settings,syncAt);
 	};
-	TimelineLite.prototype.plop = function(presetArr,settings,syncAt){
-		return this.buildZig('plop',presetArr,settings,syncAt);
+	TimelineLite.prototype.plop = function(preset,settings,syncAt){
+		return this.buildZig('plop',preset,settings,syncAt);
+	};
+
+	// these are just handy
+
+	TimelineLite.prototype.click = function(trigger,toggle){
+		return this.mouse(trigger,toggle,'click');
+	};
+	TimelineLite.prototype.rollover = function(trigger,toggle){
+		return this.mouse(trigger,toggle,'rollover');
+	};
+
+	TimelineLite.prototype.onComplete = function(func,delay){
+		setTimeout(function(){
+			func();
+		},this.totalDuration()*1000)
+
+		return this;
+	};
+
+	//================================================
+	// PUBLIC FUNCTIONS/CONSTRUCTORS (ADVANCED USERS)
+	//================================================
+	TimelineLite.prototype.buildZig = function(type,pre,set,sa){	
+
+		var settings, 
+			preset, 
+			syncAt;
+
+		// Handle variation in passed arguments
+		// ------------------------------------------------------
+		if(typeof pre === 'string' && typeof set === 'object' && typeof sa === 'number'){
+			preset = pre;
+			settings = set;
+			syncAt = sa;
+		}else if(typeof pre === 'object' && typeof set === 'number' ){
+			preset = 'lively';
+			settings = pre;
+			syncAt = set;
+		}else if(typeof pre === 'string' && typeof set === 'number'){
+			preset = pre;
+			settings = undefined;
+			syncAt = set;
+		}else if(typeof pre === 'object'){
+			preset = 'lively';
+			settings = pre;
+			syncAt = 0;
+		}else if(typeof pre === 'number'){
+			preset = 'lively';
+			settings = undefined;
+			syncAt = pre;
+		}else if(typeof pre === 'string'){
+			preset = pre;
+			settings = undefined;
+			syncAt = 0;
+		}else if(pre === undefined){
+			preset = 'lively';
+			settings = undefined;
+			syncAt = 0;
+		}
+		// ------------------------------------------------------
+		// end handle arguments
+
+		var q = new ZigAnimation(this,type,preset,settings);
+		
+		// handle if syncAt is not defined
+		// ------------------------------------------------------
+		if(syncAt != undefined){
+			this.add(q,syncAt);
+		}else{
+			this.add(q,this.startAt);
+		}
+
+		// startAt is set when the Zig is made within the ZigAnimation constructor
+		this.startAt+=q.startAt;
+		this.instances.push(q);
+
+		// chaining
+		// ------------------------------------------------------
+		return this;
 	};
 
 	TimelineLite.prototype.mouse = function(trigger,tog,method){
@@ -145,44 +221,31 @@ and so on
 
 		return _t;
 	};
-	TimelineLite.prototype.onComplete = function(func,delay){
-		setTimeout(function(){
-			func();
-		},this.totalDuration()*1000)
 
-		return this;
-	};
+	/*
+	Each Jig, Zig and Ziggle Object has a data object, provided by TimelineLite, 
+	a '_complete' boolean is in each one, this was added to allow looping and prevent animation stacking.
+	*/
 
+	// Here we extend some of TimelineLite's native functions to include variables needed to handle jigs and zigs.
+	TimelineLite.prototype.play = (function(_super){
+		return function(){
+			this.data._active = true;
+			return _super.apply(this,arguments);
+		};
+	})(TimelineLite.prototype.play);
 
-
-	//PUBLIC FUNCTIONS/CONSTRUCTORS (ADVANCED USERS)
-	//================================================
-	TimelineLite.prototype.buildZig = function(type,presetArr,settings,syncAt){	
-		
-		var q = new ZigAnimation(this,type,presetArr,settings);
-		
-		if(syncAt != undefined){
-			this.add(q,syncAt);
-		}else{
-			this.add(q,this.startAt);
+	TimelineLite.prototype.pause = (function(_super){	
+		return function(){
+			this.data._active = false
+			return _super.apply(this,arguments);
 		}
+	})(TimelineLite.prototype.pause);
 
-		this.startAt+=q.startAt;
-		this.instances.push(q);
-		return this;
-	};
 
-	// these functions are _complete status independent
-	TimelineLite.prototype.go = function(){
-		this.data._active = true;
-		this.play();
-	};
-	TimelineLite.prototype.halt = function(){
-		this.data._active = false
-		this.pause();
-	};
+	// This function was built to allow you to add a TimelineLite instance ANYWHERE on an already instatiated TimelineLite instance.
 	TimelineLite.prototype.sync = function(child,time){
-	
+		
 		var s = parseInt(time*1000)/1000;
 		var td = this.totalDuration();
 		var g;
@@ -235,9 +298,9 @@ and so on
 			}
 	};
 
-
-	//PRIVATE CONSTRUCTORS
-	//==============
+	//======================
+	// PRIVATE CONSTRUCTORS
+	//======================
 	function Zig(settings){
 		
 		var q = new TimelineLite();
@@ -456,9 +519,9 @@ and so on
 		return q;
 	};
 
-
-	//PRIVATE FUNCTIONS
-	//============================
+	//==================
+	// PRIVATE FUNCTIONS
+	//==================
 	nodeSelector = function(nodeString){
 		//https://developer.mozilla.org/en-US/docs/Web/API/document.querySelectorAll
 
@@ -581,8 +644,9 @@ and so on
 		return s;
 	};	
 
-	//PRESETS
-	//============================
+	//=========
+	// PRESETS
+	//=========
 	var library = {
 			// Most presets will support 3D transform
 			wiggle:{
