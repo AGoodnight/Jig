@@ -86,10 +86,10 @@ and so on
 
 	// these are just handy
 
-	TimelineLite.prototype.click = function(trigger,toggle){
+	TimelineLite.prototype.click = function(toggle,trigger){
 		return this.mouse(trigger,toggle,'click');
 	};
-	TimelineLite.prototype.rollover = function(trigger,toggle){
+	TimelineLite.prototype.rollover = function(toggle,trigger){
 		return this.mouse(trigger,toggle,'rollover');
 	};
 
