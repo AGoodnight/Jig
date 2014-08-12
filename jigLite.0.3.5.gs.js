@@ -42,6 +42,7 @@ and so on
 			_endAt:0,
 			_timeline:undefined,
 			_toggle:undefined,
+			_type:'default', // default & piggyback
 
 			_latestZig:0,
 
@@ -93,6 +94,15 @@ and so on
 
 		var rr = (x-(z*r))
 		console.log(rr)
+
+		/*
+		if(r = 0){
+			rr = totalduration*time
+		}else{
+			var c = td*r
+			rr = time-c
+		}
+		*/
 
 		return Math.round(rr*1000)/1000;
 
