@@ -116,6 +116,10 @@ and so on
 			preset = pre;
 			settings = set;
 			syncAt = sa;
+		}else if(typeof pre === 'string' && typeof set === 'object'){
+			preset = pre;
+			settings = set;
+			syncAt = 0;
 		}else if(typeof pre === 'object' && typeof set === 'number' ){
 			preset = 'lively';
 			settings = pre;
@@ -489,8 +493,15 @@ and so on
 
 			for(var n in jig.node){
 
+				
 				var ziggle = new Ziggle();
-				ziggle = q.data._preset[0].apply(this, [ziggle, q, n, jig, stagger]);
+
+				ziggle = q.data._preset[0].apply(this, [ziggle, q.data, jig.node[n], stagger]);
+				ziggle.call(function(){
+					
+					ziggle.loop(n);
+				});
+
 				ziggle.data._presettings = [ziggle,q,n,jig,0];
 				ziggle.data._reps = q.data._reps;
 				ziggle.data._repeat = q.data._repeat;
@@ -676,25 +687,14 @@ and so on
 					}
 				},
 
-				build:function(ziggle,zig,index,jig,delay){
+				build:function(ziggle,v,actor,delay){
 
-					actor = jig.node[index];
-					//console.log(jig.node[index])
-					//console.log(actor)
-
-					// our settings represented by a simple 'v'
-					// ---------------------------------------
-					v = zig.data;
-					//console.log('repeat: '+v._repeat)
-
-					// our total duration split into the neccessary chunks
-					// ---------------------------------------------------
-					s = [
-						v._speed/8,
-						v._speed/7,
-						v._speed/6,
+					var s=[
 						v._speed/5,
-						v._speed/4
+						v._speed/5,
+						v._speed/5,
+						v._speed/5,
+						v._speed/5
 					];
 
 					ziggle.add(
@@ -738,11 +738,6 @@ and so on
 							ease:v._e
 						})
 					);
-					ziggle.call(function(){
-						ziggle.loop(index);
-						//console.log(ziggle)
-					})
-
 					return ziggle;
 				}
 			},

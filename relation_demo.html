@@ -1,0 +1,88 @@
+<html>
+<link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,400,700' rel='stylesheet' type='text/css'>
+<style>
+
+*{
+	font: 700 70px 'Open Sans',sans-serif;
+	position:relative;
+}
+
+
+body{
+	color:white;
+	font-size:70px;
+	background:black;
+}
+
+.demo{
+	width:1200px;
+	overflow:hidden;
+	background:rgb(40,40,40);
+	margin:0 auto;
+
+	text-align:center;`
+}
+.jig{
+	display:inline-block;
+	padding:20px;
+	border:dashed red 1px;
+}
+.zig{
+	display:inline-block;
+	padding:20px;
+	border:dashed red 1px;
+}
+.ziggle{
+	display:inline-block;
+	padding:20px;
+	border:dashed red 1px;
+}
+
+.container{
+	display:inline-block;
+	padding:100px;
+	margin:0 auto;
+}
+
+p{
+	font-size:14px;
+}
+
+</style>
+
+<body>
+<div class='demo'>
+	<div class='container'>
+	<div id='jig' class='jig'>jig
+	<div class='zig'>zig
+	<div class='ziggle'>ziggle
+	</div>
+	</div>
+	</div>
+	</div>
+</div>
+<div>
+</div>
+</body>
+
+<script src='vendors/jquery-1.11.1.min.js'></script>
+<script src='vendors/greensock/TweenLite.min.js'></script>
+<script src='vendors/greensock/TimelineLite.min.js'></script>
+<script src='vendors/greensock/plugins/CSSPlugin.min.js'></script>
+<script src='jigLite.0.3.5.gs.js' type='text/javascript'></script>
+<script>
+	
+	var jigs = [
+		//jig('.jig').wiggle('calmly',{speed:2,repeat:999999999}),
+		jig('.zig').wiggle('calmly',{speed:1,repeat:80}),
+		jig('.ziggle').wiggle('calmly',{speed:.5,repeat:80})
+	];
+
+	for(var i in jigs){
+		jigs[i].play();
+	}
+
+</script>
+
+
+</html>
