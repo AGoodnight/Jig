@@ -25,17 +25,34 @@ body{
 .jig{
 	display:inline-block;
 	padding:20px;
-	border:dashed red 1px;
 }
+
+.timeline{
+	display:block;
+	bottom:5px;
+	left:-5px;
+	height:5%;
+	width:100%;
+	position:absolute;
+}
+
+#zig{
+	background:rgba(0,200,100,.7);
+}
+#jig{
+	background:rgba(200,0,0,.7);
+}
+#ziggle{
+	background:rgba(0,200,260,.7);
+}
+
 .zig{
 	display:inline-block;
 	padding:20px;
-	border:dashed red 1px;
 }
 .ziggle{
 	display:inline-block;
 	padding:20px;
-	border:dashed red 1px;
 }
 
 .container{
@@ -51,17 +68,26 @@ p{
 </style>
 
 <body>
+
 <div class='demo'>
 	<div class='container'>
-	<div id='jig' class='jig'>jig
+	<div class='jig'>jig
+		<div id='jig' class='timeline'></div>
+
 	<div class='zig'>zig
+		<div id='zig' class='timeline'></div>
+
 	<div class='ziggle'>ziggle
+		<div id='ziggle' class='timeline'></div>
 	</div>
 	</div>
 	</div>
+
 	</div>
+
 </div>
 <div>
+
 </div>
 </body>
 
@@ -71,12 +97,47 @@ p{
 <script src='vendors/greensock/plugins/CSSPlugin.min.js'></script>
 <script src='jigLite.0.3.5.gs.js' type='text/javascript'></script>
 <script>
+
+
 	
 	var jigs = [
-		//jig('.jig').wiggle('calmly',{speed:2,repeat:999999999}),
-		jig('.zig').wiggle('calmly',{speed:1,repeat:80}),
-		jig('.ziggle').wiggle('calmly',{speed:.5,repeat:80})
+		jig('.ziggle').wiggle().wiggle({repeat:6},.1).wiggle(5) // piggyback = true -- a function that would remove the sync option and automaticlly sync the zigs based on thier position in the chain, one after another
 	];
+
+	var jigW = parseInt(
+			$('#jig').css('width')
+			);
+
+	var zigW = parseInt(
+			$('#zig').css('width')
+			);
+
+	var ziggleW = parseInt(
+			$('#ziggle').css('width')
+			);
+
+	var g = setInterval(function(){ 
+
+			// Make this an internal function at some point.
+
+			var zigTime = function(){
+				if(jigs[0].data._latestZig.data._repeat>0){
+					return jigs[0].data._latestZig.time()/(jigs[0].data._latestZig.data._speed*jigs[0].data._latestZig.data._repeat);
+				}else{
+					return jigs[0].data._latestZig.time()/(jigs[0].data._latestZig.data._speed);
+				}
+			}
+
+			var zigT = zigTime();
+			var jigT = jigs[0].time()/jigs[0].totalDuration();
+			var ziggleT =jigs[0].data._latestZiggle.time()/jigs[0].data._latestZiggle.totalDuration()
+
+
+			$('#jig').css('width',jigW*jigT+'px');
+			$('#zig').css({'width':zigW*zigT+'px'});
+			$('#ziggle').css({'width':ziggleW*ziggleT+'px'});
+
+	},10);
 
 	for(var i in jigs){
 		jigs[i].play();

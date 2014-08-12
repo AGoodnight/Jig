@@ -43,9 +43,12 @@ and so on
 			_timeline:undefined,
 			_toggle:undefined,
 
+			_latestZig:0,
+
 			//timing
 			_delay:0,
 			_speed:undefined,
+			_fd:0, //final duration after repeats have been processed
 
 			//state
 			_active:false
@@ -64,12 +67,40 @@ and so on
 
 		q.startAt = 0;
 		q.zigs = [];
-		q.lastZiggle = undefined;
 
 		q.pause();
 
 		return q;	
 	};
+
+	TimelineLite.prototype.loopTime = function(){
+
+		if(this.data._td == undefined){
+			this.data._td = this.totalDuration();
+			//console.log(this.data._td)
+		}
+
+		var x = this.time();
+		var y = this.totalDuration();
+		var z = this.data._td;
+
+		var r;
+		if(this.data._reps = 0){
+			r = 1;
+		}else{
+			r = this.data._reps;
+		}
+
+		var rr = (x-(z*r))
+		console.log(rr)
+
+		return Math.round(rr*1000)/1000;
+
+	}
+
+	TimelineLite.prototype.loopDuration = function(){
+		return this.data._td;
+	}
 
 	//=====================
 	// PUBLIC CONSTRUCTORS
@@ -110,6 +141,7 @@ and so on
 			preset, 
 			syncAt;
 
+		// ------------------------------------------------------
 		// Handle variation in passed arguments
 		// ------------------------------------------------------
 		if(typeof pre === 'string' && typeof set === 'object' && typeof sa === 'number'){
@@ -145,22 +177,12 @@ and so on
 			settings = undefined;
 			syncAt = 0;
 		}
-		// ------------------------------------------------------
-		// end handle arguments
 
+		// ------------------------------------------------------
+		// Create a Preset Zig
+		// ------------------------------------------------------
 		var q = new ZigAnimation(this,type,preset,settings);
-		
-		// handle if syncAt is not defined
-		// ------------------------------------------------------
-		if(syncAt != undefined){
-			this.add(q,syncAt);
-		}else{
-			this.add(q,this.startAt);
-		}
-
-		// startAt is set when the Zig is made within the ZigAnimation constructor
-		this.startAt+=q.startAt;
-		this.instances.push(q);
+		this.add(q,syncAt);
 
 		// chaining
 		// ------------------------------------------------------
@@ -315,7 +337,6 @@ and so on
 		q.ziggles = [];
 		q.zigglesComplete;
 		q.zigglesDuration;
-
 		// Zig Data
 		// -----------------
 		q.data = {
@@ -328,6 +349,8 @@ and so on
 				_toggle:undefined,
 				_parent:undefined,
 				_preset:undefined,
+
+				_latestZiggle:0,
 
 				//relative
 				_amplitude:undefined,
@@ -388,7 +411,7 @@ and so on
 				
 				//repeat
 				_reps:0,
-				_repeat:undefined,
+				_repeat:0,
 
 				//state
 				_active:false,
@@ -437,32 +460,54 @@ and so on
 
 			var looping = false;
 
-			var thisJig = this.data._parent.data._parent
-			var thisZig = this.data._parent
+			var thisJig = q.data._parent.data._parent
+			var thisZig = q.data._parent
 
-			var g = this.data._reps;
-			var r = this.data._repeat;
-
-			if( r > g ){
-				
-				this.data._reps++;
-				var func = thisZig.data._preset[0].apply(this,this.data._presettings)
-			
-			}else{
-				thisZig.data._complete = true;
-				thisZig.data._active = false;
-					//	console.log('++++> Zig Complete: '+thisZig.data._name)
+			// -------------------------------------------
+			// Set Iteration Duration
+			// -------------------------------------------
+			if(thisZig.data._td === undefined){
+				thisZig.data._td = thisZig.totalDuration();
 			}
 
-			var jDur = thisJig.totalDuration();
-			var jTime = thisJig.time();
+			// -------------------------------------------
+			// Set Zig Rep status, 
+			// Runs after LAST Ziggle in it's Zig calls this function
+			// -------------------------------------------
+			if(this.data._id[1] === this.data._parent.ziggles.length-1){
+				thisZig.data._reps++
+			}
 
-
+			// -------------------------------------------
+			// Looping?
+			// -------------------------------------------
 			if(this.data._id[0] === thisJig.lastZiggle){
 				looping = true;
 			}
 			thisJig.lastZiggle = this.data._id[0];
 
+			// -------------------------------------------
+			// Handle Need to Loop
+			// -------------------------------------------
+			var g = q.data._reps;
+			var r = q.data._repeat-1;
+
+			if( r > g ){
+				
+				q.data._reps++;
+				var func = thisZig.data._preset[0].apply(q,q.data._presettings)
+			
+			}else{
+				thisZig.data._complete = true;
+				thisZig.data._active = false; 
+					//	console.log('++++> Zig Complete: '+thisZig.data._name)
+			}
+
+			// -------------------------------------------
+			// Loops Complete?	
+			// -------------------------------------------
+			var jDur = thisJig.totalDuration();
+			var jTime = thisJig.time();
 			if(jDur === jTime && this.data._id[1] === (thisJig.node.length-1) ){
 				thisJig.data._complete = true;
 				thisJig.data._active = true;
@@ -488,21 +533,20 @@ and so on
 		q.data._preset = new Preset(behavior,preset);
 		q.data = filterSettings(q.data._preset[1],q.data); 
 		q.startAt = 0;
+		q.data._fd = q.data._speed*q.data._repeat;
+		q.data._id = jig.zigs.length;
+		q.data._self = q;
+		q.data._totalRuns = q.data._repeat+1
 
 		offset = q.data._stagger;
 
-			for(var n in jig.node){
+		for(var n in jig.node){
 
 				
 				var ziggle = new Ziggle();
 
-				ziggle = q.data._preset[0].apply(this, [ziggle, q.data, jig.node[n], stagger]);
-				ziggle.call(function(){
-					
-					ziggle.loop(n);
-				});
-
-				ziggle.data._presettings = [ziggle,q,n,jig,0];
+				ziggle = q.data._preset[0].apply(this, [ziggle, q.data, jig.node[n], stagger, n]);
+				ziggle.data._presettings = [ziggle,q.data,jig.node[n],0,n];
 				ziggle.data._reps = q.data._reps;
 				ziggle.data._repeat = q.data._repeat;
 				ziggle.data._parent = q;
@@ -517,16 +561,12 @@ and so on
 				q.add(ziggle,stagger);
 				q.ziggles.push(ziggle);
 
-			}
+		}
 
-			if(q.data._repeat > 0){
-				q.startAt = q.totalDuration()*q.data._repeat
-			}else{
-				q.startAt = q.totalDuration()
-			}
 
-			jig.zigs.push(q);
-		
+		jig.zigs.push(q);
+
+
 		return q;
 	};
 
@@ -668,27 +708,25 @@ and so on
 						_speed:1, 
 						_amplitude:10,
 						_rotation:20,
-						_origin:'50% 50%',
-						_repeat:0
+						_origin:'50% 50%'
 					},
 					calmly:{
 						_speed:3, 
 						_amplitude:3,
 						_rotation:8,
-						_origin:'50% 50%',
-						_repeat:0
+						_origin:'50% 50%'
 					},
 					feverishly:{
 						_speed:.2, 
 						_amplitude:10,
 						_rotation:0,
-						_origin:'50% 50%',
-						_repeat:5
+						_origin:'50% 50%'
 					}
 				},
 
-				build:function(ziggle,v,actor,delay){
+				build:function(ziggle,v,actor,delay,index){
 
+					// Your custom setting modifications
 					var s=[
 						v._speed/5,
 						v._speed/5,
@@ -697,6 +735,17 @@ and so on
 						v._speed/5
 					];
 
+					// Required
+					// ----------------------------------------
+					ziggle.call(function(){
+						v._loopStatus = 0;
+						v._parent.data._latestZig = v._self;
+						v._parent.data._latestZiggle = ziggle;
+					});
+
+					// ----------------------------------------
+
+					// Your Animation
 					ziggle.add(
 						TweenLite.to(actor,s[0],{
 							transformOrigin:v._origin,
@@ -738,6 +787,15 @@ and so on
 							ease:v._e
 						})
 					);
+
+					// Required
+					// ----------------------------------------
+					ziggle.call(function(){
+						//v._loopStatus = 1;
+						ziggle.loop(index);
+					});
+					// ----------------------------------------
+
 					return ziggle;
 				}
 			},
