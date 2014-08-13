@@ -17,42 +17,42 @@ body{
 .demo{
 	width:1200px;
 	overflow:hidden;
-	background:rgb(40,40,40);
+	background:rgb(10,10,10);
 	margin:0 auto;
-
-	text-align:center;`
 }
 .jig{
 	display:inline-block;
 	padding:20px;
+	color:rgb(100,200,0);
 }
 
 .timeline{
 	display:block;
-	bottom:5px;
-	left:-5px;
-	height:5%;
+	padding:10px;
+	margin:0;
 	width:100%;
-	position:absolute;
+	position:relative;
 }
 
 #zig{
-	background:rgba(0,200,100,.7);
+	background:rgb(100,200,0);
 }
 #jig{
-	background:rgba(200,0,0,.7);
+	background:rgb(100,200,0);
 }
 #ziggle{
-	background:rgba(0,200,260,.7);
+	background:rgb(100,200,0);
 }
 
 .zig{
 	display:inline-block;
 	padding:20px;
+	color:rgb(0,200,100);
 }
 .ziggle{
 	display:inline-block;
 	padding:20px;
+	color:rgb(0,200,260);
 }
 
 .container{
@@ -62,7 +62,10 @@ body{
 }
 
 p{
-	font-size:14px;
+	font:400 14px verdana,sans-serif;
+	text-align:left;
+	padding:0;
+	margin:0;
 }
 
 </style>
@@ -71,19 +74,11 @@ p{
 
 <div class='demo'>
 	<div class='container'>
-	<div class='jig'>jig
-		<div id='jig' class='timeline'></div>
+	<div class='jig'>jig</div>
 
-	<div class='zig'>zig
-		<div id='zig' class='timeline'></div>
-
-	<div class='ziggle'>ziggle
-		<div id='ziggle' class='timeline'></div>
-	</div>
-	</div>
-	</div>
-
-	</div>
+	<div id='jig' class='timeline'></div>
+	<div id='zig' class='timeline'></div>
+	<div id='ziggle' class='timeline'></div>
 
 </div>
 <div>
@@ -97,46 +92,51 @@ p{
 <script src='vendors/greensock/plugins/CSSPlugin.min.js'></script>
 <script src='jigLite.0.3.5.gs.js' type='text/javascript'></script>
 <script>
-
-
 	
 	var jigs = [
-		jig('.ziggle').wiggle().wiggle({repeat:6},.1).wiggle(5) // piggyback = true -- a function that would remove the sync option and automaticlly sync the zigs based on thier position in the chain, one after another
+		jig('.jig',{name:'mydemo',type:'piggyback'})
+			.click(true)
+			.wiggle()
+			.wiggle({speed:2,repeat:2})
+			.wiggle({speed:.4,repeat:10})
+			.wiggle()
 	];
 
-	var jigW = parseInt(
-			$('#jig').css('width')
-			);
-
-	var zigW = parseInt(
-			$('#zig').css('width')
-			);
-
-	var ziggleW = parseInt(
-			$('#ziggle').css('width')
-			);
+	var jigW = parseInt($('#jig').css('width'));
+	var zigW = parseInt($('#zig').css('width'));
+	var ziggleW = parseInt($('#ziggle').css('width'));
 
 	var g = setInterval(function(){ 
 
 			// Make this an internal function at some point.
 
-			var zigTime = function(){
-				if(jigs[0].data._latestZig.data._repeat>0){
-					return jigs[0].data._latestZig.time()/(jigs[0].data._latestZig.data._speed*jigs[0].data._latestZig.data._repeat);
+				if(jigs[0].data._latestZig === 0){
+					if(jigs[0].zigs[0]._repeat>0){
+						zigT = jigs[0].zigs[0].time()/(jigs[0].zigs[0].data._speed*jigs[0].zigs[0].data._repeat);
+					}else{
+						zigT = jigs[0].zigs[0].time()/(jigs[0].zigs[0].data._speed);
+					}
+
+					ziggleL = jigs[0].zigs[0].ziggleTime()/jigs[0].zigs[0].data._speed; 
+
 				}else{
-					return jigs[0].data._latestZig.time()/(jigs[0].data._latestZig.data._speed);
+					if(jigs[0].data._latestZig.data._repeat>0){
+						zigT = jigs[0].data._latestZig.time()/(jigs[0].data._latestZig.data._speed*jigs[0].data._latestZig.data._repeat);
+					}else{
+						zigT = jigs[0].data._latestZig.time()/(jigs[0].data._latestZig.data._speed);
+					}
+
+					ziggleL = jigs[0].data._latestZiggle.ziggleTime()/jigs[0].data._latestZig.data._speed; 
 				}
-			}
 
-			var zigT = zigTime();
 			var jigT = jigs[0].time()/jigs[0].totalDuration();
-			var ziggleT =jigs[0].data._latestZiggle.time()/jigs[0].data._latestZiggle.totalDuration()
 
+			// KNOWN ISSUES
+			// ziggleL is coming out negative after restart???
 
 			$('#jig').css('width',jigW*jigT+'px');
 			$('#zig').css({'width':zigW*zigT+'px'});
-			$('#ziggle').css({'width':ziggleW*ziggleT+'px'});
-
+			$('#ziggle').css({'width':ziggleW*ziggleL+'px'});
 	},10);
 
 	for(var i in jigs){

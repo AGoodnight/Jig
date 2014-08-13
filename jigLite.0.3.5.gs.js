@@ -33,88 +33,56 @@ and so on
 
 		var q = new TimelineLite();
 		
+		// Data Intialization
+		// -------------------------
 		q.data = {
 
-			_nodeType:'JIG',
-			// Timeline setup
+			// attributes
 			_name:'untitled',
-			_startAt:0,
-			_endAt:0,
-			_timeline:undefined,
+			_type:'default',
+
+			// playback
+			_syncAt:0,
+			_cd:0,
 			_toggle:undefined,
-			_type:'default', // default & piggyback
 
-			_latestZig:0,
+			// internal state changes
+			_active:false,
 
-			//timing
-			_delay:0,
-			_speed:undefined,
-			_fd:0, //final duration after repeats have been processed
-
-			//state
-			_active:false
+			// internal tracking
+			_latestZig:0
 		};
 
-
 		q.data = replaceSettings(settings,q.data);
+		// -------------------------
 
+		// Jig attributes
 		q.defaultOverwrite = 'none';
-		q.type = 'jig'
+		q.type = 'JIG';
 
-		q.instances = [];
+		// Nodes
 		q.nodeString = nodeString;
 		q.node = nodeSelector(nodeString);
-		q.target = undefined;
 
-		q.startAt = 0;
+		// Instances
+		q.instances = [];
 		q.zigs = [];
 
 		q.pause();
-
 		return q;	
 	};
 
-	TimelineLite.prototype.loopTime = function(){
-
-		if(this.data._td == undefined){
-			this.data._td = this.totalDuration();
-			//console.log(this.data._td)
-		}
-
-		var x = this.time();
-		var y = this.totalDuration();
-		var z = this.data._td;
-
-		var r;
-		if(this.data._reps = 0){
-			r = 1;
-		}else{
-			r = this.data._reps;
-		}
-
-		var rr = (x-(z*r))
-		console.log(rr)
-
-		/*
-		if(r = 0){
-			rr = totalduration*time
-		}else{
-			var c = td*r
-			rr = time-c
-		}
-		*/
-
-		return Math.round(rr*1000)/1000;
-
+	TimelineLite.prototype.computedDuration = function(){
+		return this.data._cd;
 	}
 
-	TimelineLite.prototype.loopDuration = function(){
-		return this.data._td;
-	}
-
-	//=====================
+	//==========================================================
 	// PUBLIC CONSTRUCTORS
-	//=====================
+	//==========================================================
+
+	// ---------------------------------------------------------
+	// References to presets which call a buildZig constructor
+	// ---------------------------------------------------------
 	TimelineLite.prototype.wiggle = function(preset,settings,syncAt){
 		return this.buildZig('wiggle',preset,settings,syncAt);		
 	};
@@ -125,26 +93,32 @@ and so on
 		return this.buildZig('plop',preset,settings,syncAt);
 	};
 
-	// these are just handy
-
+	// ---------------------------------------------------------
+	// Some additional functionality
+	// ---------------------------------------------------------
 	TimelineLite.prototype.click = function(toggle,trigger){
 		return this.mouse(trigger,toggle,'click');
 	};
 	TimelineLite.prototype.rollover = function(toggle,trigger){
 		return this.mouse(trigger,toggle,'rollover');
 	};
-
 	TimelineLite.prototype.onComplete = function(func,delay){
-		setTimeout(function(){
+
+		/*setTimeout(function(){
 			func();
-		},this.totalDuration()*1000)
+		},this.totalDuration()*1000)*/
+
+		this.call(
+			func
+		);
 
 		return this;
 	};
 
-	//================================================
+
+	//=====================================================================================
 	// PUBLIC FUNCTIONS/CONSTRUCTORS (ADVANCED USERS)
-	//================================================
+	//=====================================================================================
 	TimelineLite.prototype.buildZig = function(type,pre,set,sa){	
 
 		var settings, 
@@ -189,16 +163,43 @@ and so on
 		}
 
 		// ------------------------------------------------------
-		// Create a Preset Zig
+		// Create a Zig and append to Jig (this)
 		// ------------------------------------------------------
 		var q = new ZigAnimation(this,type,preset,settings);
-		this.add(q,syncAt);
 
-		// chaining
 		// ------------------------------------------------------
+		// Handle Sync/Timing behavior
+		// ------------------------------------------------------
+		if(this.data._type == 'default'){
+			this.add(q,syncAt);
+
+		}else if(this.data._type == 'piggyback'){
+
+			var mtd
+
+			if(this.zigs[this.zigs.length-1] !== undefined){
+				
+				if(this.zigs[this.zigs.length-1].data._repeat>0){
+					mtd = this.zigs[this.zigs.length-1].totalDuration()*( (this.zigs[this.zigs.length-1].data._repeat-1) );
+				}else{
+					mtd = 0
+				}
+	
+			}else{
+				mtd = 0;
+			}
+
+			var startAt = parseInt(syncAt*1000)/1000;
+			var bias = ( parseInt(mtd*1000)/1000 )+startAt;
+			this.add(q,'+='+bias);
+		} 
+
+		// -------------------
+		// RETURN
+		// -------------------
+		this.zigs.push(q);
 		return this;
 	};
-
 	TimelineLite.prototype.mouse = function(trigger,tog,method){
 		
 		var _t = this;
@@ -240,14 +241,26 @@ and so on
 				case 'rollover':
 					if(_t.data._toggle){
 						_t.data._trigger[i].onmouseover = function(){
-							execute.apply(this,[_t]);
+							if(_t.data._active){
+								halt.apply(this,[_t]);
+							}else{
+								execute.apply(this,[_t]);
+							}
 						}
 						_t.data._trigger[i].onmouseout = function(){
-							halt.apply(this,[_t]);
+							if(_t.data._active){
+								halt.apply(this,[_t]);
+							}else{
+								execute.apply(this,[_t]);
+							}
 						};
 					}else{
 						_t.data._trigger[i].onmouseover = function(){
-							execute.apply(this,[_t]);
+							if(_t.data._active){
+								halt.apply(this,[_t]);
+							}else{
+								execute.apply(this,[_t]);
+							}
 						};
 					}
 				break;
@@ -280,24 +293,20 @@ and so on
 
 
 	// This function was built to allow you to add a TimelineLite instance ANYWHERE on an already instatiated TimelineLite instance.
-	TimelineLite.prototype.sync = function(child,time){
-		
+	TimelineLite.prototype.sync = function(child,time){	
 		var s = parseInt(time*1000)/1000;
 		var td = this.totalDuration();
 		var g;
 
 		if(td == s){
-			g = td-s; //console.log('+='+g);
+			g = td-s;
 			this.add(child,'+='+g);
-			//console.log('EQUAL TO --- '+jig.data.name+' --- '+zig.data.name+' --- '+jig.totalDuration());
 		}else if(td>s){	
-			g = td-s;//console.log('-='+g);
+			g = td-s;
 			this.add(child,'-='+g);
-			//console.log('GREATER THAN --- '+jig.data.name+' --- '+zig.data.name+' --- '+jig.totalDuration());
 		}else if(td<s){	
-			g = time-td; //console.log('+='+g);
+			g = time-td;
 			this.add(child,'+='+g);
-			//console.log('LESS THAN --- '+jig.data.name+' --- '+zig.data.name+' --- '+jig.totalDuration());
 		}
 	};
 
@@ -310,7 +319,6 @@ and so on
 			execute(_t);
 		}	
 	};
-
 	function execute(_t){
 		if(_t.data._complete){	
 			_t.data._complete = false;
@@ -325,7 +333,6 @@ and so on
 			}
 		}
 	};
-
 	function halt(_t){
 			
 			if(_t.data._active){
@@ -334,9 +341,10 @@ and so on
 			}
 	};
 
-	//======================
+	//===========================================================
 	// PRIVATE CONSTRUCTORS
-	//======================
+	//===========================================================
+
 	function Zig(settings){
 		
 		var q = new TimelineLite();
@@ -345,8 +353,7 @@ and so on
 		// Ziggle information
 		// -----------------
 		q.ziggles = [];
-		q.zigglesComplete;
-		q.zigglesDuration;
+
 		// Zig Data
 		// -----------------
 		q.data = {
@@ -354,9 +361,6 @@ and so on
 				_nodeType:'ZIG',
 				// Timeline setup
 				_name:undefined,
-				_startAt:undefined,
-				_endAt:undefined,
-				_toggle:undefined,
 				_parent:undefined,
 				_preset:undefined,
 
@@ -367,7 +371,6 @@ and so on
 				_life:undefined,
 
 				//timing
-				_delay:0,
 				_stagger:0,
 				_speed:undefined,
 
@@ -424,28 +427,21 @@ and so on
 				_repeat:0,
 
 				//state
-				_active:false,
-				_toggled:false
+				_active:false
 		};
-
 		q.data = replaceSettings(settings,q.data);
 
-		//loop
-		
+		// -------------------------------
+		// RETURN
+		// -------------------------------
 		return q;
 	};
-
 	function Ziggle(settings){
 		
 		var q = new TimelineLite();
 		q.defaultOverwrite = 'none';
 
-		// Ziggle information
-		// -----------------
-		var Complete = false;
-		var Duration = undefined;
-
-		// Zig Data
+		// Ziggle Data
 		// -----------------
 		q.data = {
 			
@@ -454,6 +450,9 @@ and so on
 				_name:undefined,
 				_parent:undefined,
 				_preset:undefined,
+
+				//timing
+				_cd:0,
 
 				//repeat
 				_reps:0,
@@ -494,10 +493,9 @@ and so on
 			if(this.data._id[0] === thisJig.lastZiggle){
 				looping = true;
 			}
-			thisJig.lastZiggle = this.data._id[0];
 
 			// -------------------------------------------
-			// Handle Need to Loop
+			// Handle Need to Loop a Ziggle
 			// -------------------------------------------
 			var g = q.data._reps;
 			var r = q.data._repeat-1;
@@ -505,12 +503,11 @@ and so on
 			if( r > g ){
 				
 				q.data._reps++;
-				var func = thisZig.data._preset[0].apply(q,q.data._presettings)
+				q = thisZig.data._preset[0].apply(q,q.data._presettings);
 			
 			}else{
 				thisZig.data._complete = true;
 				thisZig.data._active = false; 
-					//	console.log('++++> Zig Complete: '+thisZig.data._name)
 			}
 
 			// -------------------------------------------
@@ -520,39 +517,52 @@ and so on
 			var jTime = thisJig.time();
 			if(jDur === jTime && this.data._id[1] === (thisJig.node.length-1) ){
 				thisJig.data._complete = true;
-				thisJig.data._active = true;
+				thisJig.data._active = false;
+				q.data._td = undefined;
+				q.data._reps = 0;
 						console.log('====> Jig Complete: '+thisJig.data._name+' ---- zigs: '+this.data._id)
 			}
 
 		};
 		
+		// -------------------------------
+		// RETURN
+		// -------------------------------
 		return q;
 	};
-
 	function ZigAnimation(jig,behavior,preset,settings){
 
-		var timeline;
-		var q = new Zig(settings);
-		q.data._parent = jig;
-		var stagger;
-		var duration;
-		// Local variables
-		// ------------------------
+		var timeline,
+			stagger,
+			duration;
+
 		var loops = offset = stagger = 0
 
+		// -------------------------------
+		// Zig Creation
+		// -------------------------------
+		var q = new Zig(settings);
+
+		// -------------------------------
+		// Preset Assignment & Settings
+		// -------------------------------
 		q.data._preset = new Preset(behavior,preset);
-		q.data = filterSettings(q.data._preset[1],q.data); 
-		q.startAt = 0;
-		q.data._fd = q.data._speed*q.data._repeat;
+		q.data = filterSettings(q.data._preset[1],q.data);
+
+		// -------------------------------
+		// Zig Settings
+		// -------------------------------
+		q.data._parent = jig;
 		q.data._id = jig.zigs.length;
 		q.data._self = q;
-		q.data._totalRuns = q.data._repeat+1
 
+		// -------------------------------
+		// Ziggle Creation
+		// -------------------------------
 		offset = q.data._stagger;
 
 		for(var n in jig.node){
 
-				
 				var ziggle = new Ziggle();
 
 				ziggle = q.data._preset[0].apply(this, [ziggle, q.data, jig.node[n], stagger, n]);
@@ -562,31 +572,74 @@ and so on
 				ziggle.data._parent = q;
 				ziggle.data._id = [jig.zigs.length,parseInt(n)];
 				
+
+				// -----------------------------------
+				// Compute actual duration of ziggle
+				// -----------------------------------
+				if(q.data._repeat > 0){
+					ziggle.data._cd = q.data._speed*q.data._repeat+stagger
+				}else{
+					ziggle.data._cd = q.data._speed
+				}
+
+				// -------------------------------
+				// Stagger this ziggle if needed
+				// -------------------------------
 				if(offset === 'random'){
 					stagger = Math.random();
 				}else if(typeof offset ==='number'){
 					stagger = parseInt(n)*offset;
 				}
 
+
+				// -------------------------------
+				// Add ziggle to zig
+				// -------------------------------
 				q.add(ziggle,stagger);
 				q.ziggles.push(ziggle);
 
 		}
 
-
-		jig.zigs.push(q);
-
-
+		// -------------------------------
+		// RETURN
+		// -------------------------------
 		return q;
 	};
 
 	//==================
 	// PRIVATE FUNCTIONS
 	//==================
-	nodeSelector = function(nodeString){
-		//https://developer.mozilla.org/en-US/docs/Web/API/document.querySelectorAll
 
-		var DOM = document.body.childNodes
+	TimelineLite.prototype.ziggleTime = function(){
+
+
+		if(this.data._td == undefined){
+			this.data._td = this.totalDuration();
+		}
+
+		// Calculate Time in Ziggle fragment (loop)
+		// ----------------------------------------
+		var x = this.time();
+		var y = this.totalDuration();
+		var z = this.data._td;
+		var r = this.data._reps;
+
+		// KNOWN ISSUES
+		// upon rstart r is equal to it's previous count?????
+
+		var rr;
+
+		if(r === 0){
+			rr = x;
+		}else{
+			var c = z*r;
+			rr = x-c;
+		}
+		// ----------------------------------------
+
+		return Math.round(rr*1000)/1000;
+	};
+	nodeSelector = function(nodeString){
 
 		function removePrefix(o){
 			var arr=[];
@@ -594,17 +647,14 @@ and so on
 			var prefix;
 
 			switch(o[0]){
-					// if an id
 					case '#':
 						arr[1] = o.substr(1);
 						arr[0] = o[0];
 					break;
-					//if a class
 					case '.':
 						arr[1] = o.substr(1);
 						arr[0] = o[0];
 					break;
-					//if a tag or anything else
 					default:
 						arr[1] = o;
 						arr[0] = null;
@@ -619,18 +669,24 @@ and so on
 			var element;
 
 			switch(prefix){
-				// if an id
+				// -------------------------------
+				// If the prefix indicates an ID
+				// -------------------------------
 				case '#':
 					arr = [document.getElementById(name)];
 				break;
-				//if a class -- this is acting funny
+				// -------------------------------
+				// If the prefix indicates a Class
+				// -------------------------------
 				case '.':
 					element = Array.prototype.slice.call(document.getElementsByClassName(name));
 					for(var i in element){
 						arr.push(element[i]);
 					}
 				break;
-				//if a tag or anything else
+				// -----------------------------------------
+				// If the lack of a prefix indicates an Tag
+				// -----------------------------------------
 				default:
 					try{
 						element = Array.prototype.slice.call(document.getElementsByTagName(name));
@@ -644,31 +700,40 @@ and so on
 			return arr;
 		};
 
+		var DOM = document.body.childNodes;
 		var n = nodeString;
 		var splitN = n.split(' ');
 		var thisNode;
 
 		if(splitN.length < 2){
 
-			// simple selection
+			//-------------------------------------------------------------
+			// If we are not trying to get children of another DOM element
+			//-------------------------------------------------------------
 			var parent = removePrefix(splitN[0]);
 			thisNode = findNode(parent[0],parent[1]);
 			
 		}else{
-			// looking for node inside a parent
+
+			// INCOMPLETE ***************************
+
+			//-------------------------------------------------------------
+			// If we are trying to get the children of another DOM element
+			//-------------------------------------------------------------
 			var parent = removePrefix(splitN[0]);
 			var child = removePrefix(splitN[1]);
 
 			var firstNode = findNode(parent[0],parent[1]);
 			
-			//console.log('Elements ------')
-			
 			for(var i in firstNode){
 				var nodes = firstNode[i].childNodes;
-				//console.log(nodes)
 			}
 		}
 
+
+		// -------------------------------
+		// RETURN
+		// -------------------------------
 		return thisNode;
 	};
 	filterSettings = function(defaults,settings){
@@ -679,8 +744,7 @@ and so on
 			if(s[i] === undefined){
 				for(var j in defaults){
 					if(j === i){
-						s[i] = defaults[j];
-						
+						s[i] = defaults[j];		
 					}
 				}
 			}
@@ -696,18 +760,15 @@ and so on
 			for(var j in passed){
 				if('_'+j === i){
 					s['_'+j] = passed[j];
-
 				}
-			}
-			
-		}
-		
+			}	
+		}	
 		return s;
 	};	
 
-	//=========
+	//==============================================
 	// PRESETS
-	//=========
+	//==============================================
 	var library = {
 			// Most presets will support 3D transform
 			wiggle:{
@@ -748,11 +809,9 @@ and so on
 					// Required
 					// ----------------------------------------
 					ziggle.call(function(){
-						v._loopStatus = 0;
 						v._parent.data._latestZig = v._self;
 						v._parent.data._latestZiggle = ziggle;
 					});
-
 					// ----------------------------------------
 
 					// Your Animation
@@ -801,7 +860,6 @@ and so on
 					// Required
 					// ----------------------------------------
 					ziggle.call(function(){
-						//v._loopStatus = 1;
 						ziggle.loop(index);
 					});
 					// ----------------------------------------
@@ -820,7 +878,6 @@ and so on
 
 		return p;
 	};
-	
 
 
 
