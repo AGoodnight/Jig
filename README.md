@@ -13,7 +13,7 @@ Jig
 <br/>
 <hr/>
 <h1>Examples</h1>
-<p>The current iteration of the Jig project is <b>'JigLite'</b>. The next iteration will be called <b>JigMax</b> and will support canvas elements</p>
+<p>Jig is far from complete, it is my hope that it will allow easy layering of animations, much like flash at som epoin tin te future. However I would like to keep it independnet of Jquery, and that is a real challenege.</p>
 
 <p>Below is a a div that hops when you click it. It also pauses if you click it again.</p>
 
