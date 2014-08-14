@@ -44,7 +44,7 @@ jig('.starwars',{type:'piggyback'})
 </pre>
 <br/>
 
-<p>You can even add custom animation in the classic GSAP fashion by using the 'tween' zig.
+<p>You can even add custom animation in the classic GSAP fashion by using the 'tween' zig. just make sure to follow the syntax below
 <pre>
 jig('.rocko').tween( function(ziggle,actor){ 
 
