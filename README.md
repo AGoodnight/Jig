@@ -13,7 +13,6 @@ Jig
 <br/>
 <hr/>
 <h1>Examples</h1>
-<p>Jig is far from complete, it is my hope that it will allow easy layering of animations, much like flash at som epoin tin te future. However I would like to keep it independnet of Jquery, and that is a real challenege.</p>
 
 <p>Below is a a div that hops when you click it. It also pauses if you click it again.</p>
 
@@ -43,6 +42,9 @@ jig('.starwars',{type:'piggyback'})
         ease:'easeInOut'
       });
 </pre>
+<br/>
+
+<p>Jig is far from complete, it is my hope that it will allow easy layering of animations, much like flash at some point in the future. However I would like to keep it independnet of Jquery, and that is a real challenge.</p>
 <br/>
 
 <p>To learn more about GSAP, a javascript library complete with TimelineLite and Tweenlite, visit http://www.greensock.com/gsap-js/</p>
