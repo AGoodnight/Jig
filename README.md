@@ -16,7 +16,7 @@ Below is a a div that hops when you click it. It also pauses if you click it aga
 jig('#tng').click(true).hop();
 </pre>
 
-Below, the first argument refers to a preset variation of the hop preset, while last argument tells it 'when' (in seconds) to animate.
+Below, the first argument refers to a preset variation of the hop zig, while last argument tells it 'when' (in seconds) to animate.
 <pre>
 jig('#tng').click(true).hop('lively',1);
 </pre>
