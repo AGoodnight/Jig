@@ -11,12 +11,17 @@ A Zig is a single instance of a preset/custom timeline
 <br/>
 A Ziggle is a fragment of animation on a Zig/timeline
 
+Here is an a div that hops when you click it. It also pauses if you click it again.
 <pre>
 jig('#tng').click(true).hop();
 </pre>
+
+Below, the first argument refers to a preset variation of the hop preset, while last argument tells it 'when' (in seconds) to animate.
 <pre>
-jig('#tng').click(true).hop('lively',1); <- the last argument tells it 'when' to animate
+jig('#tng').click(true).hop('lively',1);
 </pre>
+
+Below is a more complex example utilizing a 'piggyback' jig, which will animate each zig in succession. Alos, when you rollover any DOM element of the specified class the animation pauses.
 <pre>
 jig('.starwars',{type:'piggyback'})
       .rollover()
