@@ -1,0 +1,182 @@
+<html>
+<link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,400,700' rel='stylesheet' type='text/css'>
+<style>
+
+*{
+	font: 700 30px 'Open Sans',sans-serif;
+	position:relative;
+}
+
+
+body{
+	color:white;
+	font-size:70px;
+	background:black;
+}
+
+.demo{
+	width:1200px;
+	overflow:hidden;
+	background:rgb(10,10,10);
+	margin:0 auto;
+}
+.jig{
+	display:inline-block;
+	padding:20px;
+	color:black;
+	background-color:rgb(100,200,0);
+	margin-bottom:20px;
+}
+
+.timeline{
+	display:block;
+	margin:0;
+	height:10px;
+	margin-bottom:3px;
+	width:100%;
+	position:relative;
+}
+
+#zig{
+	background:rgb(100,200,0);
+}
+#jig{
+	background:rgb(100,200,0);
+}
+#ziggle{
+	background:rgb(100,200,0);
+}
+
+.zig{
+	display:inline-block;
+	padding:20px;
+	color:rgb(0,200,100);
+}
+.ziggle{
+	display:inline-block;
+	padding:20px;
+	color:rgb(0,200,260);
+}
+
+.container{
+	display:inline-block;
+	padding:100px;
+	margin:0 auto;
+}
+
+p{
+	font:400 14px verdana,sans-serif;
+	text-align:left;
+	padding:0;
+	margin:0;
+}
+
+</style>
+
+<body>
+
+<div class='demo'>
+	<div class='container'>
+	<div class='jig'>jig</div>
+	<div class='jig'>jig</div>
+	<div class='jig'>jig</div>
+
+	<div id='jig' class='timeline'></div>
+	<div id='zig' class='timeline'></div>
+	<div id='ziggle' class='timeline'></div>
+
+</div>
+<div>
+
+</div>
+</body>
+
+<script src='vendors/jquery-1.11.1.min.js'></script>
+<script src='vendors/greensock/TweenLite.min.js'></script>
+<script src='vendors/greensock/TimelineLite.min.js'></script>
+<script src='vendors/greensock/plugins/CSSPlugin.min.js'></script>
+<script src='jigLite.0.3.5.gs.js' type='text/javascript'></script>
+<script>
+	
+	// --------------------------------------
+	// Functions for making jig animations
+	// --------------------------------------
+	var jigs = [
+		jig('.jig',{type:'piggyback'})
+			.click(true)
+			//.spin({speed:.6,rotationY:180,stagger:.1,ease:'easeInOut'})
+			.hop({speed:.9,repeat:4,stagger:.5})
+			.spin({speed:.6,rotationX:180,stagger:.2,ease:'easeInOut'})
+			//.wiggle()
+			//.spin({speed:.6,rotation:180,stagger:.3,ease:'easeInOut'})
+			/*.tween(function(ziggle,actor){
+				
+				ziggle.add( 
+					TweenLite.to(actor,.2,{x:100})
+				);
+				ziggle.add( 
+					TweenLite.to(actor,.2,{y:100})
+				);
+				ziggle.add( 
+					TweenLite.to(actor,.2,{x:0})
+				);
+				ziggle.add( 
+					TweenLite.to(actor,.2,{y:0})
+				);
+
+				return ziggle;
+
+			})*/
+			//.spin()
+	];
+
+
+
+	// --------------------------------------
+	// Functions for drawing timeline bars
+	// --------------------------------------
+	var jigW = parseInt($('#jig').css('width'));
+	var zigW = parseInt($('#zig').css('width'));
+	var ziggleW = parseInt($('#ziggle').css('width'));
+
+	var g = setInterval(function(){ 
+
+			// Make this an internal function at some point.
+
+				if(jigs[0].data._latestZig === 0){
+					if(jigs[0].zigs[0]._repeat>0){
+						zigT = jigs[0].zigs[0].time()/(jigs[0].zigs[0].data._speed*jigs[0].zigs[0].data._repeat);
+					}else{
+						zigT = jigs[0].zigs[0].time()/(jigs[0].zigs[0].data._speed);
+					}
+
+					ziggleL = jigs[0].zigs[0].ziggleTime()/jigs[0].zigs[0].data._speed; 
+
+				}else{
+					if(jigs[0].data._latestZig.data._repeat>0){
+						zigT = jigs[0].data._latestZig.time()/(jigs[0].data._latestZig.data._speed*jigs[0].data._latestZig.data._repeat);
+					}else{
+						zigT = jigs[0].data._latestZig.time()/(jigs[0].data._latestZig.data._speed);
+					}
+
+					ziggleL = jigs[0].data._latestZiggle.ziggleTime()/jigs[0].data._latestZig.data._speed; 
+				}
+
+			var jigT = jigs[0].time()/jigs[0].totalDuration();
+
+			// KNOWN ISSUES
+			// ziggleL is coming out negative after restart???
+
+			$('#jig').css('width',jigW*jigT+'px');
+			$('#zig').css({'width':zigW*zigT+'px'});
+			$('#ziggle').css({'width':ziggleW*ziggleL+'px'});
+	},10);
+
+	for(var i in jigs){
+		jigs[i].play();
+	}
+
+</script>
+
+
+</html>

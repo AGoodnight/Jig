@@ -53,7 +53,10 @@ and so on
 			_latestZig:0
 		};
 
-		q.data = replaceSettings(settings,q.data);
+
+		q.settingsOverwrite = [];
+		q.data = replaceSettings(q,settings,q.data);
+
 		// -------------------------
 
 		// Jig attributes
@@ -86,12 +89,23 @@ and so on
 	TimelineLite.prototype.wiggle = function(preset,settings,syncAt){
 		return this.buildZig('wiggle',preset,settings,syncAt);		
 	};
-	TimelineLite.prototype.jump = function(preset,settings,syncAt){
-		return this.buildZig('jump',preset,settings,syncAt);
+	TimelineLite.prototype.hop = function(preset,settings,syncAt){
+		return this.buildZig('hop',preset,settings,syncAt);
 	};
 	TimelineLite.prototype.plop = function(preset,settings,syncAt){
 		return this.buildZig('plop',preset,settings,syncAt);
 	};
+	TimelineLite.prototype.spin = function(preset,settings,syncAt){
+		return this.buildZig('spin',preset,settings,syncAt);
+	};
+
+	// ---------------------------------------------------------
+	// Allows user to pass a custom tweenlite constructor
+	// ---------------------------------------------------------
+	TimelineLite.prototype.tween = function(func){
+		return this.buildZig('custom',func);
+	};
+
 
 	// ---------------------------------------------------------
 	// Some additional functionality
@@ -123,8 +137,10 @@ and so on
 
 		var settings, 
 			preset, 
-			syncAt;
+			syncAt,
+			q;
 
+		var custom = false;
 		// ------------------------------------------------------
 		// Handle variation in passed arguments
 		// ------------------------------------------------------
@@ -160,12 +176,20 @@ and so on
 			preset = 'lively';
 			settings = undefined;
 			syncAt = 0;
+		}else if(typeof pre === 'function'){
+			custom = true;
+			settings = undefined;
+			syncAt = 0;
 		}
 
 		// ------------------------------------------------------
 		// Create a Zig and append to Jig (this)
 		// ------------------------------------------------------
-		var q = new ZigAnimation(this,type,preset,settings);
+		if(!custom){
+			q = new ZigAnimation(this,type,preset,settings);
+		}else{
+			q = new ZigAnimation_custom(this,pre);
+		}
 
 		// ------------------------------------------------------
 		// Handle Sync/Timing behavior
@@ -373,9 +397,11 @@ and so on
 				//timing
 				_stagger:0,
 				_speed:undefined,
+				_ease:undefined,
 
 				//transform
-				_origin:'%50 %50',
+				_origin:undefined,
+				_density:undefined,
 
 				//scale
 				_scale:undefined,
@@ -429,7 +455,9 @@ and so on
 				//state
 				_active:false
 		};
-		q.data = replaceSettings(settings,q.data);
+		// some data needs to be set.
+		q.settingsOverwrite = [];
+		q.data = replaceSettings(q,settings,q.data);
 
 		// -------------------------------
 		// RETURN
@@ -458,11 +486,19 @@ and so on
 				_reps:0,
 				_repeat:0,
 
+				//CSS Properties
+				_height:0,
+				_width:0,
+
 				//state
-				_active:false
+				_active:false,
+
+				//switches
+				_boolean:false
 		};
 
-		q.data = replaceSettings(settings,q.data);
+		q.settingsOverwrite = [];
+		q.data = replaceSettings(q,settings,q.data);
 
 		//loop
 		q.loop = function(i){
@@ -547,7 +583,7 @@ and so on
 		// Preset Assignment & Settings
 		// -------------------------------
 		q.data._preset = new Preset(behavior,preset);
-		q.data = filterSettings(q.data._preset[1],q.data);
+		q.data = filterSettings(q,q.data._preset[1],q.data);
 
 		// -------------------------------
 		// Zig Settings
@@ -565,7 +601,21 @@ and so on
 
 				var ziggle = new Ziggle();
 
+				// ------------------------------------------
+				// Gather some computed CSS from the element
+				// ------------------------------------------
+				ziggle.data._height = parseInt( window.getComputedStyle(jig.node[n],null).getPropertyValue("height") );
+				ziggle.data._width = parseInt( window.getComputedStyle(jig.node[n],null).getPropertyValue("width") );
+
+				// ------------------------------------------
+				// Make the ziggle
+				// ------------------------------------------
 				ziggle = q.data._preset[0].apply(this, [ziggle, q.data, jig.node[n], stagger, n]);
+
+
+				// ------------------------------------------
+				// Set some more data for the ziggle
+				// ------------------------------------------
 				ziggle.data._presettings = [ziggle,q.data,jig.node[n],0,n];
 				ziggle.data._reps = q.data._reps;
 				ziggle.data._repeat = q.data._repeat;
@@ -605,6 +655,70 @@ and so on
 		// -------------------------------
 		return q;
 	};
+	function ZigAnimation_custom(jig,func){
+
+		var timeline,
+			duration;
+
+		// -------------------------------
+		// Zig Creation
+		// -------------------------------
+		var q = new Zig();
+
+		// -------------------------------
+		// Preset Assignment & Settings
+		// -------------------------------
+		q.data._preset = 'none'
+
+		// -------------------------------
+		// Zig Settings
+		// -------------------------------
+		q.data._parent = jig;
+		q.data._id = jig.zigs.length;
+		q.data._self = q;
+
+		// -------------------------------
+		// Ziggle Creation
+		// -------------------------------
+
+		for(var n in jig.node){
+
+				var ziggle = new Ziggle();
+
+				// ------------------------------------------
+				// Gather some computed CSS from the element
+				// ------------------------------------------
+				ziggle.data._height = parseInt( window.getComputedStyle(jig.node[n],null).getPropertyValue("height") );
+				ziggle.data._width = parseInt( window.getComputedStyle(jig.node[n],null).getPropertyValue("width") );
+
+				// ------------------------------------------
+				// Set some more data for the ziggle
+				// ------------------------------------------
+				ziggle.data._parent = q;
+				ziggle.data._id = [jig.zigs.length,parseInt(n)];
+				
+				ziggle = func.apply(this,[ ziggle,jig.node[n] ]);
+
+				// -----------------------------------
+				// Compute actual duration of ziggle
+				// -----------------------------------
+				ziggle.data._cd = ziggle.totalDuration();
+
+
+				// -------------------------------
+				// Add ziggle to zig
+				// -------------------------------
+				q.add(ziggle);
+				q.ziggles.push(ziggle);
+
+		}
+
+		// -------------------------------
+		// RETURN
+		// -------------------------------
+		return q;
+	};
+
 
 	//==================
 	// PRIVATE FUNCTIONS
@@ -736,7 +850,7 @@ and so on
 		// -------------------------------
 		return thisNode;
 	};
-	filterSettings = function(defaults,settings){
+	filterSettings = function(parent,defaults,settings){
 
 		var s = settings;
 
@@ -749,10 +863,19 @@ and so on
 				}
 			}
 		}
+
+		//-------------------------------------
+		// Some Data is required for valid math
+		//-------------------------------------
+		for(var i in s){
+			if(s[i] === undefined){
+				s[i] = 0;
+			}
+		}
 		
 		return s;
 	};
-	replaceSettings = function(passed,settings){
+	replaceSettings = function(parent,passed,settings){
 
 		var s = settings;
 
@@ -760,17 +883,31 @@ and so on
 			for(var j in passed){
 				if('_'+j === i){
 					s['_'+j] = passed[j];
+					parent.settingsOverwrite.push('_'+j);
 				}
 			}	
 		}	
 		return s;
 	};	
+	settingOverwritten = function(parent,setting){
+		for(var i in parent.settingsOverwrite){
+			if(parent.settingsOverwrite[i] === setting){
+				return true;
+			}
+		}
+	}
 
 	//==============================================
 	// PRESETS
 	//==============================================
+
+	// --------------------------------------------------------------------
+	// This is where you can access or create new presets for Jig to handle
+	// --------------------------------------------------------------------
 	var library = {
-			// Most presets will support 3D transform
+
+		// NOTE: Don't forget you can animate in 3D!
+
 			wiggle:{
 				// Pre-defined settings
 				// -------------------
@@ -778,16 +915,16 @@ and so on
 					lively:{
 						_speed:1, 
 						_amplitude:10,
-						_rotation:20,
+						_rotation:6,
 						_origin:'50% 50%'
 					},
-					calmly:{
+					calm:{
 						_speed:3, 
 						_amplitude:3,
 						_rotation:8,
 						_origin:'50% 50%'
 					},
-					feverishly:{
+					fever:{
 						_speed:.2, 
 						_amplitude:10,
 						_rotation:0,
@@ -867,7 +1004,196 @@ and so on
 					return ziggle;
 				}
 			},
+			hop:{
+				// Pre-defined settings
+				// -------------------
+				defaults:{
+					lively:{
+						_speed:1, 
+						_amplitude:2,
+						_rotation:15,
+						_density:.7,
+						_origin:'50% 100%' // ground
+					}
+				},
+
+				build:function(ziggle,v,actor,delay,index){
+
+					// Your custom setting modifications
+					
+					var s=[
+						v._speed/6,
+						v._speed/4,
+						v._speed/5
+					];
+
+
+					// ---------------------------------------------------
+					// if v._scale is = to 0 it will break the math below
+					// ---------------------------------------------------
+					if( !settingOverwritten(v._self,'_scale') ){
+						v._scale = 1;
+					}
+
+					// ------------------------------------------------------------------
+					/* 	
+					We set the sum of our first speed variations to f and then we 
+					set the last array value to be the remainder between the speed and f
+					*/
+					// ------------------------------------------------------------------
+					var f = 0;
+					for(var i in s){ f += s[i]; };
+					s[3] = v._speed%f;
+
+					// ---------------------------------------------------------------------------
+					// We set a new amplitude which reflects the physical dimensions of the actor
+					// ---------------------------------------------------------------------------
+					var amp = (v._amplitude*-1)*ziggle.data._height;
+
+					// ------------------------------------------------------------------------------
+					// We want to make our actor rotate a bit in the air, but we want it to alternate
+					// ------------------------------------------------------------------------------
+					ziggle.data._boolean = ziggle.data._boolean ? false : true;
+					var b = ziggle.data._boolean ? v._rotation+'deg' : (-1*v._rotation)+'deg';
+
+					// ----------------------------------------
+					// Required for looping
+					// ----------------------------------------
+					ziggle.call(function(){
+						v._parent.data._latestZig = v._self;
+						v._parent.data._latestZiggle = ziggle;
+					});
+
+					// ----------------------------------------
+					// Assign animation to ziggle (timeline)
+					// ----------------------------------------
+
+					ziggle.add(
+						TweenLite.to(actor,s[0],{
+							scaleX:v._scale*1+(1-v._density),
+							scaleY:v._scale*1-(1-v._density),
+							transformOrigin:v._origin,
+							ease:'easeIn'
+						})
+					);
+					
+					ziggle.add(
+						TweenLite.to(actor,s[1],{
+							scaleX:v._scale*1-(.9-v._density),
+							scaleY:v._scale*1+(.9-v._density),
+							y:amp,
+							transformOrigin:v._origin,
+							ease:'linearOut',
+							rotation:b
+						})
+					);
+
+					ziggle.add(
+						TweenLite.to(actor,s[2],{
+							scaleX:v._scale*.8+(1-v._density),
+							scaleY:v._scale*1-(1-v._density),
+							y:0,
+							ease:'easeIn',
+							rotation:0
+						})
+					);
+
+					ziggle.add(
+						TweenLite.to(actor,s[3],{
+							scaleX:v._scale,
+							scaleY:v._scale,
+							y:0,
+							ease:'linearOut'
+						})
+					);
+					
+					
+
+					// ----------------------------------------
+					// Required for looping
+					// ----------------------------------------
+					ziggle.call(function(){
+						ziggle.loop(index);
+					});
+
+					// ----------------------------------------
+					// RETURN
+					// ----------------------------------------
+					return ziggle;
+				}
+			},
+			spin:{
+				// Pre-defined settings
+				// -------------------
+				defaults:{
+					lively:{
+						_speed:1,
+						_rotationZ:360,
+						_origin:'50% 50%',
+						_ease:'linear'
+					}
+				},
+
+				build:function(ziggle,v,actor,delay,index){
+
+					// Required
+					// ----------------------------------------
+					ziggle.call(function(){
+						v._parent.data._latestZig = v._self;
+						v._parent.data._latestZiggle = ziggle;
+					});
+					// ----------------------------------------
+
+					if( settingOverwritten(v._self,'_rotation') ||
+						settingOverwritten(v._self,'_rotationX') ||
+						settingOverwritten(v._self,'_rotationY') ){
+
+						v._rotationZ = v._rotation;
+						
+					}
+
+					// Your Animation
+					ziggle.add(
+						TweenLite.to(actor,v._speed,{
+							
+							transformOrigin:v._origin,
+							delay:delay,
+
+							rotationX:'+='+v._rotationX,
+							rotationY:'+='+v._rotationY,
+							rotationZ:'+='+v._rotationZ,
+
+							ease:v._ease
+						})
+					);
+
+					ziggle.add(
+						TweenLite.to(actor,0,{
+
+							rotationX:0,
+							rotationY:0,
+							rotationZ:0
+
+						})
+					);
+
+					// Required
+					// ----------------------------------------
+					ziggle.call(function(){
+						ziggle.loop(index);
+					});
+					// ----------------------------------------
+
+					return ziggle;
+				}
+			}
+
 	};
+
+
+	// ---------------------------------------------------------
+	// This function returns an array with the preset requested
+	// ---------------------------------------------------------
 	Preset = function(type,vari){
 		
 		var p = [library[type].build];
