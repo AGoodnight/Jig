@@ -6,7 +6,7 @@ Jig is intended to make it easier to instatiate and manage preset animations and
 While JQuery can do much of what Jig can and will be able to do, Jig's scope is smaller and it's target audience is predominatley web animators & motion designers, individuals who may or may not know any javascript. Greensock's Animation Platform is also much faster and less processor intensive than JQuery's animation features, while being easier to approach by non-developers, making Jig's core animation functions simple to understand and customize.
 
 <pre>
-jig('.starwars').click(true).hop()
+jig('#tng').click(true).hop()
 </pre>
 <pre>
 jig('.starwars',{type:'piggyback')
