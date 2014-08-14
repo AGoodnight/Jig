@@ -15,12 +15,12 @@ Below is a a div that hops when you click it. It also pauses if you click it aga
 <pre>
 jig('#tng').click(true).hop();
 </pre>
-
+<br/>
 Below, the first argument refers to a preset variation of the 'hop' zig, while the last argument tells it 'when' (in seconds) to animate.
 <pre>
 jig('#tng').click(true).hop('lively',1);
 </pre>
-
+<br/>
 Below is a more complex example utilizing a 'piggyback' jig, which will animate each zig in succession. Also, when you rollover any DOM element of the specified class the animation pauses.
 <pre>
 jig('.starwars',{type:'piggyback'})
@@ -33,5 +33,5 @@ jig('.starwars',{type:'piggyback'})
         ease:'easeInOut'
       });
 </pre>
-
+<br/><br/>
 To learn more about GSAP, a javascript library complete with TimelineLite and Tweenlite, visit http://www.greensock.com/gsap-js/
