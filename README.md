@@ -9,7 +9,15 @@ While JQuery can do much of what Jig can and will be able to do, Jig's scope is 
 jig('.starwars').click(true).hop()
 </pre>
 <pre>
-jig('.starwars',{type:'piggyback').rollover().wiggle().spin({speed:.6,rotationX:180,stagger:.2,ease:'easeInOut'})
+jig('.starwars',{type:'piggyback')
+      .rollover()
+      .wiggle()
+      .spin({
+        speed:.6,
+        rotationX:180,
+        stagger:.2,
+        ease:'easeInOut'
+      })
 </pre>
 
 To learn more about GSAP, a javascript library complete with TimelineLite and Tweenlite, visit http://www.greensock.com/gsap-js/
