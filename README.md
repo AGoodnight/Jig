@@ -6,8 +6,6 @@ Jig
 <p>While JQuery can do much of what Jig can and will be able to do, Jig's scope is smaller and it's target audience is predominatley web animators & motion designers, individuals who may or may not know any javascript. Greensock's Animation Platform is also much faster and less processor intensive than JQuery's animation features, while being easier to approach by non-developers, making Jig's core animation functions simple to understand and customize.</p>
 
 <p>The current iteration of the Jig project is <b>'JigLite'</b></p>
-<br/>
-<hr/>
 
 <p>A Jig is a timeline that controls a particular DOM elements animations/timelines.</p>
 
@@ -16,6 +14,7 @@ Jig
 <p>A Ziggle is a fragment of animation on a Zig/timeline</p>
 <br/>
 <hr/>
+<h1>Examples</h1>
 <p>Below is a a div that hops when you click it. It also pauses if you click it again.</p>
 
 <pre>
