@@ -49,8 +49,9 @@ jig('.starwars',{type:'piggyback'})
 jig('.rocko').tween( function(ziggle,actor){ 
 
       ziggle.add(
-            // an instance of TweenLite animation
-      )
+           TweenLite.to(actor,1,{ x:100 });
+      );
+      
       return ziggle
 })
 </pre>
