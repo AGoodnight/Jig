@@ -104,12 +104,12 @@ p{
 	var jigs = [
 		jig('.jig',{type:'piggyback'})
 			.click(true)
-			//.spin({speed:.6,rotationY:180,stagger:.1,ease:'easeInOut'})
+			.spin({speed:.6,rotationY:180,stagger:.1,ease:'easeInOut'})
 			.hop({speed:.9,repeat:4,stagger:.5})
 			.spin({speed:.6,rotationX:180,stagger:.2,ease:'easeInOut'})
-			//.wiggle()
-			//.spin({speed:.6,rotation:180,stagger:.3,ease:'easeInOut'})
-			/*.tween(function(ziggle,actor){
+			.wiggle()
+			.spin({speed:.6,rotation:180,stagger:.3,ease:'easeInOut'})
+			.tween(function(ziggle,actor){
 				
 				ziggle.add( 
 					TweenLite.to(actor,.2,{x:100})
@@ -126,8 +126,8 @@ p{
 
 				return ziggle;
 
-			})*/
-			//.spin()
+			})
+			.spin()
 	];
 
 
