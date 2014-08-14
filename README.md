@@ -5,7 +5,7 @@ Jig is intended to make it easier to instatiate and manage preset animations and
 
 While JQuery can do much of what Jig can and will be able to do, Jig's scope is smaller and it's target audience is predominatley web animators & motion designers, individuals who may or may not know any javascript. Greensock's Animation Platform is also much faster and less processor intensive than JQuery's animation features, while being easier to approach by non-developers, making Jig's core animation functions simple to understand and customize.
 
-A Jig is timeline that controls a particular DOM elements animations/timelines.
+A Jig is a timeline that controls a particular DOM elements animations/timelines.
 <br/>
 A Zig is a single instance of a preset/custom timeline
 <br/>
