@@ -10,8 +10,8 @@ A Jig is a timeline that controls a particular DOM elements animations/timelines
 A Zig is a single instance of a preset/custom timeline
 <br/>
 A Ziggle is a fragment of animation on a Zig/timeline
-
-Here is an a div that hops when you click it. It also pauses if you click it again.
+<br/><br/><br/>
+Below is a a div that hops when you click it. It also pauses if you click it again.
 <pre>
 jig('#tng').click(true).hop();
 </pre>
