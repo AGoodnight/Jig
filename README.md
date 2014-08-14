@@ -44,6 +44,18 @@ jig('.starwars',{type:'piggyback'})
 </pre>
 <br/>
 
+<p>You can even add custom animation in the classic GSAP fashion by using the 'tween' zig.
+<pre>
+jig('.rocko').tween( function(ziggle,actor){ 
+
+      ziggle.add(
+            // an instance of TweenLite animation
+      )
+      return ziggle
+})
+</pre>
+<br/>
+
 <p>Jig is far from complete, it is my hope that it will allow easy layering of animations, much like flash at some point in the future. However I would like to keep it independnet of Jquery, and that is a real challenge.</p>
 <br/>
 
