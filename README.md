@@ -12,7 +12,7 @@ A Zig is a single instance of a preset/custom timeline
 A Ziggle is a fragment of animation on a Zig/timeline
 
 <pre>
-jig('#tng').click(true).hop()
+jig('#tng').click(true).hop();
 </pre>
 <pre>
 jig('.starwars',{type:'piggyback'})
@@ -23,7 +23,7 @@ jig('.starwars',{type:'piggyback'})
         rotationX:180,
         stagger:.2,
         ease:'easeInOut'
-      })
+      });
 </pre>
 
 To learn more about GSAP, a javascript library complete with TimelineLite and Tweenlite, visit http://www.greensock.com/gsap-js/
