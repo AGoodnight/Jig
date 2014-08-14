@@ -15,7 +15,7 @@ A Ziggle is a fragment of animation on a Zig/timeline
 jig('#tng').click(true).hop();
 </pre>
 <pre>
-jig('#tng').click(true).hop('lively',1); <-- the last argument tells it 'when' to animate
+jig('#tng').click(true).hop('lively',1); <- the last argument tells it 'when' to animate
 </pre>
 <pre>
 jig('.starwars',{type:'piggyback'})
