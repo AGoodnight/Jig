@@ -1,25 +1,17 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
+
 <link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,400,700' rel='stylesheet' type='text/css'>
+<link href='css/bootstrap.css' rel='stylesheet' type='text/css'>
+
 <style>
 
 *{
-	font: 700 30px 'Open Sans',sans-serif;
+	font-family: 'Open Sans',sans-serif;
 	position:relative;
 }
 
 
-body{
-	color:white;
-	font-size:70px;
-	background:black;
-}
-
-.demo{
-	width:1200px;
-	overflow:hidden;
-	background:rgb(10,10,10);
-	margin:0 auto;
-}
 .jig{
 	display:inline-block;
 	padding:20px;
@@ -28,24 +20,36 @@ body{
 	margin-bottom:20px;
 }
 
+.circle{
+	display:inline-block;
+	border-radius:100%;
+	background-color:#F83E31;
+	padding:20px;
+	width:150px;
+	height:150px;
+	margin-left:40px;
+	margin-bottom:40px;
+}
+
+.square{
+	display:inline-block;
+	background-color:#FFAE39;
+	padding:20px;
+	width:150px;
+	height:150px;
+	margin-left:40px;
+	margin-bottom:40px;
+}
+
 .timeline{
 	display:block;
 	margin:0;
 	height:10px;
 	margin-bottom:3px;
-	width:100%;
 	position:relative;
+	background:rgb(0,100,0);
 }
 
-#zig{
-	background:rgb(100,200,0);
-}
-#jig{
-	background:rgb(100,200,0);
-}
-#ziggle{
-	background:rgb(100,200,0);
-}
 
 .zig{
 	display:inline-block;
@@ -58,79 +62,140 @@ body{
 	color:rgb(0,200,260);
 }
 
-.container{
-	display:inline-block;
-	padding:100px;
-	margin:0 auto;
+#jiveLine{
+	width:90%;
+	height:20px;
+	background:rgb(200,200,200);
+	position:absolute;
+	margin-top:40px;
 }
 
-p{
-	font:400 14px verdana,sans-serif;
-	text-align:left;
-	padding:0;
-	margin:0;
+.scrubber{
+	width:30px;
+	height:20px;
+	background:#116186;
+	position:absolute;
+	cursor:pointer;
+}
+
+.fill{
+	width:30px;
+	height:20px;
+	background:#9AC534;
+	position:absolute;
+	cursor:pointer;
+}
+
+#demo{
+	margin-top:200px;
 }
 
 </style>
 
 <body>
 
-<div class='demo'>
-	<div class='container'>
-	<div class='jig'>jig</div>
-	<div class='jig'>jig</div>
-	<div class='jig'>jig</div>
+<div class='container'>
+	<div class='row'>
+		<div class='jumbotron' style='margin-top:50px;'>
+			<div class='circle'></div>
+			<div class='circle'></div>
+			<div class='circle'></div>
+			<div class='square'></div>
+			<div class='circle'></div>
+			<div id='jiveLine' class='controller'>
+				<div class ='fill'></div>
+				<div class ='scrubber'></div>
+			</div>
+		</div>
+	</div>
+		
+	<div class='row'>
 
-	<div id='jig' class='timeline'></div>
-	<div id='zig' class='timeline'></div>
-	<div id='ziggle' class='timeline'></div>
+		<div class='col-md-4' style='overflow:hidden;'>
+			<h3>Internal progressions of timelines within the orange square</h3>
+			<p>jig progress<div id='jig' class='timeline'></div></p>
+			<p>zig progress<div id='zig' class='timeline'></div></p>
+			<p>ziggle progress<div id='ziggle' class='timeline'></div></p>
+		</div>
+	
+		<div class='col-md-8'>
+		<pre>
+var jigs = [
+	jig('.square',{type:'piggyback'})
+		.spin({speed:.6,rotationY:180,ease:'easeInOut'})
+		.wiggle()
+		.hop({repeat:4,speed:.6})
+		.spin({rotationX:180})
+		.spin({rotationY:180})
+		.spin({speed:.4,repeat:4}),
 
+	jig('.circle',{type:'piggyback'})
+		.hop({speed:.9,repeat:4,stagger:.2} )
+		.wiggle()
+		.tween(function(ziggle,actor){
+				
+			ziggle.add( 
+				TweenLite.to(actor,.2,{x:100})
+			);
+			ziggle.add( 
+				TweenLite.to(actor,.2,{x:0})
+			);
+
+			return ziggle;
+
+		})
+];
+
+var myTimeline = new jive(jigs).scrubber('#jiveLine').click(true,'.circle');
+
+		</pre>
+		</div>
 </div>
-<div>
 
-</div>
 </body>
 
 <script src='vendors/jquery-1.11.1.min.js'></script>
 <script src='vendors/greensock/TweenLite.min.js'></script>
 <script src='vendors/greensock/TimelineLite.min.js'></script>
 <script src='vendors/greensock/plugins/CSSPlugin.min.js'></script>
-<script src='jigLite.0.3.5.gs.js' type='text/javascript'></script>
+<script src='vendors/greensock/utils/Draggable.min.js'></script>
+<script src='../jigLite.0.3.5.gs.js' type='text/javascript'></script>
+<script src='../jiveLite.0.1.gs.js' type='text/javascript'></script>
 <script>
+
+
+	
 	
 	// --------------------------------------
 	// Functions for making jig animations
 	// --------------------------------------
 	var jigs = [
-		jig('.jig',{type:'piggyback'})
-			.click(true)
-			.spin({speed:.6,rotationY:180,stagger:.1,ease:'easeInOut'})
-			.hop({speed:.9,repeat:4,stagger:.5})
-			.spin({speed:.6,rotationX:180,stagger:.2,ease:'easeInOut'})
+		jig('.square',{type:'piggyback'})
+			.spin({speed:.6,rotationY:180,ease:'easeInOut'})
 			.wiggle()
-			.spin({speed:.6,rotation:180,stagger:.3,ease:'easeInOut'})
+			.hop({repeat:4,speed:.6})
+			.spin({rotationX:180})
+			.spin({rotationY:180})
+			.spin({speed:.4,repeat:4}),
+
+		jig('.circle',{type:'piggyback'})
+			.hop({speed:.9,repeat:4,stagger:.2} )
+			.wiggle()
 			.tween(function(ziggle,actor){
 				
 				ziggle.add( 
 					TweenLite.to(actor,.2,{x:100})
 				);
 				ziggle.add( 
-					TweenLite.to(actor,.2,{y:100})
-				);
-				ziggle.add( 
 					TweenLite.to(actor,.2,{x:0})
-				);
-				ziggle.add( 
-					TweenLite.to(actor,.2,{y:0})
 				);
 
 				return ziggle;
 
 			})
-			.spin()
 	];
 
-
+	var myTimeline = new jive(jigs).scrubber('#jiveLine').click(true,'.circle');
 
 	// --------------------------------------
 	// Functions for drawing timeline bars
@@ -172,9 +237,9 @@ p{
 			$('#ziggle').css({'width':ziggleW*ziggleL+'px'});
 	},10);
 
-	for(var i in jigs){
-		jigs[i].play();
-	}
+	
+
+
 
 </script>
 

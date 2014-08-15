@@ -31,7 +31,8 @@ and so on
 	//======
 	jig = function(nodeString,settings){
 
-		var q = new TimelineLite();
+		var q = new TimelineLite({paused:true});
+		q._active = false;
 		
 		// Data Intialization
 		// -------------------------
@@ -45,9 +46,6 @@ and so on
 			_syncAt:0,
 			_cd:0,
 			_toggle:undefined,
-
-			// internal state changes
-			_active:false,
 
 			// internal tracking
 			_latestZig:0
@@ -71,7 +69,7 @@ and so on
 		q.instances = [];
 		q.zigs = [];
 
-		q.pause();
+		//q.pause();
 		return q;	
 	};
 
@@ -228,22 +226,20 @@ and so on
 		
 		var _t = this;
 
+		console.log(_t)
+
 		if(tog){
 			this.data._toggle = true;
 		}else{
 			this.data._toggle = false;
 		};
 
-
 		// Set Trigger
 		if(trigger === 'self' || trigger === undefined){
 			_t.data._trigger = _t.node;
-			console.log(_t.node)
 		}else if(typeof trigger === 'string'){
 			_t.data._trigger = nodeSelector(trigger);
 		};
-
-
 
 		// Set Mouse Mode
 		for(var i in _t.data._trigger){
@@ -265,14 +261,14 @@ and so on
 				case 'rollover':
 					if(_t.data._toggle){
 						_t.data._trigger[i].onmouseover = function(){
-							if(_t.data._active){
+							if(_t._active){
 								halt.apply(this,[_t]);
 							}else{
 								execute.apply(this,[_t]);
 							}
 						}
 						_t.data._trigger[i].onmouseout = function(){
-							if(_t.data._active){
+							if(_t._active){
 								halt.apply(this,[_t]);
 							}else{
 								execute.apply(this,[_t]);
@@ -280,7 +276,7 @@ and so on
 						};
 					}else{
 						_t.data._trigger[i].onmouseover = function(){
-							if(_t.data._active){
+							if(_t._active){
 								halt.apply(this,[_t]);
 							}else{
 								execute.apply(this,[_t]);
@@ -303,14 +299,14 @@ and so on
 	// Here we extend some of TimelineLite's native functions to include variables needed to handle jigs and zigs.
 	TimelineLite.prototype.play = (function(_super){
 		return function(){
-			this.data._active = true;
+			this._active = true;
 			return _super.apply(this,arguments);
 		};
 	})(TimelineLite.prototype.play);
 
 	TimelineLite.prototype.pause = (function(_super){	
 		return function(){
-			this.data._active = false
+			this._active = false
 			return _super.apply(this,arguments);
 		}
 	})(TimelineLite.prototype.pause);
@@ -337,7 +333,7 @@ and so on
 
 	// These functions are _complete status dependent and standalone
 	function toggle(_t){
-		if(_t.data._active){
+		if(_t._active){
 			halt(_t);
 		}else{
 			execute(_t);
@@ -346,23 +342,25 @@ and so on
 	function execute(_t){
 		if(_t.data._complete){	
 			_t.data._complete = false;
-			_t.data._active = true;
+			_t._active = true;
 			_t.restart();	
 		}else{	
-			if(!_t.data._active){
-				_t.data._active = true;
+			if(!_t._active){
+				_t._active = true;
 				_t.play();
-
-				console.log(_t)
 			}
 		}
+
+		console.log(_t)
 	};
 	function halt(_t){
 			
-			if(_t.data._active){
-				_t.data._active = false;
+			if(_t._active){
+				_t._active = false;
 				_t.pause();
 			}
+
+		console.log(_t)
 	};
 
 	//===========================================================
@@ -450,10 +448,7 @@ and so on
 				
 				//repeat
 				_reps:0,
-				_repeat:0,
-
-				//state
-				_active:false
+				_repeat:0
 		};
 		// some data needs to be set.
 		q.settingsOverwrite = [];
@@ -489,9 +484,6 @@ and so on
 				//CSS Properties
 				_height:0,
 				_width:0,
-
-				//state
-				_active:false,
 
 				//switches
 				_boolean:false
@@ -543,7 +535,7 @@ and so on
 			
 			}else{
 				thisZig.data._complete = true;
-				thisZig.data._active = false; 
+				thisZig._active = false; 
 			}
 
 			// -------------------------------------------
@@ -553,7 +545,7 @@ and so on
 			var jTime = thisJig.time();
 			if(jDur === jTime && this.data._id[1] === (thisJig.node.length-1) ){
 				thisJig.data._complete = true;
-				thisJig.data._active = false;
+				thisJig._active = false;
 				q.data._td = undefined;
 				q.data._reps = 0;
 						console.log('====> Jig Complete: '+thisJig.data._name+' ---- zigs: '+this.data._id)
@@ -1010,7 +1002,7 @@ and so on
 				defaults:{
 					lively:{
 						_speed:1, 
-						_amplitude:2,
+						_amplitude:1,
 						_rotation:15,
 						_density:.7,
 						_origin:'50% 100%' // ground
@@ -1168,7 +1160,7 @@ and so on
 					);
 
 					ziggle.add(
-						TweenLite.to(actor,0,{
+						TweenLite.set(actor,{
 
 							rotationX:0,
 							rotationY:0,
