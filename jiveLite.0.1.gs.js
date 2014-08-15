@@ -1,4 +1,4 @@
-(function(document){
+;(function(document){
 	
 
 jive = function(jigs,settings){
@@ -19,7 +19,7 @@ jive = function(jigs,settings){
 
 	for(var i in jigs){
 		q.add(jigs[i],0);
-		if(jigs[i].paused){
+		if(jigs[i]._paused){
 			jigs[i].play();
 		}
 	}
@@ -48,7 +48,7 @@ TimelineLite.prototype.scrubber = function(scrubber){
 		_dragging:false,
 
 		_tl:this, // TimelineLite instance
-		_node:q,
+		_node:node,
 		_nodeString:scrubber,
 		_fill:elementNodes[0],
 		_bug:elementNodes[1],
@@ -160,4 +160,4 @@ function getChildNodes(nodeName,n){
 };
 
 
-})(document)
+})(document);

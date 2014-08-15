@@ -1,29 +1,9 @@
 ;(function(document){
 
 /*
-JIG COMPONENT for TimelineLite. 
+JigLite for TimelineLite. 
 Copyright 2014 Adam Goodnight, all rights reserved.
-
-contributors:
-Jason Rutherford
-
-TimelineLite was created by Greensock
-*/
-
-/* 
-"jigLite" is an add-on for GSAP TimelineLite.
-Jigs are TimelineLite objects that manage Zigs assigned to a DOM element. 
-Zigs are instances of preset animations in the forms of TimelineLite objects.
-Jig objects act as virtual controllers for the Zig instances.
-Jigs allow developers to easily access a Zigs animation properties.
-Jigs allow developers to run collections of Zigs in sequence.
-Jigs can be assigned to any instance of TimelineLite and then run as a sequence and so on.
-
-Jig is intended to mirror Adobe's Flash-like animation abilities.
-Scenes are TimelineLite instances,
-Movieclips are Jigs,
-Graphics are Zigs,
-and so on
+TimelineLite is copyright by Greensock.
 */
 
 	//======
@@ -114,11 +94,7 @@ and so on
 	TimelineLite.prototype.rollover = function(toggle,trigger){
 		return this.mouse(trigger,toggle,'rollover');
 	};
-	TimelineLite.prototype.onComplete = function(func,delay){
-
-		/*setTimeout(function(){
-			func();
-		},this.totalDuration()*1000)*/
+	TimelineLite.prototype.exec = function(func,delay){
 
 		this.call(
 			func
@@ -156,6 +132,10 @@ and so on
 			syncAt = set;
 		}else if(typeof pre === 'string' && typeof set === 'number'){
 			preset = pre;
+			settings = undefined;
+			syncAt = set;
+		}else if(typeof pre === 'function' && typeof set === 'number'){
+			custom = true;
 			settings = undefined;
 			syncAt = set;
 		}else if(typeof pre === 'object'){
@@ -222,12 +202,12 @@ and so on
 		this.zigs.push(q);
 		return this;
 	};
+
 	TimelineLite.prototype.mouse = function(trigger,tog,method){
 		
 		var _t = this;
 
-		console.log(_t)
-
+		// if toggling play and pause is desired
 		if(tog){
 			this.data._toggle = true;
 		}else{
@@ -291,10 +271,6 @@ and so on
 		return _t;
 	};
 
-	/*
-	Each Jig, Zig and Ziggle Object has a data object, provided by TimelineLite, 
-	a '_complete' boolean is in each one, this was added to allow looping and prevent animation stacking.
-	*/
 
 	// Here we extend some of TimelineLite's native functions to include variables needed to handle jigs and zigs.
 	TimelineLite.prototype.play = (function(_super){
