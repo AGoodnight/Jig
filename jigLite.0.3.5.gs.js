@@ -435,6 +435,8 @@ TimelineLite is copyright by Greensock.
 		// -------------------------------
 		return q;
 	};
+
+	// loop function is inside ziggle, because only ziggles loop
 	function Ziggle(settings){
 		
 		var q = new TimelineLite();
@@ -471,10 +473,13 @@ TimelineLite is copyright by Greensock.
 		//loop
 		q.loop = function(i){
 
-			var looping = false;
+			var loop;
 
-			var thisJig = q.data._parent.data._parent
-			var thisZig = q.data._parent
+			var looping = false;
+			console.log(this);
+
+			var thisJig = this.data._parent.data._parent
+			var thisZig = this.data._parent
 
 			// -------------------------------------------
 			// Set Iteration Duration
@@ -501,13 +506,13 @@ TimelineLite is copyright by Greensock.
 			// -------------------------------------------
 			// Handle Need to Loop a Ziggle
 			// -------------------------------------------
-			var g = q.data._reps;
-			var r = q.data._repeat-1;
+			var g = this.data._reps;
+			var r = this.data._repeat-1;
 
 			if( r > g ){
 				
-				q.data._reps++;
-				q = thisZig.data._preset[0].apply(q,q.data._presettings);
+				this.data._reps++;
+				loop = thisZig.data._preset[0].apply(this,this.data._presettings);
 			
 			}else{
 				thisZig.data._complete = true;
@@ -519,13 +524,16 @@ TimelineLite is copyright by Greensock.
 			// -------------------------------------------
 			var jDur = thisJig.totalDuration();
 			var jTime = thisJig.time();
+
 			if(jDur === jTime && this.data._id[1] === (thisJig.node.length-1) ){
+				
 				thisJig.data._complete = true;
 				thisJig._active = false;
-				q.data._td = undefined;
-				q.data._reps = 0;
-						console.log('====> Jig Complete: '+thisJig.data._name+' ---- zigs: '+this.data._id)
-			}
+				this.data._td = undefined;
+				this.data._reps = 0;
+
+					console.log('====> Jig Complete: '+thisJig.data._name+' ---- zigs: '+this.data._id)
+			};
 
 		};
 		
@@ -692,7 +700,7 @@ TimelineLite is copyright by Greensock.
 	// PRIVATE FUNCTIONS
 	//==================
 
-	TimelineLite.prototype.ziggleTime = function(){
+	TimelineLite.prototype.getTime = function(){
 
 
 		if(this.data._td == undefined){

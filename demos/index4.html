@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<style>
+
+#sally{
+	position:relative;
+	width:30px;
+	height:30px;
+	background-color:orange;
+}
+
+#sonic{
+	position:relative;
+	width:30px;
+	height:30px;
+	background-color:blue;
+}
+
+#amy{
+	position:relative;
+	width:30px;
+	height:30px;
+	background-color:red;
+}
+
+</style>
+
+</head>
+<body>
+	<div class='character' id='sonic'></div>
+	<div class='character' id='amy'></div>
+	<div class='character' id='sally'></div>
+	<div class='text' id='silly'>My Nae in</div>
+</body>
+<script src='vendors/greensock/TweenLite.min.js'></script>
+<script src='vendors/greensock/TimelineLite.min.js'></script>
+<script src='vendors/greensock/plugins/CSSPlugin.min.js'></script>
+<script src='../jigLite.0.4.gs.js' type='text/javascript'></script>
+
+
+<script>
+
+var sup = jig('.character',{name:'SuperDuper'})
+	// We do not assign a name, we get a default name
+	.zigInstance('hop',{
+		speed:1,
+		repeat:1,
+		stagger:.05})
+	.play();
+
+console.log(sup.zigs);
+
+</script>
+</html>

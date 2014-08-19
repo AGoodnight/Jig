@@ -215,7 +215,7 @@ var myTimeline = new jive(jigs).scrubber('#jiveLine').click(true,'.circle');
 						zigT = jigs[0].zigs[0].time()/(jigs[0].zigs[0].data._speed);
 					}
 
-					ziggleL = jigs[0].zigs[0].ziggleTime()/jigs[0].zigs[0].data._speed; 
+					ziggleL = jigs[0].zigs[0].getTime()/jigs[0].zigs[0].data._speed; 
 
 				}else{
 					if(jigs[0].data._latestZig.data._repeat>0){
@@ -224,7 +224,7 @@ var myTimeline = new jive(jigs).scrubber('#jiveLine').click(true,'.circle');
 						zigT = jigs[0].data._latestZig.time()/(jigs[0].data._latestZig.data._speed);
 					}
 
-					ziggleL = jigs[0].data._latestZiggle.ziggleTime()/jigs[0].data._latestZig.data._speed; 
+					ziggleL = jigs[0].data._latestZiggle.getTime()/jigs[0].data._latestZig.data._speed; 
 				}
 
 			var jigT = jigs[0].time()/jigs[0].totalDuration();
