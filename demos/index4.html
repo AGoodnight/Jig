@@ -6,8 +6,8 @@
 
 #sally{
 	position:relative;
-	width:30px;
-	height:30px;
+	width:60px;
+	height:60px;
 	background-color:orange;
 }
 
@@ -20,8 +20,8 @@
 
 #amy{
 	position:relative;
-	width:30px;
-	height:30px;
+	width:40px;
+	height:40px;
 	background-color:red;
 }
 
@@ -42,15 +42,29 @@
 
 <script>
 
-var sup = jig('.character',{name:'SuperDuper'})
-	// We do not assign a name, we get a default name
-	.zigInstance('hop',{
-		speed:1,
-		repeat:1,
-		stagger:.05})
-	.play();
+function func(va){
+	console.log(va)
+}
 
-console.log(sup.zigs);
+
+var sup = jig('#silly', '.character', {name:'SuperDuper'})
+	// We do not assign a name, we get a default name
+	.click(true)
+	.hop({name:'rocko',stagger:.1})
+	.zig(function(actor){
+
+		var tl = new TimelineLite();
+
+		tl.add(
+			TweenLite.fromTo(actor,1,{x:100},{x:0})
+		);
+
+		return tl;
+
+	},1,{name:'farts'});
+
+console.log(sup.zigs)
+
 
 </script>
 </html>
