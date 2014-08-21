@@ -80,6 +80,10 @@
 		return this.mouseEvent('click',arguments);
 	};
 
+	TimelineLite.prototype.rollover = function(){
+		return this.mouseEvent('rollover',arguments);
+	}
+
 	TimelineLite.prototype.zig = function(){
 		return this.zigInstance('custom',arguments)
 	};
@@ -98,7 +102,6 @@
 		var delay = args[1];
 		var options = args[2];
 		var timeline = args[4];
-
 
 		if(delay === undefined){
 			delay = 0;
@@ -129,12 +132,16 @@
 
 		}else{
 
-			zig.data = {
-				_reps:0
+			zig.data = {};
+
+			if(options != undefined){
+				zig.data = options
 			}
 
-			if(options != undefined && !!options.name){
-				zig._name = options.name
+			zig.data = filter(zig.data,{_reps:0})
+
+			if(options != undefined && !!options._name){
+				zig._name = options._name
 			}else{
 				zig._name = preset+'_'+this.zigsArr.length
 			}
@@ -166,7 +173,8 @@
 					
 					// Create a Ziggle
 					if(timeline !== undefined){
-						ziggle = timeline(this.nodes[i][j]);
+						ziggle = new TimelineLite();
+						ziggle = timeline(ziggle,this.nodes[i][j]);
 					}else{
 						ziggle = new Ziggle(this,ziggleId,zig,preset,zig.data,this.nodes[i][j],stagger);
 					}
@@ -190,7 +198,8 @@
 				
 				// Create a Ziggle
 				if(timeline !== undefined){
-					ziggle = timeline(this.nodes[i][0]);
+					ziggle = new TimelineLite();
+					ziggle = timeline(ziggle,this.nodes[i][0]);
 				}else{
 					ziggle = new Ziggle(this,ziggleId,zig,preset,zig.data,this.nodes[i][0],stagger);
 				};
@@ -295,31 +304,39 @@
 			}
 		}
 
-		// assigning functions to mouse event
-		// ----------------------------------
-		switch(type){
-			case 'click':
-				for(var i in trigger){
+		function makeEvent(t,eventType){
+			for(var i in t){
 
-					if(trigger[i].onmousedown === null){
+					if(t[i][eventType] === null){
 						// Here we create a function for onmousedown
 						// -----------------------------------------
-						trigger[i].onmousedown = function(){
+						t[i][eventType] = function(){
 							onOff();
 						}
 					}else{
 						// Here we 'add' to any already exhisting function for onmousedown
 						// ---------------------------------------------------------------
-						trigger[i].onmousedown = (
+						t[i][eventType] = (
 							function(_super){
 								return function(){
 									onOff();
 									return _super.apply(this,arguments);
 								}
 							}
-						)(trigger[i].onmousedown)
+						)(t[i][eventType])
 					}
 				}
+		}
+
+		// assigning functions to mouse event
+		// ----------------------------------
+		switch(type){
+			case 'click':
+				makeEvent(trigger,'onmousedown');
+			break;
+
+			case 'rollover':
+				makeEvent(trigger,'onmouseover');
 			break;
 		}
 
@@ -344,6 +361,7 @@
 		q.data._boolean = false;
 
 		var l = options._repeat+1;
+
 
 		// -----------------------
 		// Loops
