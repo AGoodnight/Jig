@@ -579,6 +579,57 @@
 				return arr;
 			};
 
+			function removeUndefined(x){
+
+				var y = {};
+				for(var i in x){
+					if(x[i].nodeName !== undefined){
+						y[i] = x[i]
+					}
+				}
+
+				return y;
+			}
+
+			function searchForNode(parent,matchWith,deep){
+
+				var r = 0;
+				var matched = [];
+
+				var l = Object.keys(removeUndefined(parent)).length
+
+				for (var i in parent){
+					
+					if(parent[i].nodeName !== undefined){
+
+						r++;
+						var p = parent[i].nodeName.toLowerCase()
+						
+						if(p === matchWith){	
+
+							matched.push(parent[i])
+
+							if(r === l-1){
+								if(matched.length>0){
+									return matched;
+								}else{
+									return false;
+								}
+							}
+							
+						}else{
+							if(parent[i].childNodes !== undefined){
+								q = searchForNode(parent[i].childNodes,matchWith);
+								if( q !== undefined){
+									return q;
+								}
+							}
+						}
+					}
+				}
+
+			}
+
 			var DOM = document.body.childNodes;
 			var n = nodeString;
 			var splitN = n.split(' ');
@@ -594,11 +645,18 @@
 				
 			}else{
 
-				// INCOMPLETE ***************************
+				var parent = removePrefix(splitN[0]);
+				var child = removePrefix(splitN[1]);
+				var parentsNodes = findNode(parent[0],parent[1])[0].childNodes;
+				var result = searchForNode(parentsNodes,child[1]);
 
-				//-------------------------------------------------------------
-				// If we are trying to get the children of another DOM element
-				//-------------------------------------------------------------
+				console.log(result)
+
+				if(result !== false && result !== undefined){
+					thisNode = result;
+				}else{
+					console.log('No Node Found, please use an id for your parent element');
+				}
 				
 			}
 
