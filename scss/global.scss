@@ -1,0 +1,151 @@
+// ----------
+// Mix-ins
+// ----------
+
+//Mixins
+@mixin lg($fromColor, $toColor) {
+  background-color: $toColor; /* Fallback Color */
+  background-image: -webkit-gradient(linear, left top, left bottom, from($fromColor), to($toColor)); /* Saf4+, Chrome */
+  background-image: -webkit-linear-gradient(top, $fromColor, $toColor); /* Chrome 10+, Saf5.1+, iOS 5+ */
+  background-image:    -moz-linear-gradient(top, $fromColor, $toColor); /* FF3.6 */
+  background-image:     -ms-linear-gradient(top, $fromColor, $toColor); /* IE10 */
+  background-image:      -o-linear-gradient(top, $fromColor, $toColor); /* Opera 11.10+ */
+  background-image:         linear-gradient(top, $fromColor, $toColor);
+  filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,StartColorStr='#{$fromColor}', EndColorStr='#{$toColor}');
+}
+
+// Animations
+@mixin all($dur){
+	-webkit-transition:all $dur;
+	-moz-transtion:all $dur;
+	-ms-transition:all $dur;
+	-o-transition:all $dur;
+	transition:all $dur;
+}
+
+// ----------
+// Variables
+// ----------
+
+// Breakpoints
+$boot-xs:"(max-width:480px)";
+$boot-s:"(min-width:481px) and (max-width:767px)";
+$boot-md:"(min-width:768px) and (max-width:991px)";
+$boot-lg:"(min-width:992px) and (max-width:1200px)";
+$boot-xlg:"(min-width:1200px)";
+
+$boot-wide: "(min-width:992px)";
+$boot-medium: "(max-width:991px)";
+$boot-thin: "(max-width:768px)";
+
+// Colors
+$blue:#559ede;
+$red:#cb111f;
+$orange:#fc822f;
+$green:#b8e943;
+$grey:#d5d5d5;
+
+// Headers
+$h1:400 100px 'Poiret One', sans-serif;
+$h5:medium 10px arial, sans-serif;
+
+// Navigation
+$n1:400 13px 'Lato', sans-serif;
+$n2:400 20px 'Lato', sans-serif;
+
+// Body
+$body:medium 15px arial, sans-serif;
+
+// Border
+$dot-rule: $grey dotted 2px;
+
+
+// ----------
+// Style Declarations
+// ----------
+ 
+ body{
+ 	font:$body; 
+ }
+
+ a{ 
+ 	color:$blue;
+ 	@include all(.3);
+
+ 	&:hover{
+ 		color:$red;
+ 		@include all(.6);
+ 	};
+ }
+
+#slide-nav{
+	width:240px;
+	height:122px;
+	background:$blue;
+
+	.nav-item{
+
+		font:$n2;
+		@include all(.5);
+
+		&:hover{
+			font-size:15px;
+			@include all(.4);
+		};
+
+	};
+
+}
+
+#stage{
+
+	.slide{
+		width:750px;
+		height:600px;
+		padding:15px;
+	};
+
+}
+
+.git-badge{
+	background:url(img/git-badge.jpg);
+	//background-position:;
+	&:hover{
+		//background-position:;
+	};
+}
+
+.red{
+	@include lg(#cc111f,#be101d);
+};
+
+.orange{
+	@include lg(#ff8631,#f37d2d);
+};
+
+.green{
+	@include lg(#b2e241,#bdf045);
+};
+
+.yellow{
+	@include lg(#ff8530,#f27c2d);
+};
+
+#jig{
+
+	.square{
+		position:absolute;
+		display:block;
+		width:170px;
+		height:170px;
+	};
+
+}
+
+// Media Queries
+@media #{$boot-thin}{}
+@media #{$boot-wide}{}
+@media #{$boot-medium}{}
+@media #{$boot-xs}{}
+
+

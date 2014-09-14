@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link href='css/bootstrap.min.css' rel='stylesheet'>
+<link href='css/global.css' rel='stylesheet'>
+</head>
+<body>
+
+<div class='container'>
+	<div id='demo' class='row'>
+		<div class='col-md-6'>
+				<div id='actor' class='block'></div>
+				<div id='actor' class='block'></div>
+				<div id='actor' class='block'></div>
+		</div>
+		<div class='col-md-6'>
+				<pre>
+jig('.block')
+	.plop(1,{stagger:.1})
+	.spin(1,{stagger:.2})
+	.hop(1,{repeat:1,stagger:.4})
+	.play()
+	.click();
+				</pre>
+		</div>
+	</div>
+	<div class='row'>
+		<div class='col-md-4'>
+		JigLite
+		</div>
+		<div class='col-md-8'>
+		jigLite('yourTarget').hop().plop().spin()
+		.click() - allows you to click to start or restart playback
+		.play() - auto plays tha animation
+		</div>
+	</div>
+</div>
+
+</body>
+<script src='js/TweenLite.min.js'></script>
+<script src='js/TimelineLite.min.js'></script>
+<script src='js/CSSPlugin.min.js'></script>
+<script src='js/jigLite.js' type='text/javascript'></script>
+<script src='js/jigLibrary.js' type='text/javascript'></script>
+<script>
+
+jig('.block')
+	.plop({stagger:.1})
+	.spin(1,{stagger:.2})
+	.hop(1,{repeat:1,stagger:.4})
+	.play()
+	.click();
+
+</script>
+</html
