@@ -1,0 +1,54 @@
+.block{
+	padding:30px;
+	position:relative;
+	background:black;
+	display:inline-block;
+	font-size:30px;
+	color:white;
+	font-family:'Roboto', sans-serif;
+	font-weight:700;
+	margin-bottom:30px;
+	text-align:center;
+}
+.col-md-12 pre{
+	margin:10px 0 30px 0;
+}
+
+.block:hover{
+	color:white;
+}
+
+.block:first-child{
+	margin-left:0;
+}
+
+#demo{
+	margin-top:20px;
+	position:relative;
+}
+
+.pad60{
+	padding-bottom:60px;
+}
+
+.pad30{
+	padding-bottom:30px;
+}
+
+.faded{
+	background-color:#EDEDED;
+}
+
+h1,h2,h3,h4,h5,h6{
+	font-weight:600;
+	font-family:'Roboto', sans-serif;
+}
+
+
+.sidebar a{
+	font-size:13px;
+}
+
+@-moz-document url-prefix() {
+  fieldset { display: table-cell; }
+}

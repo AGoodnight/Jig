@@ -2,37 +2,412 @@
 <html>
 <head>
 <link href='css/bootstrap.min.css' rel='stylesheet'>
+<script src='js/jquery.min.js' rel='stylesheet'></script>
+<script src='js/bootstrap.js' rel='stylesheet'></script>
 <link href='css/global.css' rel='stylesheet'>
+<link href='http://fonts.googleapis.com/css?family=Roboto:400,700,500' rel='stylesheet' type='text/css'>
 </head>
 <body>
 
+<!--<div clas='navbar navbar-default' role='navigation'>
+	<div class='container-fluid'>
+		<div class='navbar-header'>
+			<button class='navbar-toggle collapsed' data-toggle='collapse' data-target='#primary-nav'>
+				<span class="sr-only">Toggle navigation</span>
+        		<span class="icon-bar"></span>
+        		<span class="icon-bar"></span>
+        		<span class="icon-bar"></span>
+      		</button>
+      		<a class='navbar-brand' href='#'>Adam Goodnight</a>
+      	</div>
+      	<div class='collapse navbar-collapse' id='primary-nav'>
+      		<ul class='nav navbar-nav'>
+      			<li><a>jigLite</a></li>
+      		</ul>
+      	</div>
+    </div>
+</div>-->
+
 <div class='container'>
 	<div id='demo' class='row'>
-		<div class='col-md-6'>
-				<div id='actor' class='block'></div>
-				<div id='actor' class='block'></div>
-				<div id='actor' class='block'></div>
+
+		<div class='col-md-3'>
+			<div class='sidebar hidden-sm hidden-xs' data-spy="affix" data-offset-top="0"  role='complimentary'>
+					
+					<h5>Constructor Methods</h5>
+						<a href='#jig'>jig()</a><br>
+						<a href='#zig'>TimelineLite.zig()</a><br>
+					<h5>Preset Zigs</h5>
+						<a href='#hop'>hop()</a><br>
+						<a href='#plop'>plop()</a><br>
+						<a href='#spin'>spin()</a><br>
+						<a href='#fly'>fly()</a><br>
+						<a href='#fade'>fade()</a><br>
+					<h5>Control Methods</h5>
+						<a href='#click'>TimelineLite.click()</a><br>
+						<a href='#rollover'>TimelineLite.rollover()</a><br>
+						<br>
+						
+				
+					<a href='http://www.adamgoodnight.com'>Adam Goodnight.com</a>
+				
+			</div>
 		</div>
-		<div class='col-md-6'>
-				<pre>
-jig('.block')
-	.plop(1,{stagger:.1})
-	.spin(1,{stagger:.2})
-	.hop(1,{repeat:1,stagger:.4})
-	.play()
-	.click();
-				</pre>
+		<div class='col-md-8' role='main'>
+
+				<div class='row'>
+						<div class='col-md-12'>
+						<h1>Jiglite</h1>
+						<br>
+						<br>
+							<h4>Setup</h4>
+
+							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut eget erat lorem. Quisque orci nulla, commodo sed consequat quis, porttitor eu odio. Suspendisse at luctus nisi, vitae tempus lacus. Donec posuere aliquet accu</p>
+							<br>
+							<br>
+							<br>
+							
+
+						</div>
+
+						<h3>Constructor Methods</h3>
+						<hr>
+						
+						<div name='jig' class='col-md-12'>
+							<h1>jig();</h1>
+							<br>
+							<p>The Jig method creates and returns an instance of timelinelite which will control whatever element or elements you pass to it.</p>
+							<pre>
+								<p>jig('h1','.className','#yourID')</p>
+							</pre>
+							<br>
+								<div class='col-md-6'>
+								<h4>Chaining</h4>
+								<p>
+								Chaining is the central idea of jig.
+								</p>
+								</div>
+
+								<div class='col-md-6'>
+								<h4>TimelineLite</h4>
+								<p>
+								Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut eget erat lorem. Quisque orci nulla, commodo sed consequat quis, porttitor eu odio. Suspendisse at luctus nisi, vitae tempus lacus. Donec posuere aliquet accu
+								</p>
+								</div>
+
+								<div class='col-md-6'>
+								<h4>Selector</h4>
+								<p>
+								Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut eget erat lorem. Quisque orci nulla, commodo sed consequat quis, porttitor eu odio. Suspendisse at luctus nisi, vitae tempus lacus. Donec posuere aliquet accu
+								</p>
+								</div>
+
+								<div class='col-md-6'>
+								<h4>Zig Objects</h4>
+								<p>
+								Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut eget erat lorem. Quisque orci nulla, commodo sed consequat quis, porttitor eu odio. Suspendisse at luctus nisi, vitae tempus lacus. Donec posuere aliquet accu
+								</p>
+								<br>
+								<br>
+								<br>
+								<br>
+								</div>
+
+						</div>
+
+						<div class='col-md-12'>
+							<h1>zig();</h1>
+							<br name='zig'>
+							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut eget erat lorem. Quisque orci nulla, commodo sed consequat quis, porttitor eu odio. Suspendisse at luctus nisi, vitae tempus lacus. Donec posuere aliquet accu</p>
+							<pre>
+jig('h1').
+	.zig(.1, function(ziggle,actor){
+		ziggle.add( //Your TweenLite )})
+	.play();
+							</pre>
+
+								<div class='col-md-12'>
+								<h4>Delay</h4>
+								<p>
+								You can enter a delay, this will be how long the animation waits before starting relative to the last animation you assigned to the timeline through chaining.
+								</p>
+								<code>jig('.className').hop(1)</code>
+								<br>
+								<br>
+								</div>
+
+
+								<div class='col-md-12'>
+								<h4>Zigs in Jigs</h4>
+								<p>
+								Since a zig is an object you can treat it as such in your browser when debugging or animatig complex situations.<br></p>
+								<p>
+								<code>
+									var myJig = jig('.className').hop().plop().fade();<br>
+									console.log(myJig.zigs);<br>
+									
+								</code>
+								</p>
+								<br>
+								</div>
+								<br>
+								<br>
+						</div>
+					</div>
+					<hr>
+					<div class='row'>
+						<h3>Preset Zigs</h3>
+						<p>Preset Zigs are stored in the library.js file. They are built to stand-alone without any user input. A user can include user defined options though. These preset methods are speciffcations of the more general class of zig.
+						</p>
+						<br>
+						<br>
+						<div class='col-md-12'>
+							
+							<h4>Options</h4>
+							<p>
+							Options are passed to the preset method in the form of an object literal {}. A user cannot introduce functionality that isnot there, but they can overide the variables controling the preset animation. Each preset acccepts it's own set of additional options alongside the base options of preset zig class. </p>
+							<br>
+							<div class='table-responsive'>
+									<table class='table table-striped'>
+										<tr>
+											<th>Base Options</th>
+											<th>Type</th>
+											<th>Description</th>
+										</tr>
+										<tr>
+											<td>name</td>
+											<td>'string'</td>
+											<td>If you prefer to be subjective</td>
+										</tr>
+										<tr>
+											<td>speed</td>
+											<td>'number'</td>
+											<td>How fast the full animation is in seconds</td>
+										</tr>
+										<tr>
+											<td>stagger</td>
+											<td>'number'</td>
+											<td>The delay of each successive element in the jig</td>
+										</tr>
+										<tr>
+											<td>repeat</td>
+											<td>'number'</td>
+											<td>forever is 99999999999999999</td>
+										</tr>
+									</table>
+								</div>
+								<br>
+								<br>
+								<br>
+								<br>
+						</div>
+
+						<div name = 'hop' class='col-md-12'>
+								<div class='block' id='hop'>hop</div>
+								<pre>jig('#hop').hop(.1,{speed:1})</pre>
+								<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut eget erat lorem. Quisque orci nulla, commodo sed consequat quis, porttitor eu odio. Suspendisse at luctus nisi, vitae tempus lacus. Donec posuere aliquet accu</p>
+							
+							<div class='table-responsive'>
+									<table class='table table-striped'>
+										<tr>
+											<th>Options</th>
+											<th>Type</th>
+											<th>Description</th>
+										</tr>
+										<tr>
+											<td>amplitude</td>
+											<td>'number'</td>
+											<td>The highest point of the hop relative to the jig elements height</td>
+										</tr>
+										<tr>
+											<td>density</td>
+											<td>'number'</td>
+											<td>How squishy the element is when it lands</td>
+										</tr>
+										<tr>
+											<td>rotation</td>
+											<td>'number'</td>
+											<td>how much it rotates when it reaches the top of the hop.</td>
+										</tr>
+									</table>
+								</div>
+								<br>
+								<br>
+						</div>
+						<br>
+						<br>
+
+						<div name = 'fly' class='col-md-12'>
+								<div class='block' id='fly'>fly</div>
+								<pre>jig('#hop').hop(.1,{speed:1})</pre>
+								<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut eget erat lorem. Quisque orci nulla, commodo sed consequat quis, porttitor eu odio. Suspendisse at luctus nisi, vitae tempus lacus. Donec posuere aliquet accu</p>
+							
+							<div class='table-responsive'>
+									<table class='table table-striped'>
+										<tr>
+											<th>Options</th>
+											<th>Type</th>
+											<th>Description</th>
+										</tr>
+										<tr>
+											<td>rotation</td>
+											<td>'number'</td>
+											<td>The highest point of the hop relative to the jig elements height</td>
+										</tr>
+										<tr>
+											<td>density</td>
+											<td>'number'</td>
+											<td>How squishy the element is when it lands</td>
+										</tr>
+										<tr>
+											<td>rotation</td>
+											<td>'number'</td>
+											<td>how much it rotates when it reaches the top of the hop.</td>
+										</tr>
+									</table>
+								</div>
+								<br>
+								<br>
+						</div>
+						<br>
+						<br>
+
+						<div name = 'plop' class='col-md-12'>
+								<div class='block' id='plop'>plop</div>
+								<pre>jig('#hop').hop(.1,{speed:1})</pre>
+								<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut eget erat lorem. Quisque orci nulla, commodo sed consequat quis, porttitor eu odio. Suspendisse at luctus nisi, vitae tempus lacus. Donec posuere aliquet accu</p>
+							
+							<div class='table-responsive'>
+									<table class='table table-striped'>
+										<tr>
+											<th>Options</th>
+											<th>Type</th>
+											<th>Description</th>
+										</tr>
+										<tr>
+											<td>amplitude</td>
+											<td>'number'</td>
+											<td>The highest point of the hop relative to the jig elements height</td>
+										</tr>
+										<tr>
+											<td>density</td>
+											<td>'number'</td>
+											<td>How squishy the element is when it lands</td>
+										</tr>
+										<tr>
+											<td>rotation</td>
+											<td>'number'</td>
+											<td>how much it rotates when it reaches the top of the hop.</td>
+										</tr>
+									</table>
+								</div>
+								<br>
+								<br>
+						</div>
+						<br>
+						<br>
+
+						<div name = 'fade' class='col-md-12'>
+								<div class='block' id='fade'>fade</div>
+								<pre>jig('#hop').hop(.1,{speed:1})</pre>
+								<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut eget erat lorem. Quisque orci nulla, commodo sed consequat quis, porttitor eu odio. Suspendisse at luctus nisi, vitae tempus lacus. Donec posuere aliquet accu</p>
+							
+							<div class='table-responsive'>
+									<table class='table table-striped'>
+										<tr>
+											<th>Options</th>
+											<th>Type</th>
+											<th>Description</th>
+										</tr>
+										<tr>
+											<td>amplitude</td>
+											<td>'number'</td>
+											<td>The highest point of the hop relative to the jig elements height</td>
+										</tr>
+										<tr>
+											<td>density</td>
+											<td>'number'</td>
+											<td>How squishy the element is when it lands</td>
+										</tr>
+										<tr>
+											<td>rotation</td>
+											<td>'number'</td>
+											<td>how much it rotates when it reaches the top of the hop.</td>
+										</tr>
+									</table>
+								</div>
+								<br>
+								<br>
+						</div>
+						<br>
+						<br>
+
+						<div name = 'spin' class='col-md-12'>
+								<div class='block' id='spin'>spin</div>
+								<pre>jig('#spin').spin(.1,{speed:1})</pre>
+								<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut eget erat lorem. Quisque orci nulla, commodo sed consequat quis, porttitor eu odio. Suspendisse at luctus nisi, vitae tempus lacus. Donec posuere aliquet accu</p>
+							
+							<div class='table-responsive'>
+									<table class='table table-striped'>
+										<tr>
+											<th>Options</th>
+											<th>Type</th>
+											<th>Description</th>
+										</tr>
+										<tr>
+											<td>amplitude</td>
+											<td>'number'</td>
+											<td>The highest point of the hop relative to the jig elements height</td>
+										</tr>
+										<tr>
+											<td>density</td>
+											<td>'number'</td>
+											<td>How squishy the element is when it lands</td>
+										</tr>
+										<tr>
+											<td>rotation</td>
+											<td>'number'</td>
+											<td>how much it rotates when it reaches the top of the hop.</td>
+										</tr>
+									</table>
+								</div>
+								<br>
+								<br>
+						</div>
+						<br>
+						<br>
+						
+					
+						<h4>Control Methods</h4>
+						<hr>
+						<br>
+
+						<div name='click' class='col-md-12'>
+							<h1>click( );</h1>
+							<br>
+							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut eget erat lorem. Quisque orci nulla, commodo sed consequat quis, porttitor eu odio. Suspendisse at luctus nisi, vitae tempus lacus. Donec posuere aliquet accu</p>
+							<pre>
+								<p>jig('h1')<br>     .fade()<br>     .click(toggle:boolean);</p>
+							</pre>
+							<br>
+							<br>
+						</div>
+
+						<div name='rollover' class='col-md-12'>
+							<h1>rollover( );</h1>
+							<br>
+							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut eget erat lorem. Quisque orci nulla, commodo sed consequat quis, porttitor eu odio. Suspendisse at luctus nisi, vitae tempus lacus. Donec posuere aliquet accu</p>
+							<pre>
+								<p>jig('h1')<br>     .spin()<br>     .rollover(toggle:boolean);</p>
+							</pre>
+							<br>
+							<br>
+						</div>
+
+
+				</div>
 		</div>
-	</div>
-	<div class='row'>
-		<div class='col-md-4'>
-		JigLite
-		</div>
-		<div class='col-md-8'>
-		jigLite('yourTarget').hop().plop().spin()
-		.click() - allows you to click to start or restart playback
-		.play() - auto plays tha animation
-		</div>
+
 	</div>
 </div>
 
@@ -44,12 +419,46 @@ jig('.block')
 <script src='js/jigLibrary.js' type='text/javascript'></script>
 <script>
 
-jig('.block')
-	.plop({stagger:.1})
-	.spin(1,{stagger:.2})
-	.hop(1,{repeat:1,stagger:.4})
+// User Controled Jigs
+jig('#hop')
+	.hop({repeat:1})
+	.click(true).play();;
+
+jig('#spin')
+	.spin()
+	.rollover().play();
+
+jig('#fly')
+	.fly()
+	.click(true).play();
+
+jig('#fade')
+	.fade({start:1,end:0})
+	.fade({start:0,end:1})
+	.click(true)
+	.play();
+
+jig('#plop')
+	.plop({startY:-200})
 	.play()
-	.click();
+	.click(true)
+	.play();
+
+
+// Fade In Sequence
+
+jig('.col-md-3')
+	.fly(.4,{_startrotationz:0})
+	.play();
+
+jig('h1')
+	.fade(.1,{speed:1})
+	.play();
+
+jig('h4','p')
+	.fade(.9,{speed:1})
+	.play();
+
 
 </script>
-</html
+</html>

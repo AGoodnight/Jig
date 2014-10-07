@@ -7,6 +7,12 @@ TimelineLite.prototype.plop = function(){
 TimelineLite.prototype.spin = function(){
 	return this.zigInstance('spin',arguments);
 };
+TimelineLite.prototype.fade = function(){
+	return this.zigInstance('fade',arguments);
+};
+TimelineLite.prototype.fly = function(){
+	return this.zigInstance('fly',arguments);
+};
 
 
 
@@ -93,6 +99,7 @@ var library = {
 				_speed:1,
 				_density:.9,
 				_scale:1,
+				_startY:'none',
 				_origin:'50% 100%', // ground
 
 				_repeat:0
@@ -101,7 +108,7 @@ var library = {
 
 				var q = new TimelineLite();
 				// Your custom setting modifications		
-				var s=[o._speed/8,o._speed/6];
+				var s=[o._speed/7,o._speed/4];
 				var f = 0;
 				for(var i in s){ f += s[i]; };
 				s[2] = o._speed%f;
@@ -110,11 +117,18 @@ var library = {
 				// Assign animation to q (timeline)
 				// ----------------------------------------
 
+				var sY;
+				if(o._startY === 'none'){
+					sY = o._parentY-(o._selfY+o._self.data._height);
+				}else{
+					sY = o._startY;
+				}
+
 				console.log(o._parentY-o._selfY);
 
 				q.add(
 					TweenLite.set(actor,{
-						y:o._parentY-(o._selfY+o._self.data._height)
+						y:sY
 					})
 				)
 
@@ -146,7 +160,7 @@ var library = {
 						scaleX:o._scale,
 						scaleY:o._scale,
 						transformOrigin:o._origin,
-						ease:'easeIn'
+						ease:'easeOut'
 					})
 				);
 
@@ -193,5 +207,113 @@ var library = {
 
 				return q;
 			}
-		}		
-	};
+		},
+
+		fade:{
+			options:{
+				_speed:1, 
+				_start:0,
+				_end:1,
+				_origin:'50% 50%', // ground
+
+				_repeat:0
+			},
+			animation:function(actor,o,d){
+
+				var q = new TimelineLite();
+				// Your custom setting modifications
+
+				// ----------------------------------------
+				// Assign animation to q (timeline)
+				// ----------------------------------------
+
+				q.add(
+					TweenLite.set(actor,{
+						opacity:o._start,
+					})
+				);
+
+				q.add(
+					TweenLite.to(actor,o._speed,{
+						opacity:o._end,
+						ease:'easeOut'
+					})
+				);
+
+
+				return q;
+			}
+		},
+
+		fly:{
+			options:{
+
+				_speed:1, 
+				
+				
+					_startx:-300,
+					_starty:100,
+					_startz:300,
+					_startrotationx:-90,
+					_startrotationy:90,
+					_startrotationz:90,
+					_startopacity:0,
+				
+
+					_endx:0,
+					_endy:0,
+					_endz:0,
+					_endrotationx:0,
+					_endrotationy:0,
+					_endrotationz:0,
+					_endopacity:1,
+				
+
+				_origin:'50% 50%', // ground
+				_ease:'easeOut',
+				_repeat:0
+			},
+			animation:function(actor,o,d){
+
+				var q = new TimelineLite();
+				//q.immediateRender = false;
+				// Your custom setting modifications
+
+				// ----------------------------------------
+				// Assign animation to q (timeline)
+				// ----------------------------------------
+				q.add(
+					TweenLite.set(actor,{transformPerspective:500,opacity:0})
+					);
+
+				q.add(
+					TweenLite.fromTo(actor,o._speed,
+					{
+						x:o._startx,
+						y:o._starty,
+						z:o._startz,
+						opacity:o._startopacity,
+						rotationX:o._startrotationx,
+						rotationY:o._startrotationy,
+						rotationZ:o._startrotationz,
+						_origin:o._origin,
+						_ease:o._ease
+					},
+					{
+						x:o._endx,
+						y:o._endy,
+						z:o._endz,
+						opacity:o._endopacity,
+						rotationX:o._endrotationx,
+						rotationY:o._endrotationy,
+						rotationZ:o._endrotationz,
+						_origin:o._origin,
+						_ease:o._ease
+					})
+				);
+
+
+				return q;
+			}
+		}				
+};

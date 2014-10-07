@@ -72,6 +72,10 @@
 	// PUBLIC CONSTRUCTORS
 	// --------------------
 
+	TimelineLite.prototype.zig = function(){
+		return this.zigInstance('custom',arguments)
+	};
+
 	TimelineLite.prototype.click = function(){
 		return this.mouseEvent('click',arguments);
 	};
@@ -79,10 +83,6 @@
 	TimelineLite.prototype.rollover = function(){
 		return this.mouseEvent('rollover',arguments);
 	}
-
-	TimelineLite.prototype.zig = function(){
-		return this.zigInstance('custom',arguments)
-	};
 
 
 	// Core Constructors
