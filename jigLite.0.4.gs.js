@@ -1,5 +1,6 @@
 ;(function(document,window){
 
+	// Jig makes an object where animation execution requests are anchored.
 	jig = function(){
 		
 		var q = new TimelineLite({paused:true});
@@ -72,18 +73,27 @@
 	// PUBLIC CONSTRUCTORS
 	// --------------------
 
+	// These are your jig options ( ex. jig().hop(); )
+
 	TimelineLite.prototype.hop = function(){
 		return this.zigInstance('hop',arguments);
 	};
+
+	// jig().hop().click()
+	// If a click order is executes it binds the jig objects timeline to a click event
 
 	TimelineLite.prototype.click = function(){
 		return this.mouseEvent('click',arguments);
 	};
 
+	// similar to click, except rollover, 
+		//a good use for this would be to produce a button which remains hopping whilst you are hovering over it.
+
 	TimelineLite.prototype.rollover = function(){
 		return this.mouseEvent('rollover',arguments);
 	}
 
+	// a blank check, where you can write a native timelinelite timeline
 	TimelineLite.prototype.zig = function(){
 		return this.zigInstance('custom',arguments)
 	};
