@@ -1,3 +1,5 @@
+The Work in Jig has migrated to JiveMax, see JiveMax for the new version of Jig.
+
 Jig
 ===
 
