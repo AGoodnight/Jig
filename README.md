@@ -1,5 +1,4 @@
-The Work in Jig has migrated to JiveMax. JiveMax is a private repository not open to the public.
-
+<b>The Work in Jig has been extended and migrated to JiveMax.</b>
 -------------------
 Jig
 ===
